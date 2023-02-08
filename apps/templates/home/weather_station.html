@@ -76,231 +76,245 @@
 
     </script>
     <!-- Header -->
-    <div id="map">
+     <div id="map">
         <p>MAP</p>
     </div>
     <div id="viewDiv">
-
     </div>
     <div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
+      <div class="container-fluid">
+        <div class="header-body">
+        <div style="align-items: center">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<div class="container">
+<div class="row flex-lg-nowrap">
+  <div class="col-12 col-lg-auto mb-3" style="width: 200px;">
+    <div >
+      <div class="e-navlist e-navlist--active-bg">
 
+      </div>
+    </div>
+  </div>
 
-        <div class="container-fluid">
-            <div class="header-body">
-                <div style="align-items: center">
-                    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
-                          rel="stylesheet"/>
-                    <div class="container">
-                        <div class="row flex-lg-nowrap">
-                            <div class="col-12 col-lg-auto mb-3" style="width: 200px;">
-                                <div>
-                                    <div class="e-navlist e-navlist--active-bg">
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col">
-                                <div class="e-tabs mb-3 px-3">
-                                    <ul class="nav nav-tabs" style="position:relative; left:-155px">
-                                        <li class="nav-item"><a class="nav-link active" href="#">Weather station</a>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <div class="row flex-lg-nowrap">
-                                    <div class="col mb-3">
-                                        <div class="e-panel card" style="position:relative; left:-140px">
-                                            <div class="card-body">
-
-                                                <div class="e-table">
-                                                    <div class="table-responsive table-lg mt-3">
-                                                        <table class="table table-bordered">
-                                                            <thead>
-                                                            <tr>
-                                                                <th>
-                                                                    id
-                                                                </th>
-
-                                                                <th class="max-width">Packet</th>
-                                                                <th class="sortable">Packet result</th>
-                                                                <th class="sortable">Location</th>
-
-
-                                                                <th>Actions</th>
-                                                            </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                            {% for item in list %}
-                                                                <tr>
-                                                                    <td class="text-nowrap align-middle">{{ item.id }}</td>
-                                                                    <td class="text-nowrap align-middle">{{ item.packet }}</td>
-
-                                                                    {% for item in item.weather_station.all %}
-                                                                        <td class="text-center align-middle"> {{ item.temperature }}</td>
-                                                                    {% endfor %}
-
-                                                                    <td class="text-center align-middle">   {{ item.location }}</td>
-
-                                                                    <td class="text-center align-middle">
-                                                                        <div class="btn-group align-top">
-                                                                            <button class="btn btn-sm btn-outline-secondary badge" data-toggle="modal"
-                                                                                    data-target="#edit-weather-station-modal" onclick="updateEditId({{ item.id }})" type="button">Edit
-                                                                            </button>
-
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
-                                                            {% endfor %}
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                    <div class="d-flex justify-content-center">
-                                                        <ul class="pagination mt-3 mb-0">
-                                                            <li class="disabled page-item"><a href="#"
-                                                                                              class="page-link">‹</a>
-                                                            </li>
-                                                            <li class="active page-item"><a href="#"
-                                                                                            class="page-link">1</a></li>
-                                                            <li class="page-item"><a href="#" class="page-link">2</a>
-                                                            </li>
-                                                            <li class="page-item"><a href="#" class="page-link">3</a>
-                                                            </li>
-                                                            <li class="page-item"><a href="#" class="page-link">4</a>
-                                                            </li>
-                                                            <li class="page-item"><a href="#" class="page-link">5</a>
-                                                            </li>
-                                                            <li class="page-item"><a href="#" class="page-link">›</a>
-                                                            </li>
-                                                            <li class="page-item"><a href="#" class="page-link">»</a>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-lg-3 mb-3">
-                                        <div class="card">
-
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- User Form Modal -->
-                    <div class="modal fade" role="dialog" tabindex="-1" id="edit-weather-station-modal">
-                        <div class="modal-dialog modal-lg" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Edit</h5>
-                                    <button type="button" class="close" data-dismiss="modal">
-                                        <span aria-hidden="true">×</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="py-1">
-                                        <form class="form" novalidate="">
-                                            <div class="row">
-                                                <div class="col">
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            <div class="form-group">
-                                                                <label>PACKET</label>
-                                                                <input class="form-control" id="edit-packet" type="text">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            <div class="form-group">
-                                                                <label>PACKET RESULT</label>
-                                                                <input class="form-control" type="text">
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label>LOCATION</label>
-                                                                <input class="form-control" id="edit-location" type="text">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col d-flex justify-content-end">
-                                                    <button class="btn btn-primary" type="button" onclick="edit()">Save</button>
-                                                </div>
-                                            </div>
-                                        </form>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+ <div class="col">
+        <div div class="e-tabs  px-3">
+          <div class="card" style="position:relative; left:-155px">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">Sensors</h3>
                 </div>
+                  <div>  <button class="btn btn-sm btn-outline-secondary badge" type="button" style="border-radius: 50% ; font-size: 1.5rem ; float: right; ; background-color: #7765e3 ; height:36px; width: 36px;margin-top: 15px; ;color:white;" onclick="AddSensor()" data-toggle="modal" data-target="#user-form-modal">+</button></di
+
+              </div>
             </div>
+
+              <div class="table-responsive table-lg mt-3"  style="position:relative;: top:20px">
+                <table class="table align-items-center table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Type</th>
+                      <th class="sortable">category</th>
+
+                    <th scope="col">Number Result</th>
+                    <th scope="col">string result</th>
+                      <th class="sortable">Location</th>
+                      <th class="sortable">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                 {% for item in list %}
+                     <tr id="sensor-{{ item.id }}" data-location="{{ item.location }}" data-category="{{ item.category }}" data-type="{{item.type}}">
+
+
+                    <th scope="row">
+                        {{item.id}}
+                    </th>
+                    <td>
+                        {{ item.type}}
+                    </td>
+                     <td>
+                        {{ item.category}}
+                    </td>
+                    <td>
+                     {% if not item.number_results.all.count %}   -   {% endif %}
+                     {% for item in item.number_results.all %}
+                          {{ item.number }}
+                     {% endfor %}
+                    </td>
+                    <td>
+                     {% if not item.STRINGRESULT.all.count %}   -   {% endif %}
+                        {% for item in item.STRINGRESULT.all %}
+                             {{ item.string_result }}
+                        {% endfor %}
+                    </td>
+                     <td>
+                       {{ item.location }}
+                    </td>
+                     <td class="text-center align-middle">
+                        <div class="btn-group align-top">
+                            <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="EditSensor('{{ item.id }}')" data-toggle="modal" data-target="#user-form-modal">Edit</button>
+                            <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="DeleteSensor('{{ item.id }}')"> <i class="fa-solid fa-trash-can-arrow-up" ></i></button>
+                        </div>
+                      </td>
+                      {% endfor %}
+
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
+
+
+
+                  </tbody>
+                </table>
+              </div>
+
+           <div style="margin-top: 15px;">
+
+            </div>
+          </div>
+        </div>
+      </div>
+        </div>
+      <div class="col-12 col-lg-3 mb-3">
+        <div class="card">
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Form Modal -->
+    <div class="modal fade" role="dialog" tabindex="-1" id="user-form-modal">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Create Sensor</h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="py-1">
+              <form class="form"  method="POST" action="{% url 'sensor-operation' %}">
+              {% csrf_token %}
+              <input class="form-control" type="hidden" name="operation" id="operation" required>
+              <input class="form-control" type="hidden" name="id" id="sensor-form-id" >
+                <div class="row">
+                  <div class="col">
+                    <div class="row">
+                      <div class="col">
+                        <div class="form-group">
+                          <label>Location</label>
+                          <input class="form-control" type="text" name="location" id="location"required >
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div class="form-group">
+                          <label>Category</label>
+                          <input class="form-control" type="text" name="category" id="category"required >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <div class="form-group">
+                          <label>Type</label>
+                          <input class="form-control" type="text" name="type" id="type" required>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col mb-3">
+                        <div class="form-group">
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                    <button class="btn btn-primary" type="submit">Save</button>
+                  </div>
+                </div>
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
     </div>      <!-- Card stats -->
-    <input type="hidden" id="current-edit-id" />
-    {% include "includes/footer.html" %}
+
+      {% include "includes/footer.html" %}
+
+    </div>
+
 {% endblock content %}
 
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
-
-    <script src="/static/assets/vendor/clipboard/dist/clipboard.min.js"></script>
 <script>
-function updateEditId(id){
-    $('#current-edit-id').val(id);
+function DeleteSensor(id){
+        console.log(id)
+
+if(confirm('Are you sure you want to delete this item?')){
+     let formdata = new FormData();
+    formdata.append("id", id);
+
+    let requestOptions = {
+      method: 'DELETE',
+      body: formdata,
+      redirect: 'follow'
+    };
+
+    fetch("/api/delete/sensor/", requestOptions)
+      .then(response => response.text())
+      .then(result => console.log(result))
+      .then(result => location.reload())
+      .catch(error => console.log('error', error));
 }
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
+
 }
-function edit(){
-    const pk = $('#current-edit-id').val();
-    const locationVal = $('#edit-location').val();
-    const packet = $('#edit-packet').val();
-    let csrftoken = getCookie('csrftoken');
 
-    try{
-        const formData = new FormData();
-        formData.append('pk', pk);
-        formData.append('location', locationVal);
-        formData.append('packet', packet);
+function EditSensor(id){
+    let location_input = document.getElementById('location')
+    let type_input = document.getElementById('type')
+    let category_input = document.getElementById('category')
+    let sensor_id_input = document.getElementById('sensor-form-id')
+    let operation = document.getElementById('operation')
 
-        fetch('{% url 'weather_station_api' %}', {
-            method: 'PUT',
-            body: formData,
-            credentials: 'same-origin',
-            headers: { "X-CSRFToken": csrftoken },
+    let sensor = document.getElementById(`sensor-${id}`)
 
-        })
-            .then((response)=>response.json())
-            .then((result)=>{
-                console.log(result)
-                location.reload();
+    location_input.value = sensor.dataset.location
+    type_input.value = sensor.dataset.type
+    category_input.value = sensor.dataset.category
+    sensor_id_input.value = id
+    operation.value = 'edit'
 
-            })
-    }catch (e) {
-        console.error(e)
-    }
+}
+function AddSensor(){
+    let location_input = document.getElementById('location')
+    let type_input = document.getElementById('type')
+    let category_input = document.getElementById('category')
+    let operation = document.getElementById('operation')
+
+    location_input.value = ''
+    type_input.value = ''
+    category_input.value = ''
+    operation.value = 'add'
+
 }
 </script>
+<script src="/static/assets/vendor/clipboard/dist/clipboard.min.js"></script>
+
 {% endblock javascripts %}

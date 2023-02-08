@@ -97,73 +97,90 @@
   </div>
 
   <div class="col">
-    <div class="e-tabs mb-3 px-3">
-      <ul class="nav nav-tabs" style="position:relative; left:-155px">
-        <li class="nav-item"><a class="nav-link active" href="#">Trees</a></li>
-      </ul>
-    </div>
+    <div div class="e-tabs  px-3">
+          <div class="card" style="position:relative; left:-155px">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">Trees</h3>
+                </div>
+                  <div>  <button class="btn btn-sm btn-outline-secondary badge" type="button" style="border-radius: 50% ; font-size: 1.5rem ; float: right; ; background-color: #7765e3 ; height:36px; width: 36px;margin-top: 15px; ;color:white;" onclick="AddTree()" data-toggle="modal" data-target="#user-form-modal">+</button></di
 
-    <div class="row flex-lg-nowrap">
-      <div class="col mb-3">
-        <div class="e-panel card" style="position:relative; left:-140px">
-          <div class="card-body" >
+              </div>
+            </div>
 
-            <div class="e-table">
-              <div class="table-responsive table-lg mt-3">
-                <table class="table table-bordered">
-                  <thead>
-                    <tr>
-                      <th>
-                        id
-                      </th>
-                      <th>Type</th>
-                      <th class="max-width">State</th>
-                      <th class="sortable">water share</th>
-                         <th class="sortable">Location</th>
+              <div class="table-responsive table-lg mt-3"  style="position:relative;: top:20px">
+                <table class="table align-items-center table-flush">
+                <thead class="thead-light">
+                  <tr>
+                   <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">state</th>
+                    <th scope="col">time</th>
+                      <th scope="col">WATER SHARE</th>
+                      <th class="sortable">Location</th>
+                      <th class="sortable">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                 {% for item in list %}
+                     <tr id="tree-{{ item.id }}" data-location="{{ item.location }}" data-state="{{ item.state }}" data-type="{{item.type}}" data-time="{{item.time}}">
 
 
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  {% for item in list %}
-                    <tr>
-                      <td class="text-nowrap align-middle">{{ item.id }}</td>
-                      <td class="text-nowrap align-middle">{{ item.type }}</td>
-                      <td class="text-center align-middle"> {{ item.state }}</td>
-                         {% for item in item.water_share.all %}
-                        <td class="text-center align-middle"> {{ item.number }}</td>
-                             {% endfor   %}
+                    <th scope="row">
+                        {{item.id}}
+                    </th>
+                    <td>
+                        {{ item.type}}
+                    </td>
+                     <td>
+                     {{ item.time}}
+                     </td>
 
-                    <td class="text-center align-middle">   {{ item.location }}</td>
+                    <td>
 
-                      <td class="text-center align-middle">
+
+                          {{ item.state }}
+
+                    </td>
+                    <td >
+                     {% if not item.item.water_share.all %}   -   {% endif %}
+                        {% for item in item.item.water_share.all %}
+                             {{ item.number }}
+                        {% endfor %}
+                    </td>
+                     <td>
+                       {{ item.location }}
+                    </td>
+
+                     <td class="text-center align-middle">
                         <div class="btn-group align-top">
-                            <button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#user-form-modal">Edit</button>
-                            <button class="btn btn-sm btn-outline-secondary badge" type="button"><i class="fa fa-trash"></i></button>
+                            <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="EditTree('{{ item.id }}')" data-toggle="modal" data-target="#user-form-modal">Edit</button>
+                            <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="DeleteTree('{{ item.id }}')"> <a href="#"><i class="fa fa-trash" style="background-color: #0b1526"></i></a></button>
                         </div>
                       </td>
-                    </tr>
-                  {% endfor %}
+                      {% endfor %}
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+
+
                   </tbody>
                 </table>
               </div>
-              <div class="d-flex justify-content-center">
-                <ul class="pagination mt-3 mb-0">
-                  <li class="disabled page-item"><a href="#" class="page-link">‹</a></li>
-                  <li class="active page-item"><a href="#" class="page-link">1</a></li>
-                  <li class="page-item"><a href="#" class="page-link">2</a></li>
-                  <li class="page-item"><a href="#" class="page-link">3</a></li>
-                  <li class="page-item"><a href="#" class="page-link">4</a></li>
-                  <li class="page-item"><a href="#" class="page-link">5</a></li>
-                  <li class="page-item"><a href="#" class="page-link">›</a></li>
-                  <li class="page-item"><a href="#" class="page-link">»</a></li>
-                </ul>
-              </div>
+
+           <div style="margin-top: 15px;">
+
             </div>
           </div>
         </div>
       </div>
+        </div>
       <div class="col-12 col-lg-3 mb-3">
         <div class="card">
 
@@ -187,94 +204,57 @@
           </div>
           <div class="modal-body">
             <div class="py-1">
-              <form class="form" novalidate="">
+                <form class="form"  method="POST" action="{% url 'tree-operation' %}">
+              {% csrf_token %}
+                <input class="form-control" type="hidden" name="operation" id="operation" required>
+                <input class="form-control" type="hidden" name="id" id="tree-form-id" >
                 <div class="row">
                   <div class="col">
                     <div class="row">
                       <div class="col">
                         <div class="form-group">
-                          <label>Full Name</label>
-                          <input class="form-control" type="text" name="name" placeholder="John Smith" value="John Smith">
+                            <label>Location</label>
+                          <input class="form-control" type="text" name="location" id="location"required >
                         </div>
                       </div>
                       <div class="col">
                         <div class="form-group">
-                          <label>Username</label>
-                          <input class="form-control" type="text" name="username" placeholder="johnny.s" value="johnny.s">
+                          <label>State</label>
+                          <input class="form-control" type="text" name="state" id="state"required >
                         </div>
                       </div>
                     </div>
                     <div class="row">
                       <div class="col">
                         <div class="form-group">
-                          <label>Email</label>
-                          <input class="form-control" type="text" placeholder="user@example.com">
+                          <label>Type</label>
+                          <input class="form-control" type="text" name="type" id="type" required>
                         </div>
                       </div>
                     </div>
                     <div class="row">
                       <div class="col mb-3">
                         <div class="form-group">
-                          <label>About</label>
-                          <textarea class="form-control" rows="5" placeholder="My Bio"></textarea>
+                          <label>Time</label>
+                          <input class="form-control" type="text" name="time" id="time" required>
+                            </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col mb-3">
+                        <div class="form-group">
+
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="col-12 col-sm-6 mb-3">
-                    <div class="mb-2"><b>Change Password</b></div>
-                    <div class="row">
-                      <div class="col">
-                        <div class="form-group">
-                          <label>Current Password</label>
-                          <input class="form-control" type="password" placeholder="••••••">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col">
-                        <div class="form-group">
-                          <label>New Password</label>
-                          <input class="form-control" type="password" placeholder="••••••">
-                        </div>
-                      </div>
-                      <div class="col">
-                        <div class="form-group">
-                          <label>Confirm <span class="d-none d-xl-inline">Password</span></label>
-                          <input class="form-control" type="password" placeholder="••••••"></div>
-                      </div>
-                    </div>
+
+                    <button class="btn btn-primary" type="submit">Save</button>
                   </div>
-                  <div class="col-12 col-sm-5 offset-sm-1 mb-3">
-                    <div class="mb-2"><b>Keeping in Touch</b></div>
-                    <div class="row">
-                      <div class="col">
-                        <label>Email Notifications</label>
-                        <div class="custom-controls-stacked px-2">
-                          <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="notifications-blog" checked="">
-                            <label class="custom-control-label" for="notifications-blog">Blog posts</label>
-                          </div>
-                          <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="notifications-news" checked="">
-                            <label class="custom-control-label" for="notifications-news">Newsletter</label>
-                          </div>
-                          <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="notifications-offers" checked="">
-                            <label class="custom-control-label" for="notifications-offers">Personal Offers</label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+
                 </div>
-                <div class="row">
-                  <div class="col d-flex justify-content-end">
-                    <button class="btn btn-primary" type="submit">Save Changes</button>
-                  </div>
-                </div>
+
               </form>
 
             </div>
@@ -295,6 +275,58 @@
 
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
+    <script>
+    function DeleteTree(id) {
+        if (confirm('Are you sure you want to delete this item?')) {
+            let formdata = new FormData();
+            formdata.append("id", id);
+
+            let requestOptions = {
+                method: 'DELETE',
+                body: formdata,
+                redirect: 'follow'
+            };
+
+            fetch("/api/delete/tree/", requestOptions)
+                .then(response => response.text())
+                .then(result => console.log(result))
+                .then(result => location.reload())
+                .catch(error => console.log('error', error));
+        }
+    }
+function EditTree(id){
+    let location_input = document.getElementById('location')
+    let type_input = document.getElementById('type')
+    let state_input = document.getElementById('state')
+    let time_input = document.getElementById('time')
+    let tree_id_input = document.getElementById('tree-form-id')
+    let operation = document.getElementById('operation')
+
+    let tree = document.getElementById(`tree-${id}`)
+
+    location_input.value = tree.dataset.location
+    type_input.value = tree.dataset.type
+    state_input.value = tree.dataset.state
+    time_input.value = tree.dataset.time
+    tree_id_input.value = id
+    operation.value = 'edit'
+
+}
+function AddTree(){
+    let location_input = document.getElementById('location')
+    let type_input = document.getElementById('type')
+    let state_input = document.getElementById('state')
+    let time_input = document.getElementById('time')
+    let operation = document.getElementById('operation')
+
+    location_input.value = ''
+    type_input.value = ''
+    state_input.value = ''
+    time_input.value = ''
+    operation.value = 'add'
+
+}
+    </script>
 
 <script src="/static/assets/vendor/clipboard/dist/clipboard.min.js"></script>
 

@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 
 
 # Create your models here.
+class Title(models.Model):
+    title = models.CharField(max_length=60)
 
 
 class Sensor(models.Model):
@@ -57,7 +59,7 @@ class Result(models.Model):
     number = models.IntegerField(default=0)
     name = models.CharField(max_length=30)
     unit = models.CharField(max_length=30)
-    timestamp = models.DateTimeField(max_length=50)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE, blank=True, null=True, related_name="number_results")
     valve = models.ForeignKey(Valve, on_delete=models.SET_NULL, blank=True, null=True, related_name="vnumber_results")
     water_tank = models.ForeignKey(WaterTank, on_delete=models.SET_NULL, blank=True, null=True,
@@ -69,7 +71,7 @@ class Result(models.Model):
 
     def __str__(self):
         try:
-            return "sensor {} , valve {}".format(str(self.sensor.pk),str(self.valve.pk))
+            return "sensor {}".format(str(self.sensor.pk))
         except:
             return 'no sesnsors'
 

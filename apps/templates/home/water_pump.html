@@ -97,9 +97,10 @@
   </div>
 
   <div class="col">
-    <div class="e-tabs mb-3 px-3">
+    <div class="e-tabs  px-3">
       <ul class="nav nav-tabs" style="position:relative; left:-155px">
         <li class="nav-item"><a class="nav-link active" href="#">Water pumps</a></li>
+
       </ul>
     </div>
 
@@ -128,24 +129,29 @@
                   </thead>
                   <tbody>
                   {% for item in list %}
-                    <tr>
+                    <tr id="waterpump-{{ item.id }}" data-location="{{ item.location }}" data-state="{{ item.state }}" >
                       <td class="text-nowrap align-middle">{{ item.id }}</td>
 
                       <td class="text-center align-middle"> {{ item.state }}</td>
+                    <td class="text-center align-middle">
+                     {% if not item.water_pump.all.count %}   -   {% endif %}
                     {% for item in item.waterpump.all %}
-                        <td class="text-center align-middle"> {{ item.number }}</td>
+                        {{ item.number }}
                              {% endfor   %}
-
+                    </td>
+                  <td class="text-center align-middle">
+                  {% if not item.water_pump.all.count %}   -   {% endif %}
                          {% for item in item.water_pump.all %}
-                        <td class="text-center align-middle"> {{ item.energy_result }}</td>
+                        {{ item.energy_result }}
                              {% endfor   %}
+                    </td>
 
                     <td class="text-center align-middle">   {{ item.location }}</td>
 
                       <td class="text-center align-middle">
                         <div class="btn-group align-top">
-                            <button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#user-form-modal">Edit</button>
-                            <button class="btn btn-sm btn-outline-secondary badge" type="button"><i class="fa fa-trash"></i></button>
+                            <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="EditWaterPump('{{ item.id }}')" data-toggle="modal" data-target="#user-form-modal">Edit</button>
+                            <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="DeleteWaterPump('{{ item.id }}')"> <a href="#"><i class="fa fa-trash" style="background-color: #0b1526"></i></a></button>
                         </div>
                       </td>
                     </tr>
@@ -153,6 +159,9 @@
                   </tbody>
                 </table>
               </div>
+
+                 <div>  <button class="btn btn-sm btn-outline-secondary badge" type="button" style="border-radius: 50% ; font-size: 1.5rem ; float: right; background-color: #7765e3 ; height: 36px;width: 36px;color:white; ;margin-top: 15px" onclick="AddWaterPump()" data-toggle="modal" data-target="#user-form-modal">+</button></div>
+
               <div class="d-flex justify-content-center">
                 <ul class="pagination mt-3 mb-0">
                   <li class="disabled page-item"><a href="#" class="page-link">‹</a></li>
@@ -181,103 +190,40 @@
     </div>
 
     <!-- User Form Modal -->
-    <div class="modal fade" role="dialog" tabindex="-1" id="user-form-modal">
+   <div class="modal fade" role="dialog" tabindex="-1" id="user-form-modal">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Create User</h5>
+            <h5 class="modal-title">Create WaterPump</h5>
             <button type="button" class="close" data-dismiss="modal">
               <span aria-hidden="true">×</span>
             </button>
           </div>
           <div class="modal-body">
             <div class="py-1">
-              <form class="form" novalidate="">
+              <form class="form"  method="POST" action="{% url 'waterpump-operation' %}">
+              {% csrf_token %}
+              <input class="form-control" type="hidden" name="operation" id="operation" required>
+              <input class="form-control" type="hidden" name="id" id=" waterpump-form-id" >
                 <div class="row">
                   <div class="col">
                     <div class="row">
                       <div class="col">
                         <div class="form-group">
-                          <label>Full Name</label>
-                          <input class="form-control" type="text" name="name" placeholder="John Smith" value="John Smith">
+                          <label>Location</label>
+                          <input class="form-control" type="text" name="location" id="location"required >
                         </div>
                       </div>
                       <div class="col">
                         <div class="form-group">
-                          <label>Username</label>
-                          <input class="form-control" type="text" name="username" placeholder="johnny.s" value="johnny.s">
+                          <label>state</label>
+                          <input class="form-control" type="text" name="state" id="state"required >
                         </div>
                       </div>
                     </div>
-                    <div class="row">
-                      <div class="col">
-                        <div class="form-group">
-                          <label>Email</label>
-                          <input class="form-control" type="text" placeholder="user@example.com">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col mb-3">
-                        <div class="form-group">
-                          <label>About</label>
-                          <textarea class="form-control" rows="5" placeholder="My Bio"></textarea>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-12 col-sm-6 mb-3">
-                    <div class="mb-2"><b>Change Password</b></div>
-                    <div class="row">
-                      <div class="col">
-                        <div class="form-group">
-                          <label>Current Password</label>
-                          <input class="form-control" type="password" placeholder="••••••">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col">
-                        <div class="form-group">
-                          <label>New Password</label>
-                          <input class="form-control" type="password" placeholder="••••••">
-                        </div>
-                      </div>
-                      <div class="col">
-                        <div class="form-group">
-                          <label>Confirm <span class="d-none d-xl-inline">Password</span></label>
-                          <input class="form-control" type="password" placeholder="••••••"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-12 col-sm-5 offset-sm-1 mb-3">
-                    <div class="mb-2"><b>Keeping in Touch</b></div>
-                    <div class="row">
-                      <div class="col">
-                        <label>Email Notifications</label>
-                        <div class="custom-controls-stacked px-2">
-                          <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="notifications-blog" checked="">
-                            <label class="custom-control-label" for="notifications-blog">Blog posts</label>
-                          </div>
-                          <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="notifications-news" checked="">
-                            <label class="custom-control-label" for="notifications-news">Newsletter</label>
-                          </div>
-                          <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="notifications-offers" checked="">
-                            <label class="custom-control-label" for="notifications-offers">Personal Offers</label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col d-flex justify-content-end">
-                    <button class="btn btn-primary" type="submit">Save Changes</button>
+
+
+                    <button class="btn btn-primary" type="submit">Save</button>
                   </div>
                 </div>
               </form>
@@ -290,7 +236,7 @@
   </div>
 </div>
 </div>
-    </div>      <!-- Card stats -->
+    </div>
 
       {% include "includes/footer.html" %}
 
@@ -300,6 +246,54 @@
 
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
+    <script>
+
+
+    function DeleteWaterPump(id) {
+        if(confirm('Are you sure you want to delete this item?')) {
+
+        let formdata = new FormData();
+        formdata.append("id", id);
+
+        let requestOptions = {
+            method: 'DELETE',
+            body: formdata,
+            redirect: 'follow'
+        };
+
+        fetch("/api/delete/water_pump/", requestOptions)
+            .then(response => response.text())
+            .then(result => console.log(result))
+            .then(result => location.reload())
+            .catch(error => console.log('error', error));
+    }
+}
+
+function EditWaterPump(id){
+    let location_input = document.getElementById('location')
+    let state_input = document.getElementById('state')
+    let waterpump_id_input = document.getElementById('waterpump-form-id')
+    let operation = document.getElementById('operation')
+
+    let waterpump = document.getElementById(`waterpump-${id}`)
+
+    location_input.value = waterpump.dataset.location
+    state_input.value = waterpump.dataset.state
+    waterpump_id_input.value = id
+    operation.value = 'edit'
+
+}
+function AddWaterPump(){
+    let location_input = document.getElementById('location')
+    let state_input = document.getElementById('state')
+    let operation = document.getElementById('operation')
+
+    location_input.value = ''
+    state_input.value = ''
+    operation.value = 'add'
+
+}
+    </script>
 
 <script src="/static/assets/vendor/clipboard/dist/clipboard.min.js"></script>
 

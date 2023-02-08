@@ -12,6 +12,7 @@ from .models import Tree
 from .models import WaterShare
 from .models import WeatherStation
 from .models import PacketResult
+from .models import Title
 from django.contrib.auth.models import Group
 
 
@@ -71,6 +72,10 @@ class WeatherStationAdmin(admin.ModelAdmin):
     inlines = [PacketResultInline]
 
 
+class TitleStationAdmin(admin.ModelAdmin):
+    list_display = ('title',)
+
+
 admin.site.register(Sensor, SensorAdmin)
 admin.site.register(Result)
 admin.site.register(Valve, ValveInAdmin)
@@ -84,3 +89,4 @@ admin.site.register(Tree, TreeAdmin)
 admin.site.register(WaterShare)
 admin.site.register(WeatherStation, WeatherStationAdmin)
 admin.site.register(PacketResult)
+admin.site.register(Title)
