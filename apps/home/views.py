@@ -2,6 +2,8 @@
 """
 Copyright (c) 2019 - present AppSeed.us
 """
+
+from django.http import JsonResponse
 from django.template.context_processors import request
 from rest_framework import generics
 from django import template
@@ -17,10 +19,10 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import routers, serializers, viewsets
+from rest_framework import routers,  viewsets
 
 from .models import Sensor, Valve, Tree, WaterPump, WaterTank, WeatherStation, Title, Result, OfflineScenario
-from .serializers import SensorSerializer
+
 
 
 @login_required(login_url="/login/")
@@ -161,6 +163,100 @@ def sensor_view(request):
 
     return render(request, 'home/Sensor.html', context={'list': sensors})
 
+def mydata_sensor(request):
+    result_list = list(Sensor.objects \
+                       .exclude(latitude__isnull=True) \
+                       .exclude(longitude__isnull=True) \
+                       .exclude(latitude__exact='') \
+                       .exclude(longitude__exact='') \
+                       .values('id',
+                               'location',
+                               'type',
+                               'category',
+                               'latitude',
+                               'longitude',
+                               ))
+
+    return JsonResponse(result_list, safe=False)
+
+def mydata_valve(request):
+    result_list = list(Valve.objects \
+                       .exclude(latitude__isnull=True) \
+                       .exclude(longitude__isnull=True) \
+                       .exclude(latitude__exact='') \
+                       .exclude(longitude__exact='') \
+                       .values('id',
+                               'location',
+                               'type',
+                               'state',
+                               'latitude',
+                               'longitude',
+                               ))
+
+    return JsonResponse(result_list, safe=False)
+
+def mydata_waterpump(request):
+    result_list = list(WaterPump.objects \
+                       .exclude(latitude__isnull=True) \
+                       .exclude(longitude__isnull=True) \
+                       .exclude(latitude__exact='') \
+                       .exclude(longitude__exact='') \
+                       .values('id',
+                               'location',
+                               'state',
+                               'latitude',
+                               'longitude',
+                               ))
+
+    return JsonResponse(result_list, safe=False)
+
+def mydata_watertank(request):
+    result_list = list(WaterTank.objects \
+                       .exclude(latitude__isnull=True) \
+                       .exclude(longitude__isnull=True) \
+                       .exclude(latitude__exact='') \
+                       .exclude(longitude__exact='') \
+                       .values('id',
+                               'water_level',
+                               'location',
+                               'latitude',
+                               'longitude',
+                               ))
+
+    return JsonResponse(result_list, safe=False)
+
+def mydata_Trees(request):
+    result_list = list(Tree.objects \
+                       .exclude(latitude__isnull=True) \
+                       .exclude(longitude__isnull=True) \
+                       .exclude(latitude__exact='') \
+                       .exclude(longitude__exact='') \
+                       .values('id',
+                               'location',
+                               'type',
+                               'time',
+                               'state',
+                               'latitude',
+                               'longitude',
+                               ))
+
+    return JsonResponse(result_list, safe=False)
+
+def mydata_weatherstation(request):
+    result_list = list(WeatherStation.objects \
+                       .exclude(latitude__isnull=True) \
+                       .exclude(longitude__isnull=True) \
+                       .exclude(latitude__exact='') \
+                       .exclude(longitude__exact='') \
+                       .values('id',
+                               'packet',
+                               'location',
+                               'latitude',
+                               'longitude',
+                               ))
+
+    return JsonResponse(result_list, safe=False)
+
 
 class SensorOperation(APIView):
 
@@ -169,6 +265,8 @@ class SensorOperation(APIView):
         location = request.POST.get('location', None)
         type = request.POST.get('type', None)
         category = request.POST.get('category', None)
+        latitude = request.POST.get('latitude', None)
+        longitude = request.POST.get('longitude', None)
         sensor_id = request.POST.get('id', None)
 
         if operation == 'edit':
@@ -179,12 +277,15 @@ class SensorOperation(APIView):
                 sensor.category = category
             if type:
                 sensor.type = type
-
+            if latitude:
+                sensor.latitude = latitude
+            if longitude:
+                sensor.longitude = longitude
             sensor.save()
 
         if operation == 'add':
-            if location and category and type:
-                sensor = Sensor.objects.create(location=location, category=category, type=type)
+            if location and category and type and latitude and longitude:
+                sensor = Sensor.objects.create(location=location, category=category, type=type, latitude=latitude, longitude=longitude)
 
         # sensors = Sensor.objects.all()
         return redirect('/sensor')
@@ -204,6 +305,8 @@ class ValveOperation(APIView):
         location = request.POST.get('location', None)
         type = request.POST.get('type', None)
         state = request.POST.get('state', None)
+        latitude = request.POST.get('latitude', None)
+        longitude = request.POST.get('longitude', None)
         valve_id = request.POST.get('id', None)
 
         if operation == 'edit':
@@ -214,12 +317,15 @@ class ValveOperation(APIView):
                 valve.state = state
             if type:
                 valve.type = type
-
+            if latitude:
+                valve.latitude = latitude
+            if longitude:
+                valve.longitude = longitude
             valve.save()
 
         if operation == 'add':
-            if location and state and type:
-                valve = Valve.objects.create(location=location, state=state, type=type)
+            if location and state and type and latitude and longitude:
+                valve = Valve.objects.create(location=location, state=state, type=type, latitude=latitude, longitude=longitude)
 
         # sensors = Sensor.objects.all()
         return redirect('/valve')
@@ -240,6 +346,8 @@ class TreeOperation(APIView):
         type = request.POST.get('type', None)
         state = request.POST.get('state', None)
         time = request.POST.get('time', None)
+        latitude = request.POST.get('latitude', None)
+        longitude = request.POST.get('longitude', None)
         tree_id = request.POST.get('id', None)
 
         if operation == 'edit':
@@ -252,12 +360,15 @@ class TreeOperation(APIView):
                 tree.type = type
             if time:
                 tree.time = time
-
+            if latitude:
+                tree.latitude = latitude
+            if longitude:
+                tree.longitude = longitude
             tree.save()
 
         if operation == 'add':
-            if location and state and type and time:
-                tree = Tree.objects.create(location=location, state=state, type=type, time=time)
+            if location and state and type and time and latitude and longitude:
+                tree = Tree.objects.create(location=location, state=state, type=type, time=time, latitude=latitude, longitude=longitude)
 
         # sensors = Sensor.objects.all()
         return redirect('/tree')
@@ -277,9 +388,9 @@ class WaterPumpOperation(APIView):
     def post(self, request):
         operation = request.POST.get('operation', None)
         location = request.POST.get('location', None)
-
         state = request.POST.get('state', None)
-
+        latitude = request.POST.get('latitude', None)
+        longitude = request.POST.get('longitude', None)
         waterpump_id = request.POST.get('id', None)
 
         if operation == 'edit':
@@ -288,12 +399,15 @@ class WaterPumpOperation(APIView):
                 waterpump.location = location
             if state:
                 waterpump.state = state
-
+            if latitude:
+                waterpump.latitude = latitude
+            if longitude:
+                waterpump.longitude = longitude
             waterpump.save()
 
         if operation == 'add':
-            if location and state:
-                waterpump = WaterPump.objects.create(location=location, state=state)
+            if location and state and latitude and longitude:
+                waterpump = WaterPump.objects.create(location=location, state=state, latitude=latitude, longitude=longitude)
 
         # sensors = Sensor.objects.all()
         return redirect('/water_pump')
@@ -312,6 +426,8 @@ class WaterTankOperation(APIView):
         operation = request.POST.get('operation', None)
         location = request.POST.get('location', None)
         water_level = request.POST.get('water_level', None)
+        latitude = request.POST.get('latitude', None)
+        longitude = request.POST.get('longitude', None)
         watertank_id = request.POST.get('id', None)
         print(operation, location, water_level, watertank_id)
         if operation == 'edit':
@@ -320,12 +436,15 @@ class WaterTankOperation(APIView):
                 watertank.location = location
             if water_level:
                 watertank.water_level = water_level
-
+            if latitude:
+                watertank.latitude = latitude
+            if longitude:
+                watertank.longitude = longitude
             watertank.save()
 
         if operation == 'add':
-            if location and water_level:
-                water_tank = WaterTank.objects.create(location=location, water_level=water_level)
+            if location and water_level and latitude and longitude:
+                water_tank = WaterTank.objects.create(location=location, water_level=water_level,latitude=latitude,longitude=longitude)
 
         return redirect('/water_tank')
 
@@ -347,8 +466,9 @@ class WeatherStationView(View):
     def post(self, request):
         location = request.POST.get('location')
         packet = request.POST.get('packet')
-
-        new_weather_station = WeatherStation.objects.create(location=location, packet=packet)
+        latitude = request.POST.get('latitude', None)
+        longitude = request.POST.get('longitude', None)
+        new_weather_station = WeatherStation.objects.create(location=location, packet=packet, latitude=latitude, longitude=longitude)
 
         return HttpResponse(new_weather_station)
 
@@ -378,13 +498,18 @@ class WeatherStationAPI(APIView):
         pk = request.data.get('pk', None)
         location = request.data.get('location', None)
         packet = request.data.get('packet', None)
-
+        latitude = request.POST.get('latitude', None)
+        longitude = request.POST.get('longitude', None)
         weather_station = self.get_object(pk)
 
         if location:
             weather_station.location = location
         if packet:
             weather_station.packet = packet
+        if latitude:
+            weather_station.latitude = latitude
+        if longitude:
+            weather_station.longitude = longitude
         weather_station.save()
 
         return Response(model_to_dict(weather_station))
@@ -392,9 +517,11 @@ class WeatherStationAPI(APIView):
     def post(self, request):
         location = request.data.get('location', None)
         packet = request.data.get('packet', None)
+        latitude = request.POST.get('latitude', None)
+        longitude = request.POST.get('longitude', None)
 
-        if location and packet:
-            new_weather_station = WeatherStation.objects.create(location=location, packet=packet)
+        if location and packet and latitude and longitude:
+            new_weather_station = WeatherStation.objects.create(location=location, packet=packet, latitude=latitude,longitude=longitude)
             return Response(status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk):
