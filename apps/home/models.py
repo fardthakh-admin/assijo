@@ -141,6 +141,9 @@ class WaterShare(models.Model):
 
 
 class WeatherStation(models.Model):
+    """
+    takes the result as a forgin key from the packet result
+    """
     packet = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
 

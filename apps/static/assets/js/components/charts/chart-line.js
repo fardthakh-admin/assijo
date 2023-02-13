@@ -28,7 +28,7 @@ var SalesChart = (function() {
             ticks: {
               callback: function(value) {
                 if (!(value % 10)) {
-                  return '$' + value + 'k';
+                  return '$' + value + 'kasd';
                 }
               }
             }
@@ -42,22 +42,18 @@ var SalesChart = (function() {
               var content = '';
 
               if (data.datasets.length > 1) {
-                content += '<span class="popover-body-label mr-auto">' + label + '</span>';
+                content += '<span class="popover-body-label mr-auto">' +'sadasd'+ label + '</span>';
               }
 
-              content += '<span class="popover-body-value">$' + yLabel + 'k</span>';
+              content += '<span class="popover-body-value">$' +'sadasd'+ yLabel + 'k</span>';
               return content;
             }
           }
         }
       },
-      data: {
-        labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        datasets: [{
-          label: 'Performance',
-          data: [0, 20, 10, 30, 15, 40, 20, 60, 60]
-        }]
-      }
+      data: let results = {{ results|safe }}
+        results.unshift(['result','sensor'])
+
     });
 
     // Save to jQuery object

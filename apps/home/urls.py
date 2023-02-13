@@ -3,8 +3,12 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
-from django.urls import path, re_path
+from django.urls import path, re_path, include
+from rest_framework import routers
+
+
 from apps.home import views
+
 
 urlpatterns = [
 
@@ -32,7 +36,7 @@ urlpatterns = [
 
     path('api/delete/offline_scenario/', views.DeleteOfflineScenario.as_view(), name='delete-offline_scenario_api'),
 
-    path('water_tank', views.WaterTankOperation.as_view(), name='water_tank-operation'),
+    path('watertank-operation/', views.WaterTankOperation.as_view(), name='watertank-operation'),
     path('sensor-operation/', views.SensorOperation.as_view(), name='sensor-operation'),
     path('valve-operation/', views.ValveOperation.as_view(), name='valve-operation'),
     path('tree-operation/', views.TreeOperation.as_view(), name='tree-operation'),

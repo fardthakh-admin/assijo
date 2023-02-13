@@ -96,84 +96,72 @@
     </div>
   </div>
 
-  <div class="col">
-    <div class="e-tabs  px-3">
-      <ul class="nav nav-tabs" style="position:relative; left:-155px">
-        <li class="nav-item"><a class="nav-link active" href="#">Water pumps</a></li>
+<div class="col">
+        <div div class="e-tabs  px-3">
+          <div class="card" style="position:relative; left:-155px">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">Water Pump</h3>
+                </div>
+                    <button class="btn btn-sm btn-outline-secondary badge" type="button" style="border-radius: 50% ; font-size: 1.5rem ; float: right; ; background-color: #7765e3 ; height:36px; width: 36px;margin-top: 15px; ;color:white;" onclick="AddWaterPump()" data-toggle="modal" data-target="#user-form-modal">+</button>
+</div>
+            </div>
+  <div class="table-responsive table-lg mt-3"  style="position:relative;: top:20px">
+                <table class="table align-items-center table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">State</th>
+                      <th class="sortable">Result</th>
 
-      </ul>
-    </div>
+                    <th scope="col">Energy level</th>
+                    <th scope="col">Location</th>
 
-    <div class="row flex-lg-nowrap">
-      <div class="col mb-3">
-        <div class="e-panel card" style="position:relative; left:-140px">
-          <div class="card-body" >
-
-            <div class="e-table">
-              <div class="table-responsive table-lg mt-3">
-                <table class="table table-bordered">
-                  <thead>
-                    <tr>
-                      <th>
-                        id
-                      </th>
-
-                      <th class="max-width">State</th>
-                        <th class="max-width">Result</th>
-                      <th class="sortable">Energy level</th>
-                         <th class="sortable">Location</th>
+                      <th class="sortable">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                 {% for item in list %}
+                     <tr id="waterpump-{{ item.id }}" data-location="{{ item.location }}" data-state="{{ item.state }}" >
 
 
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  {% for item in list %}
-                    <tr id="waterpump-{{ item.id }}" data-location="{{ item.location }}" data-state="{{ item.state }}" >
-                      <td class="text-nowrap align-middle">{{ item.id }}</td>
-
-                      <td class="text-center align-middle"> {{ item.state }}</td>
-                    <td class="text-center align-middle">
+                    <th scope="row">
+                        {{item.id}}
+                    </th>
+                    <td>
+                        {{ item.state}}
+                    </td>
+                    <td>
                      {% if not item.water_pump.all.count %}   -   {% endif %}
                     {% for item in item.waterpump.all %}
                         {{ item.number }}
                              {% endfor   %}
                     </td>
-                  <td class="text-center align-middle">
-                  {% if not item.water_pump.all.count %}   -   {% endif %}
+                    <td>
+                     {% if not item.water_pump.all.count %}   -   {% endif %}
                          {% for item in item.water_pump.all %}
                         {{ item.energy_result }}
                              {% endfor   %}
                     </td>
-
-                    <td class="text-center align-middle">   {{ item.location }}</td>
-
-                      <td class="text-center align-middle">
+                     <td>
+                       {{ item.location }}
+                    </td>
+                     <td class="text-center align-middle">
                         <div class="btn-group align-top">
                             <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="EditWaterPump('{{ item.id }}')" data-toggle="modal" data-target="#user-form-modal">Edit</button>
-                            <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="DeleteWaterPump('{{ item.id }}')"> <a href="#"><i class="fa fa-trash" style="background-color: #0b1526"></i></a></button>
+                            <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="DeleteWaterPump('{{ item.id }}')"> <i class="fa-solid fa-trash-can-arrow-up" ></i></button>
                         </div>
                       </td>
-                    </tr>
-                  {% endfor %}
+                      {% endfor %}
                   </tbody>
                 </table>
               </div>
+          </div>
+        </div>
 
-                 <div>  <button class="btn btn-sm btn-outline-secondary badge" type="button" style="border-radius: 50% ; font-size: 1.5rem ; float: right; background-color: #7765e3 ; height: 36px;width: 36px;color:white; ;margin-top: 15px" onclick="AddWaterPump()" data-toggle="modal" data-target="#user-form-modal">+</button></div>
 
-              <div class="d-flex justify-content-center">
-                <ul class="pagination mt-3 mb-0">
-                  <li class="disabled page-item"><a href="#" class="page-link">‹</a></li>
-                  <li class="active page-item"><a href="#" class="page-link">1</a></li>
-                  <li class="page-item"><a href="#" class="page-link">2</a></li>
-                  <li class="page-item"><a href="#" class="page-link">3</a></li>
-                  <li class="page-item"><a href="#" class="page-link">4</a></li>
-                  <li class="page-item"><a href="#" class="page-link">5</a></li>
-                  <li class="page-item"><a href="#" class="page-link">›</a></li>
-                  <li class="page-item"><a href="#" class="page-link">»</a></li>
-                </ul>
-              </div>
+
             </div>
           </div>
         </div>
@@ -204,7 +192,7 @@
               <form class="form"  method="POST" action="{% url 'waterpump-operation' %}">
               {% csrf_token %}
               <input class="form-control" type="hidden" name="operation" id="operation" required>
-              <input class="form-control" type="hidden" name="id" id=" waterpump-form-id" >
+              <input class="form-control" type="hidden" name="id" id="waterpump-form-id" >
                 <div class="row">
                   <div class="col">
                     <div class="row">

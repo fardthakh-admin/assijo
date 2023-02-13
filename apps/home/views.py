@@ -2,7 +2,8 @@
 """
 Copyright (c) 2019 - present AppSeed.us
 """
-
+from django.template.context_processors import request
+from rest_framework import generics
 from django import template
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -13,10 +14,13 @@ from django.template import loader
 from django.urls import reverse
 from django.views import View
 from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import routers, serializers, viewsets
 
 from .models import Sensor, Valve, Tree, WaterPump, WaterTank, WeatherStation, Title, Result, OfflineScenario
+from .serializers import SensorSerializer
 
 
 @login_required(login_url="/login/")
@@ -40,7 +44,10 @@ def index(request):
         water_tank_results.append(result['number'])
 
     sensors = Sensor.objects.all()
-    weather = WeatherStation.objects.all()
+    weather = WeatherStation.objects.last()
+    valve = Valve.objects.last()
+    waterpump = WaterPump.objects.last()
+    waterlevel = WaterTank.objects.last()
 
     trees = Tree.objects.all()
     context = {'results': result_lists,
@@ -49,6 +56,9 @@ def index(request):
                'sensors': sensors,
                'trees': trees,
                'weather': weather,
+               'valve': valve,
+               'waterlevel': waterlevel,
+               'waterpump': waterpump,
                'result': result_list,
                'time': time,
                'water_tank_results': water_tank_results,
@@ -302,21 +312,21 @@ class WaterTankOperation(APIView):
         operation = request.POST.get('operation', None)
         location = request.POST.get('location', None)
         water_level = request.POST.get('water_level', None)
-
+        watertank_id = request.POST.get('id', None)
+        print(operation, location, water_level, watertank_id)
         if operation == 'edit':
-            water_tank = WaterTank.objects.get(pk=water_tank_id)
+            watertank = WaterTank.objects.get(pk=watertank_id)
             if location:
-                water_tank.location = location
+                watertank.location = location
             if water_level:
-                water_tank.category = water_level
+                watertank.water_level = water_level
 
-            water_tank.save()
+            watertank.save()
 
         if operation == 'add':
-            if location and water_level and type:
-                water_tank = WaterTankOperation.objects.create(location=location, category=water_level)
+            if location and water_level:
+                water_tank = WaterTank.objects.create(location=location, water_level=water_level)
 
-        # sensors = Sensor.objects.all()
         return redirect('/water_tank')
 
 
@@ -445,3 +455,6 @@ class DeleteWaterTank(APIView):
         water_tank = WaterTank.objects.get(pk=id)
         water_tank.delete()
         return Response({'status': 'sucsses'})
+
+
+
