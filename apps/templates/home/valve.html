@@ -6,6 +6,8 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
+    <script src="https://openlayers.org/api/OpenLayers.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://js.arcgis.com/4.9/esri/css/main.css"/>
     <script src="https://js.arcgis.com/4.9/"></script>
     <style>
@@ -13,75 +15,27 @@
     overflow-x: hidden;
 }
 {##}
-        #map {
-            padding: 1px;
-            margin: 0;
+    #map {
             width: 100%;
-            font-size: 20px;
-            font-weight: bolder;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: rgb(255, 255, 255);
-            background-color: #2c2c2cfb;
-            text-align: center;
+            height: 500px;
+            border-radius: 10px;
         }
     #viewDiv{
-        height: 250px;
+        height: 350px;
+        {#font-size: 20px;#}
+        font-weight: bolder;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #2c2c2cfb;
+        background-color: rgb(255, 255, 255);
+        text-align: center;
     }
     </style>
 
-    <script>
-        require([
-                "esri/Map",
-                "esri/views/MapView",
-                "esri/widgets/BasemapGallery",
-                "esri/widgets/Expand",
-                "esri/widgets/Search"
-            ],
-
-            function (Map, MapView, BasemapGallery, Expand, Search) {
-                var map = new Map({
-                    basemap: "topo",
-                });
-
-                var view = new MapView({
-                    container: "viewDiv",
-                    center: [35.94503, 31.955219],
-                    zoom: 6,
-                    map: map
-                });
-
-                var basemapGallery = new BasemapGallery({
-                    view: view,
-                    source: {
-                        portal: {
-                            url: "https://www.arcgis.com",
-                        }
-                    }
-                });
-
-                var search = new Search({
-                    view: view
-                });
-
-                var searchExpand = new Expand({
-                    content: search
-                })
-
-                var baseMapExpand = new Expand({content: basemapGallery});
-                view.ui.add(baseMapExpand, "top-left");
-                view.ui.add(searchExpand, "top-right");
-
-
-            });
-
-    </script>
     <!-- Header -->
-    <div id="map">
-        <p>MAP</p>
+   <div id="viewDiv">
+    MAP
     </div>
-    <div id="viewDiv">
-
-    </div>
+    <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
     <div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
       <div class="container-fluid">
         <div class="header-body">
@@ -122,7 +76,8 @@
                       <th class="sortable">Number Result</th>
                        <th class="sortable">string result</th>
                          <th class="sortable">Location</th>
-
+                      <th class="sortable">latitude</th>
+                      <th class="sortable">longitude</th>
 
                       <th>Actions</th>
                     </tr>
@@ -130,7 +85,7 @@
                 </thead>
                 <tbody>
                    {% for item in list %}
-                    <tr id="valve-{{ item.id }}" data-location="{{ item.location }}" data-state="{{ item.state }}" data-type="{{item.type}}">
+                    <tr id="valve-{{ item.id }}" data-location="{{ item.location }}" data-state="{{ item.state }}" data-type="{{item.type}}"  data-latitude="{{item.latitude}}" data-longitude="{{item.longitude}}">
                       <td class="text-nowrap align-middle">{{ item.id }}</td>
                       <td class="text-nowrap align-middle">{{ item.type }}</td>
                       <td class="text-center align-middle"> {{ item.state }}</td>
@@ -147,7 +102,8 @@
                         {% endfor %}
                     </td>
                     <td class="text-center align-middle">   {{ item.location }}</td>
-
+                    <td class="text-center align-middle"> {{ item.latitude }}</td>
+                    <td class="text-center align-middle"> {{ item.longitude }}</td>
                       <td class="text-center align-middle">
                         <div class="btn-group align-top">
                             <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="EditValve('{{ item.id }}')" data-toggle="modal" data-target="#user-form-modal">Edit</button>
@@ -238,7 +194,31 @@
                     </div>
                   </div>
                 </div>
-
+ {#Long and lat and map#}
+                    <div class="row">
+                      <div class="col">
+                        <div class="form-group">
+                          <label>latitude</label>
+                          <input class="form-control" type="text" name="latitude" id="latitude"required >
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div class="form-group">
+                          <label>longitude</label>
+                          <input class="form-control" type="text" name="longitude" id="longitude"required >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col mb-3">
+                        <div class="form-group">
+                        <div class="wrap">
+                        <div id="map" style="width: 100%; height: 500px;"></div>
+                        </div>
+                        </div>
+                      </div>
+                    </div>
+                {#Long and lat and map#}
                     <button class="btn btn-primary" type="submit">Save</button>
                   </div>
                 </div>
@@ -262,6 +242,71 @@
 
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
+ <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+
+<script>
+    let MymapOptions = {
+        center:[30.5852 , 36.2384],
+        zoom:7
+    }
+
+    let Mymap = new L.map('map' , MymapOptions);
+
+    let Mylayer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+    Mymap.addLayer(Mylayer);
+
+
+    let marker = null;
+    Mymap.on('click', (event)=> {
+
+        if(marker !== null){
+            Mymap.removeLayer(marker);
+        }
+
+        marker = L.marker([event.latlng.lat , event.latlng.lng]).addTo(Mymap);
+
+        document.getElementById('latitude').value = event.latlng.lat;
+        document.getElementById('longitude').value = event.latlng.lng;
+
+    })
+</script>
+
+<script>
+    $(document).ready(function(){
+        $.ajax({
+            url: "{% url 'mydata_valve'%}",
+            method: 'GET',
+            success: function (data) {
+                console.log(data);
+                initMap(data);
+            }
+      });
+    });
+    function initMap(data) {
+        map = new OpenLayers.Map("viewDiv");
+        map.addLayer(new OpenLayers.Layer.OSM());
+
+        var markers = new OpenLayers.Layer.Markers("Markers");
+        map.addLayer(markers);
+
+        var markersArray = data;
+        for (var i = 0; i < markersArray.length; i++) {
+            var lonLat = new OpenLayers.LonLat(markersArray[i].longitude, markersArray[i].latitude)
+                .transform(
+                    new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+                    map.getProjectionObject() // to Spherical Mercator Projection
+                );
+            markers.addMarker(new OpenLayers.Marker(lonLat));
+        }
+        var lonLatcenter = new OpenLayers.LonLat(36.2384, 30.5852)
+            .transform(
+                new OpenLayers.Projection("EPSG:4326"),
+                map.getProjectionObject()
+            );
+        var zoom = 7;
+        map.setCenter(lonLatcenter, zoom);
+    }
+    </script>
     <script>
 function DeleteValve(id) {
     console.log(id)
@@ -288,12 +333,15 @@ function EditValve(id){
     let state_input = document.getElementById('state')
     let valve_id_input = document.getElementById('valve-form-id')
     let operation = document.getElementById('operation')
-
+    let latitude = document.getElementById('latitude')
+    let longitude = document.getElementById('longitude')
     let valve = document.getElementById(`valve-${id}`)
 
     location_input.value = valve.dataset.location
     type_input.value = valve.dataset.type
     state_input.value = valve.dataset.state
+    latitude.value = valve.dataset.latitude
+    longitude.value = valve.dataset.longitude
     valve_id_input.value = id
     operation.value = 'edit'
 
@@ -302,11 +350,15 @@ function AddValve(){
     let location_input = document.getElementById('location')
     let type_input = document.getElementById('type')
     let state_input = document.getElementById('state')
+    let latitude = document.getElementById('latitude')
+    let longitude = document.getElementById('longitude')
     let operation = document.getElementById('operation')
 
     location_input.value = ''
     type_input.value = ''
     state_input.value = ''
+    latitude.value = ''
+    longitude.value = ''
     operation.value = 'add'
 
 }

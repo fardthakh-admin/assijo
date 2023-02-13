@@ -35,7 +35,7 @@ class WaterShareInline(admin.StackedInline):
 
 
 class TreeAdmin(admin.ModelAdmin):
-    list_display = ('location', 'type', 'time', 'state',)
+    list_display = ('location', 'type', 'time', 'state', 'latitude', 'longitude')
     inlines = [WaterShareInline]
 
 
@@ -44,22 +44,22 @@ class StringResultInline(admin.StackedInline):
 
 
 class SensorAdmin(admin.ModelAdmin):
-    list_display = ('location', 'type', 'category')
+    list_display = ('location', 'type', 'category', 'latitude', 'longitude')
     inlines = [ResultInline, StringResultInline]
 
 
 class WaterPumpAdmin(admin.ModelAdmin):
-    list_display = ('location', 'state')
+    list_display = ('location', 'state', 'latitude', 'longitude')
     inlines = [ResultInline, EnergyLevelInline]
 
 
 class WaterTankAdmin(admin.ModelAdmin):
-    list_display = ('location', 'water_level')
+    list_display = ('location', 'water_level', 'latitude', 'longitude')
     inlines = [ResultInline, StringResultInline]
 
 
 class ValveInAdmin(admin.ModelAdmin):
-    list_display = ('location', 'type', 'state')
+    list_display = ('location', 'type', 'state', 'latitude', 'longitude')
     inlines = [ResultInline, StringResultInline]
 
 
@@ -68,7 +68,7 @@ class PacketResultInline(admin.StackedInline):
 
 
 class WeatherStationAdmin(admin.ModelAdmin):
-    list_display = ('location', 'packet',)
+    list_display = ('location', 'packet', 'latitude', 'longitude')
     inlines = [PacketResultInline]
 
 

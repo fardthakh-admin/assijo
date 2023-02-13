@@ -26,6 +26,13 @@ urlpatterns = [
     path('offline_scenario', views.offline_scenario_view, name='offline_scenario'),
     path('weather_station', views.WeatherStationView.as_view(), name='weather_station'),
 
+    path('mydata_sensor',views.mydata_sensor, name="mydata_sensor"),
+    path('mydata_valve',views.mydata_valve, name="mydata_valve"),
+    path('mydata_waterpump',views.mydata_waterpump, name="mydata_waterpump"),
+    path('mydata_watertank',views.mydata_watertank, name="mydata_watertank"),
+    path('mydata_Trees',views.mydata_Trees, name="mydata_Trees"),
+    path('mydata_weatherstation',views.mydata_weatherstation, name="mydata_weatherstation"),
+
     path('api/weather_station', views.WeatherStationAPI.as_view(), name='weather_station_api'),
 
     path('api/delete/sensor/', views.DeleteSensor.as_view(), name='delete-sensor_api'),

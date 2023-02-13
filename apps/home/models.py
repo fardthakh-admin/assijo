@@ -16,7 +16,8 @@ class Sensor(models.Model):
     location = models.CharField(max_length=30)
     type = models.CharField(max_length=30)
     category = models.CharField(max_length=30)
-
+    latitude = models.CharField(max_length=200, blank=True, null=True)
+    longitude = models.CharField(max_length=200, blank=True, null=True)
     # def __str__(self):
     #     return "%s %s" % (self.id, self.type)
 
@@ -25,6 +26,8 @@ class Valve(models.Model):
     location = models.CharField(max_length=40)
     type = models.CharField(max_length=30)
     state = models.CharField(max_length=30)
+    latitude = models.CharField(max_length=200, blank=True, null=True)
+    longitude = models.CharField(max_length=200, blank=True, null=True)
     #
     # def __str__(self):
     #     return "%s %s" % (self.id, self.type, self.location)
@@ -33,7 +36,8 @@ class Valve(models.Model):
 class WaterTank(models.Model):
     water_level = models.CharField(max_length=40)
     location = models.CharField(max_length=40)
-
+    latitude = models.CharField(max_length=200, blank=True, null=True)
+    longitude = models.CharField(max_length=200, blank=True, null=True)
     # def __str__(self):
     #     return "%s %s" % (self.water_level, self.location)
 
@@ -41,7 +45,8 @@ class WaterTank(models.Model):
 class WaterPump(models.Model):
     location = models.CharField(max_length=40)
     state = models.CharField(max_length=30)
-
+    latitude = models.CharField(max_length=200, blank=True, null=True)
+    longitude = models.CharField(max_length=200, blank=True, null=True)
     # def __str__(self):
     #     return "%s %s" % (self.state, self.location)
 
@@ -122,7 +127,8 @@ class Tree(models.Model):
     type = models.CharField(max_length=30)
     time = models.CharField(max_length=30)
     state = models.CharField(max_length=30)
-
+    latitude = models.CharField(max_length=200, blank=True, null=True)
+    longitude = models.CharField(max_length=200, blank=True, null=True)
 
 # def __str__(self):
 #   return "%s %s" % (self.type, self.state)
@@ -146,7 +152,8 @@ class WeatherStation(models.Model):
     """
     packet = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
-
+    latitude = models.CharField(max_length=200, blank=True, null=True)
+    longitude = models.CharField(max_length=200, blank=True, null=True)
 
 # def __str__(self):
 #   return "%s %s" % (self.packet, self.location)
