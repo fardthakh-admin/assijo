@@ -1,9 +1,8 @@
 
-
 {% extends 'layouts/base.html' %}
 
 {% block title %} Dashboard {% endblock title %}
-
+{% load static %}
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}
 
@@ -11,7 +10,49 @@
 
 {% block content %}
     <!-- Header -->
+    <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js"></script>
+	<script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js"></script>
+    <link rel="stylesheet" href="static/assets/js/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="static/assets/css/leaflet-owm.css" />
+    <link rel="stylesheet" href="static/assets/css/iconLayers.css" />
+    <script src="https://openlayers.org/api/OpenLayers.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+.main-content{
+    overflow-x: hidden;
+}
+    .leaflet-control-layers label {
+    display: table-cell;
+}
+    g[class^='raphael-group'][class$='-creditgroup'] {
+         display:none !important;
+    }
+    g[class$='creditgroup'] {
+         display:none !important;
+    }
+    #map {
+    width: 1180px;
+    height: 433px;
+    {#inset: 50% auto auto 50%;#}
+    transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    {#z-index: 100;#}
+    /* position: fixed; */
+    margin: auto;
+    overflow: visible;
+    z-index: 1;
+    text-align: center;
+        }
+    #viewDiv{
+        height: 350px;
+        {#font-size: 20px;#}
+        font-weight: bolder;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #2c2c2cfb;
+        background-color: rgb(255, 255, 255);
+        text-align: center;
+    }
 
+    </style>
     <div class="header bg-primary pb-6">
       <div class="container-fluid">
         <div class="header-body">
@@ -206,15 +247,50 @@
               </div>
             </div>
             <div class="card-body">
-              <!-- Chart -->
-              <div class="chart">
-                <canvas id="chart-bar" class="chart-canvas"></canvas>
-              </div>
+                <div id="chart-container" style="padding-left: inherit;"></div>
+{#              <!-- Chart -->#}
+{#              <div class="chart">#}
+{#                <canvas id="chart-bar" class="chart-canvas"></canvas>#}
+{#              </div>#}
             </div>
           </div>
         </div>
       </div>
       <div class="row">
+      <div class="col-xl-12">
+          <div class="card">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">Farm Map</h3>
+                </div>
+
+              </div>
+            </div>
+            <div class="table-responsive">
+              <!-- Projects table -->
+               <div id="viewDiv">
+               </div>
+               <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+            </div>
+          </div>
+        </div>
+      <div class="col-xl-12">
+          <div class="card">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">Weather Map</h3>
+                </div>
+
+              </div>
+            </div>
+            <div class="table-responsive">
+              <!-- Projects table -->
+                <div id="map"></div>
+            </div>
+          </div>
+        </div>
         <div class="col-xl-12">
           <div class="card">
             <div class="card-header border-0">
@@ -831,7 +907,367 @@ var chart = echarts.init(document.getElementById("water-level-card"));
       init($chart);
   };
     </script>
+<script>
+FusionCharts.ready(function() {
+  var waterLevel = 500;
+  var fuelWidget = new FusionCharts({
+    type: 'cylinder',
+    dataFormat: 'json',
+    id: 'fuelMeter',
+    renderAt: 'chart-container',
+    width: '320',
+    height: '350',
+    dataSource: {
+      "chart": {
+        "theme": "fusion",
+        "cylFillColor": "#0099fd",
+        "cylFillHoverColor": "#0099fd",
+        "cylFillHoverAlpha": "85",
+        "majorTMColor": "#0099fd",
+        "caption": "Water Level in the Tank",
+        "subcaption": "Full Tank = 1000 ltrs",
+        "lowerLimit": "0",
+        "upperLimit": "1000",
+        "lowerLimitDisplay": "Empty",
+        "upperLimitDisplay": "Full",
+        "numberSuffix": " ltrs",
+        "showValue": "0",
+        "chartBottomMargin": "55"
+      },
+      "value": waterLevel,
+      "annotations": {
+        "origw": "400",
+        "origh": "190",
+        "autoscale": "1",
+        "groups": [{
+          "id": "range",
+          "items": [{
+            "id": "rangeBg",
+            "type": "rectangle",
+            "x": "$canvasCenterX-100",
+            "y": "$chartEndY-40",
+            "tox": "$canvasCenterX +145",
+            "toy": "$chartEndY-65",
+            "fillcolor": "#6caa03"
+          },
+          {
+            "id": "rangeText",
+            "type": "Text",
+            "fontSize": "14",
+            "fillcolor": "#333333",
+            "text": "Available Volume = " + waterLevel,
+            "x": "$chartCenterX-15",
+            "y": "$chartEndY-50"
+          }]
+        }]
+      }
+    }
+  }).render();
 
+  // Update the chart with the initial waterLevel value
+  fuelWidget.feedData("&value=" + waterLevel);
+});
+</script>
+{#    <script>#}
+{#    FusionCharts.ready(function() {#}
+{#     var waterLevel = 500;#}
+{#    var fuelVolume = 1000,#}
+{#        fuelWidget = new FusionCharts({#}
+{#          type: 'cylinder',#}
+{#          dataFormat: 'json',#}
+{#          id: 'fuelMeter',#}
+{#          renderAt: 'chart-container',#}
+{#          width: '320',#}
+{#          height: '350',#}
+{#          dataSource: {#}
+{#            "chart": {#}
+{#              "theme": "fusion",#}
+{#              "cylFillColor": "#0099fd",#}
+{#              "cylFillHoverColor": "#0099fd",#}
+{#                "cylFillHoverAlpha": "85",#}
+{#                "majorTMColor": "#0099fd",#}
+{#              "caption": "Water Level in the Tank",#}
+{#              "subcaption": "Full Tank = 1000 ltrs",#}
+{#              "lowerLimit": "0",#}
+{#              "upperLimit": "1000",#}
+{#              "lowerLimitDisplay": "Empty",#}
+{#              "upperLimitDisplay": "Full",#}
+{#              "numberSuffix": " ltrs",#}
+{#              "showValue": "0",#}
+{#              "chartBottomMargin": "55"#}
+{#            },#}
+{#            "value": waterLevel,#}
+{#            "annotations": {#}
+{#              "origw": "400",#}
+{#              "origh": "190",#}
+{#              "autoscale": "1",#}
+{#              "groups": [{#}
+{#                "id": "range",#}
+{#                "items": [{#}
+{#                    "id": "rangeBg",#}
+{#                    "type": "rectangle",#}
+{#                    "x": "$canvasCenterX-100",#}
+{#                    "y": "$chartEndY-40",#}
+{#                    "tox": "$canvasCenterX +145",#}
+{#                    "toy": "$chartEndY-65",#}
+{#                    "fillcolor": "#6caa03"#}
+{#                  },#}
+{#                  {#}
+{#                    "id": "rangeText",#}
+{#                    "type": "Text",#}
+{#                    "fontSize": "14",#}
+{#                    "fillcolor": "#333333",#}
+{#                    "text": "Available Volume = " + waterLevel,#}
+{#                    "x": "$chartCenterX-15",#}
+{#                    "y": "$chartEndY-50"#}
+{#                  }#}
+{#                ]#}
+{#              }]#}
+{#            }#}
+{##}
+{#          },#}
+{#          "events": {#}
+{##}
+{#            "rendered": function(evtObj, argObj) {#}
+{#              setInterval(function() {#}
+{#                (fuelVolume < 100) ? (fuelVolume = 800) : "";#}
+{#                var consVolume = fuelVolume - (Math.floor(Math.random() * 3));#}
+{#                FusionCharts("fuelMeter").feedData("&value=" + consVolume);#}
+{#                fuelVolume = consVolume;#}
+{#              }, 1000);#}
+{#            },#}
+{#            //Using real time update event to update the annotation#}
+{#            //showing available volume of Diesel#}
+{#            "realTimeUpdateComplete": function(evt, arg) {#}
+{#              var annotations = evt.sender.annotations,#}
+{#                dataVal = evt.sender.getData(),#}
+{#                colorVal = (dataVal >= 700) ? "#6caa03" : ((dataVal <= 350) ? "#e44b02" : "#f8bd1b");#}
+{#              //Updating value#}
+{#              annotations && annotations.update('rangeText', {#}
+{#                "text": "Available Volume = "+ dataVal + " ltrs"#}
+{#              });#}
+{#              //Changing background color as per value#}
+{#              annotations && annotations.update('rangeBg', {#}
+{#                "fillcolor": colorVal#}
+{#              });#}
+{##}
+{#            }#}
+{#          }#}
+{#        }).render();#}
+{#    });#}
+{#    </script>#}
+<script>
+   $(document).ready(function(){
+    var data = [];
+
+
+    $.ajax({
+        url: "{% url 'mydata_sensor'%}",
+        method: 'GET',
+        success: function (data_sensor) {
+            data_sensor.forEach(function(item) {
+                item.group = "sensor"; // Add group property to each item
+            });
+            data = data.concat(data_sensor);
+        }
+    });
+
+    $.ajax({
+        url: "{% url 'mydata_waterpump'%}",
+        method: 'GET',
+        success: function (data_waterpump) {
+            data_waterpump.forEach(function(item) {
+                item.group = "waterpump"; // Add group property to each item
+            });
+            data = data.concat(data_waterpump);
+        }
+    });
+
+    $.ajax({
+        url: "{% url 'mydata_watertank'%}",
+        method: 'GET',
+        success: function (data_watertank) {
+            data_watertank.forEach(function(item) {
+                item.group = "watertank"; // Add group property to each item
+            });
+            data = data.concat(data_watertank);
+        }
+    });
+
+    $.ajax({
+        url: "{% url 'mydata_Trees'%}",
+        method: 'GET',
+        success: function (data_tree) {
+            data_tree.forEach(function(item) {
+                item.group = "tree"; // Add group property to each item
+            });
+            data = data.concat(data_tree);
+        }
+    });
+
+    $.ajax({
+        url: "{% url 'mydata_valve'%}",
+        method: 'GET',
+        success: function (data_valve) {
+            data_valve.forEach(function(item) {
+                item.group = "valve"; // Add group property to each item
+            });
+            data = data.concat(data_valve);
+            initMap(data);
+        }
+    });
+});
+
+    function initMap(data) {
+        map = new OpenLayers.Map("viewDiv");
+        map.addLayer(new OpenLayers.Layer.OSM());
+
+        var markers = new OpenLayers.Layer.Markers("Markers");
+        map.addLayer(markers);
+
+        var markersArray = data;
+        console.log("markersArray")
+        console.log(markersArray)
+        for (var i = 0; i < markersArray.length; i++) {
+            var lonLat = new OpenLayers.LonLat(markersArray[i].longitude, markersArray[i].latitude)
+                .transform(
+                    new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+                    map.getProjectionObject() // to Spherical Mercator Projection
+                );
+            if (markersArray[i].group == "sensor") {
+                var icon = new OpenLayers.Icon("static/assets/img/icons/sensor-icon.png", new OpenLayers.Size(32, 32));
+                markers.addMarker(new OpenLayers.Marker(lonLat, icon));
+            } else if (markersArray[i].group == "valve") {
+                    var icon = new OpenLayers.Icon("static/assets/img/icons/valve.png", new OpenLayers.Size(32, 32));
+                    markers.addMarker(new OpenLayers.Marker(lonLat, icon));
+            } else if (markersArray[i].group == "waterpump") {
+                    var icon = new OpenLayers.Icon("static/assets/img/icons/water_pump.png", new OpenLayers.Size(50, 32));
+                    markers.addMarker(new OpenLayers.Marker(lonLat, icon));
+            } else if (markersArray[i].group == "watertank") {
+                    var icon = new OpenLayers.Icon("static/assets/img/icons/water_tank.png", new OpenLayers.Size(32, 32));
+                    markers.addMarker(new OpenLayers.Marker(lonLat, icon));
+            } else if (markersArray[i].group == "tree") {
+                    var icon = new OpenLayers.Icon("static/assets/img/icons/tree.png", new OpenLayers.Size(32, 32));
+                    markers.addMarker(new OpenLayers.Marker(lonLat, icon));
+            }
+
+        }
+        var lonLatcenter = new OpenLayers.LonLat(36.2384, 30.5852)
+            .transform(
+                new OpenLayers.Projection("EPSG:4326"),
+                map.getProjectionObject()
+            );
+        var zoom = 7;
+        map.setCenter(lonLatcenter, zoom);
+    }
+    </script>
+{#<script>#}
+{#    $(document).ready(function(){#}
+{#    var data = [];#}
+{##}
+{#    $.ajax({#}
+{#        url: "{% url 'mydata_sensor'%}",#}
+{#        method: 'GET',#}
+{#        success: function (data_sensor) {#}
+{#            for (var i = 0; i < data_sensor.length; i++) {#}
+{#            data_sensor[i].group = "sensors";#}
+{#        }#}
+{#        data = data.concat(data_sensor);#}
+{#        }#}
+{#    });#}
+{##}
+{#    $.ajax({#}
+{#        url: "{% url 'mydata_waterpump'%}",#}
+{#        method: 'GET',#}
+{#        success: function (data_waterpump) {#}
+{#            for (var i = 0; i < data_waterpump.length; i++) {#}
+{#            data_waterpump[i].group = "waterpump";#}
+{#        }#}
+{#        data = data.concat(data_waterpump);#}
+{#        }#}
+{#    });#}
+{##}
+{#    $.ajax({#}
+{#        url: "{% url 'mydata_watertank'%}",#}
+{#        method: 'GET',#}
+{#        success: function (data_watertank) {#}
+{#                for (var i = 0; i < data_watertank.length; i++) {#}
+{#            data_watertank[i].group = "watertank";#}
+{#        }#}
+{#            data = data.concat(data_watertank);#}
+{#        }#}
+{#    });#}
+{##}
+{#    $.ajax({#}
+{#        url: "{% url 'mydata_Trees'%}",#}
+{#        method: 'GET',#}
+{#        success: function (data_tree) {#}
+{#                    for (var i = 0; i < data_tree.length; i++) {#}
+{#            data_tree[i].group = "tree";#}
+{#        }#}
+{#            data = data.concat(data_tree);#}
+{#        }#}
+{#    });#}
+{##}
+{#    $.ajax({#}
+{#        url: "{% url 'mydata_valve'%}",#}
+{#        method: 'GET',#}
+{#        success: function (data_valve) {#}
+{#            for (var i = 0; i < data_valve.length; i++) {#}
+{#            data_valve[i].group = "valve";#}
+{#        }#}
+{#            data = data.concat(data_valve);#}
+{#            console.log(data);#}
+{#            initMap(data);#}
+{#        }#}
+{#    });#}
+{#});#}
+{#    function initMap(data) {#}
+{#    // define icons for each group#}
+{#    var icons = {#}
+{#        "sensors": new OpenLayers.Icon("static/assets/img/icons/sensor-icon.png", new OpenLayers.Size(32, 32)),#}
+{#        "waterpump": new OpenLayers.Icon("static/assets/img/icons/water_pump.png", new OpenLayers.Size(50, 32)),#}
+{#        "watertank": new OpenLayers.Icon("static/assets/img/icons/water_tank.png", new OpenLayers.Size(32, 32)),#}
+{#        "tree": new OpenLayers.Icon("static/assets/img/icons/tree.png", new OpenLayers.Size(32, 32)),#}
+{#        "valve": new OpenLayers.Icon("static/assets/img/icons/valve.png", new OpenLayers.Size(32, 32)),#}
+{#    };#}
+{##}
+{#    // create map and add OSM layer#}
+{#    map = new OpenLayers.Map("viewDiv");#}
+{#    map.addLayer(new OpenLayers.Layer.OSM());#}
+{##}
+{#    // create a separate layer for each group of markers and add them to the map#}
+{#    var layers = {};#}
+{##}
+{#    for (var group in icons) {#}
+{#        layers[group] = new OpenLayers.Layer.Markers(group);#}
+{#        console.log(layers[group])#}
+{#        map.addLayer(layers[group]);#}
+{#    }#}
+{##}
+{#    // iterate through the data array and add markers with the appropriate icon for each group#}
+{#    var markersArray = data;#}
+{#    for (var i = 0; i < markersArray.length; i++) {#}
+{#        var lonLat = new OpenLayers.LonLat(markersArray[i].longitude, markersArray[i].latitude)#}
+{#            .transform(#}
+{#                new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984#}
+{#                map.getProjectionObject() // to Spherical Mercator Projection#}
+{#            );#}
+{#        var icon = icons[markersArray[i].group];#}
+{#        var layer = layers[markersArray[i].group];#}
+{#        layer.addMarker(new OpenLayers.Marker(lonLat, icon));#}
+{#    }#}
+{##}
+{#    // set center and zoom level#}
+{#    var lonLatcenter = new OpenLayers.LonLat(36.2384, 30.5852)#}
+{#        .transform(#}
+{#            new OpenLayers.Projection("EPSG:4326"),#}
+{#            map.getProjectionObject()#}
+{#        );#}
+{#    var zoom = 7;#}
+{#    map.setCenter(lonLatcenter, zoom);#}
+{#}#}
+{#    </script>#}
     <script>
 
 
@@ -891,6 +1327,73 @@ var chart = echarts.init(document.getElementById("water-level-card"));
       init($barchart);
   };
     </script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+    <script type="text/javascript" src="static/assets/js/leaflet/leaflet-src.js"></script>
+    <script type="text/javascript" src="static/assets/js/leaflet-owm.js"></script>
+    <script type="text/javascript" src="static/assets/js/iconLayer.js"></script>
+    <script>
+        var providers = {};
+
+        providers['OSM'] = {
+            title: 'OSM',
+            icon: 'static/assets/img/layers-osm.png',
+            layer: L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            })
+        };
+
+    </script>
+    <script>
+        var map = L.map('map').setView([30.5852 , 36.2384], 5);
+
+
+        //http://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=d9cfe451d5a775abaf178aec4951b4b0
+
+        var Temp = L.tileLayer('http://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=d22d9a6a3ff2aa523d5917bbccc89211', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="http://owm.io">VANE</a>',
+            id: 'temp'
+        }),
+
+        Precipitation = L.tileLayer('http://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=d22d9a6a3ff2aa523d5917bbccc89211', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="http://owm.io">VANE</a>'
+        }),
+
+        Wind = L.tileLayer('http://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=d22d9a6a3ff2aa523d5917bbccc89211', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="http://owm.io">VANE</a>'
+        }),
+
+        Pressure = L.tileLayer('http://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=d22d9a6a3ff2aa523d5917bbccc89211', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="http://owm.io">VANE</a>'
+        }),
+
+
+        Clouds = L.tileLayer('http://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=d22d9a6a3ff2aa523d5917bbccc89211', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="http://owm.io">VANE</a>'
+        });
+
+        var owm = new L.OWMLayer({key: 'b1b15e88fa797225412429c1c50c122a1'});
+        map.addLayer(owm);
+
+        Temp.addTo(map);
+
+        var overlays = {"Temperature": Temp, "Precipitation": Precipitation, "Clouds": Clouds, "Pressure": Pressure, "Wind": Wind};
+        L.control.layers(overlays, null, {collapsed:false}).addTo(map);
+
+        var layers = [];
+            for (var providerId in providers) {
+                layers.push(providers[providerId]);
+            }
+
+        L.control.iconLayers(layers).addTo(map);
+    </script>
+
 {% endblock javascripts %}
 Footer
 © 2023 GitHub, Inc.

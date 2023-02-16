@@ -32,7 +32,7 @@ def index(request):
     sensor_results = []
     result_lists = [[result['timestamp'], result['number']] for result in results]
 
-    wresults = Result.objects.filter(water_tank__location='amman').values('number', 'timestamp')
+    wresults = Result.objects.values('number', 'timestamp')
     time = []
     water_tank_results = []
     result_list = [[result['timestamp'], result['number']] for result in results]

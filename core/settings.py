@@ -80,7 +80,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'assijo',
-        'USER': 'admin2',
+        'USER': 'postgres',
         'PASSWORD': '1234',
         'HOST': 'localhost'
     }
@@ -128,8 +128,8 @@ STATIC_URL = '/static/'
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (
     os.path.join(CORE_DIR, 'apps/static'),
-)
 
+)
 
 #############################################################
 #############################################################

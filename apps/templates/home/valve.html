@@ -270,7 +270,6 @@
 
     })
 </script>
-
 <script>
     $(document).ready(function(){
         $.ajax({
@@ -296,7 +295,8 @@
                     new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
                     map.getProjectionObject() // to Spherical Mercator Projection
                 );
-            markers.addMarker(new OpenLayers.Marker(lonLat));
+            var icon = new OpenLayers.Icon("static/assets/img/icons/valve.png", new OpenLayers.Size(32, 32));
+            markers.addMarker(new OpenLayers.Marker(lonLat, icon));
         }
         var lonLatcenter = new OpenLayers.LonLat(36.2384, 30.5852)
             .transform(
@@ -307,6 +307,7 @@
         map.setCenter(lonLatcenter, zoom);
     }
     </script>
+
     <script>
 function DeleteValve(id) {
     console.log(id)
