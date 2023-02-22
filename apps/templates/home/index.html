@@ -108,7 +108,7 @@
                       <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">valve</h5>
 
         <span class="h2 font-weight-bold mb-0">
-                    {{  valve.state }}
+                    {{ valve.state }}
 
         </span>
                     </div>
@@ -136,18 +136,18 @@
 
                   <div class="row">
                     <div class="col">
-                      <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">water level</h5>
+                      <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Water Level</h5>
 
         <span class="h2 font-weight-bold mb-0" >
 
-            {{  waterlevel.swatertank.last.string_result }}
+            {{waterlevel.swatertank.last.string_result}}
 
         </span>
 
                     </div>
                     <div class="col-auto">
-                      <div class="fa-solid fa-droplet icon icon-shape bg-gradient-info text-white rounded-circle shadow">
-                        <i class="ni ni-chart-bar-32"></i>
+                      <div class="fa-solid icon icon-shape bg-gradient-info text-white rounded-circle shadow">
+                        <i class="fa-water"></i>
                       </div>
                     </div>
                   </div>
@@ -176,7 +176,7 @@
 
                     </div>
                     <div class="col-auto">
-                      <div class=" icon-shape bg-gradient-info text-white rounded-circle shadow">
+                      <div class=" icon-shape bg-gradient-success text-white rounded-circle shadow">
                           <i class="fa-solid fa-gauge"></i>
 
                       </div>
@@ -908,154 +908,82 @@ var chart = echarts.init(document.getElementById("water-level-card"));
   };
     </script>
 <script>
-FusionCharts.ready(function() {
-  var waterLevel = 500;
-  var fuelWidget = new FusionCharts({
-    type: 'cylinder',
-    dataFormat: 'json',
-    id: 'fuelMeter',
-    renderAt: 'chart-container',
-    width: '320',
-    height: '350',
-    dataSource: {
-      "chart": {
-        "theme": "fusion",
-        "cylFillColor": "#0099fd",
-        "cylFillHoverColor": "#0099fd",
-        "cylFillHoverAlpha": "85",
-        "majorTMColor": "#0099fd",
-        "caption": "Water Level in the Tank",
-        "subcaption": "Full Tank = 1000 ltrs",
-        "lowerLimit": "0",
-        "upperLimit": "1000",
-        "lowerLimitDisplay": "Empty",
-        "upperLimitDisplay": "Full",
-        "numberSuffix": " ltrs",
-        "showValue": "0",
-        "chartBottomMargin": "55"
-      },
-      "value": waterLevel,
-      "annotations": {
-        "origw": "400",
-        "origh": "190",
-        "autoscale": "1",
-        "groups": [{
-          "id": "range",
-          "items": [{
-            "id": "rangeBg",
-            "type": "rectangle",
-            "x": "$canvasCenterX-100",
-            "y": "$chartEndY-40",
-            "tox": "$canvasCenterX +145",
-            "toy": "$chartEndY-65",
-            "fillcolor": "#6caa03"
-          },
-          {
-            "id": "rangeText",
-            "type": "Text",
-            "fontSize": "14",
-            "fillcolor": "#333333",
-            "text": "Available Volume = " + waterLevel,
-            "x": "$chartCenterX-15",
-            "y": "$chartEndY-50"
-          }]
-        }]
-      }
-    }
-  }).render();
+$(document).ready(function(){
+        $.ajax({
+            url: "{% url 'mydata_watertank'%}",
+            method: 'GET',
+            success: function (data) {
+                console.log("data1");
+                console.log(data[0]);
+                Pass(data);
+            }
+      });
+    });
+function Pass(data) {
+    FusionCharts.ready(function () {
 
-  // Update the chart with the initial waterLevel value
-  fuelWidget.feedData("&value=" + waterLevel);
-});
+        var waterLevel = data[0].water_level;
+        var waterCapacity = data[0].water_capacity;
+        var fuelWidget = new FusionCharts({
+            type: 'cylinder',
+            dataFormat: 'json',
+            id: 'fuelMeter',
+            renderAt: 'chart-container',
+            width: '320',
+            height: '350',
+            dataSource: {
+                "chart": {
+                    "theme": "fusion",
+                    "cylFillColor": "#0099fd",
+                    "cylFillHoverColor": "#0099fd",
+                    "cylFillHoverAlpha": "85",
+                    "majorTMColor": "#0099fd",
+                    "caption": "Water Level in the Tank",
+                    "subcaption": "Full Tank =" + waterCapacity + " ltrs",
+                    "lowerLimit": "0",
+                    "upperLimit": waterCapacity,
+                    "lowerLimitDisplay": "Empty",
+                    "upperLimitDisplay": "Full",
+                    "numberSuffix": " ltrs",
+                    "showValue": "0",
+                    "chartBottomMargin": "55"
+                },
+                "value": waterLevel,
+                "annotations": {
+                    "origw": "400",
+                    "origh": "190",
+                    "autoscale": "1",
+                    "groups": [{
+                        "id": "range",
+                        "items": [{
+                            "id": "rangeBg",
+                            "type": "rectangle",
+                            "x": "$canvasCenterX-100",
+                            "y": "$chartEndY-40",
+                            "tox": "$canvasCenterX +145",
+                            "toy": "$chartEndY-65",
+                            "fillcolor": "#6caa03"
+                        },
+                            {
+                                "id": "rangeText",
+                                "type": "Text",
+                                "fontSize": "14",
+                                "fillcolor": "#333333",
+                                "text": "Available Volume = " + waterLevel,
+                                "x": "$chartCenterX-15",
+                                "y": "$chartEndY-50"
+                            }]
+                    }]
+                }
+            }
+        }).render();
+
+        // Update the chart with the initial waterLevel value
+        fuelWidget.feedData("&value=" + waterLevel);
+    });
+}
 </script>
-{#    <script>#}
-{#    FusionCharts.ready(function() {#}
-{#     var waterLevel = 500;#}
-{#    var fuelVolume = 1000,#}
-{#        fuelWidget = new FusionCharts({#}
-{#          type: 'cylinder',#}
-{#          dataFormat: 'json',#}
-{#          id: 'fuelMeter',#}
-{#          renderAt: 'chart-container',#}
-{#          width: '320',#}
-{#          height: '350',#}
-{#          dataSource: {#}
-{#            "chart": {#}
-{#              "theme": "fusion",#}
-{#              "cylFillColor": "#0099fd",#}
-{#              "cylFillHoverColor": "#0099fd",#}
-{#                "cylFillHoverAlpha": "85",#}
-{#                "majorTMColor": "#0099fd",#}
-{#              "caption": "Water Level in the Tank",#}
-{#              "subcaption": "Full Tank = 1000 ltrs",#}
-{#              "lowerLimit": "0",#}
-{#              "upperLimit": "1000",#}
-{#              "lowerLimitDisplay": "Empty",#}
-{#              "upperLimitDisplay": "Full",#}
-{#              "numberSuffix": " ltrs",#}
-{#              "showValue": "0",#}
-{#              "chartBottomMargin": "55"#}
-{#            },#}
-{#            "value": waterLevel,#}
-{#            "annotations": {#}
-{#              "origw": "400",#}
-{#              "origh": "190",#}
-{#              "autoscale": "1",#}
-{#              "groups": [{#}
-{#                "id": "range",#}
-{#                "items": [{#}
-{#                    "id": "rangeBg",#}
-{#                    "type": "rectangle",#}
-{#                    "x": "$canvasCenterX-100",#}
-{#                    "y": "$chartEndY-40",#}
-{#                    "tox": "$canvasCenterX +145",#}
-{#                    "toy": "$chartEndY-65",#}
-{#                    "fillcolor": "#6caa03"#}
-{#                  },#}
-{#                  {#}
-{#                    "id": "rangeText",#}
-{#                    "type": "Text",#}
-{#                    "fontSize": "14",#}
-{#                    "fillcolor": "#333333",#}
-{#                    "text": "Available Volume = " + waterLevel,#}
-{#                    "x": "$chartCenterX-15",#}
-{#                    "y": "$chartEndY-50"#}
-{#                  }#}
-{#                ]#}
-{#              }]#}
-{#            }#}
-{##}
-{#          },#}
-{#          "events": {#}
-{##}
-{#            "rendered": function(evtObj, argObj) {#}
-{#              setInterval(function() {#}
-{#                (fuelVolume < 100) ? (fuelVolume = 800) : "";#}
-{#                var consVolume = fuelVolume - (Math.floor(Math.random() * 3));#}
-{#                FusionCharts("fuelMeter").feedData("&value=" + consVolume);#}
-{#                fuelVolume = consVolume;#}
-{#              }, 1000);#}
-{#            },#}
-{#            //Using real time update event to update the annotation#}
-{#            //showing available volume of Diesel#}
-{#            "realTimeUpdateComplete": function(evt, arg) {#}
-{#              var annotations = evt.sender.annotations,#}
-{#                dataVal = evt.sender.getData(),#}
-{#                colorVal = (dataVal >= 700) ? "#6caa03" : ((dataVal <= 350) ? "#e44b02" : "#f8bd1b");#}
-{#              //Updating value#}
-{#              annotations && annotations.update('rangeText', {#}
-{#                "text": "Available Volume = "+ dataVal + " ltrs"#}
-{#              });#}
-{#              //Changing background color as per value#}
-{#              annotations && annotations.update('rangeBg', {#}
-{#                "fillcolor": colorVal#}
-{#              });#}
-{##}
-{#            }#}
-{#          }#}
-{#        }).render();#}
-{#    });#}
-{#    </script>#}
+
 <script>
    $(document).ready(function(){
     var data = [];

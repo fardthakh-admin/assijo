@@ -35,7 +35,8 @@ class Valve(models.Model):
 
 class WaterTank(models.Model):
     water_level = models.CharField(max_length=40)
-    location = models.CharField(max_length=40)
+    water_capacity = models.CharField(max_length=40, blank=True, null=True)
+    location = models.CharField(max_length=40, blank=True, null=True)
     latitude = models.CharField(max_length=200, blank=True, null=True)
     longitude = models.CharField(max_length=200, blank=True, null=True)
     # def __str__(self):

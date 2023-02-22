@@ -14,6 +14,7 @@ urlpatterns = [
 
     # The home page
     path('', views.index, name='home'),
+    path('', views.weather_station, name='WS'),
 
     # Matches any html file
     # re_path(r'^.*\.*', views.pages, name='pages'),
@@ -40,12 +41,14 @@ urlpatterns = [
     path('api/delete/tree/', views.DeleteTree.as_view(), name='delete-tree_api'),
     path('api/delete/water_pump/', views.DeleteWaterPump.as_view(), name='delete-water_pump_api'),
     path('api/delete/water_tank/', views.DeleteWaterTank.as_view(), name='delete-water_tank_api'),
+    path('api/delete/weather_station/', views.DeleteWeatherstation.as_view(), name='delete-weather_station_api'),
 
     path('api/delete/offline_scenario/', views.DeleteOfflineScenario.as_view(), name='delete-offline_scenario_api'),
 
     path('watertank-operation/', views.WaterTankOperation.as_view(), name='watertank-operation'),
     path('sensor-operation/', views.SensorOperation.as_view(), name='sensor-operation'),
     path('valve-operation/', views.ValveOperation.as_view(), name='valve-operation'),
+    path('WeatherStation-operation/', views.WeatherStationOperation.as_view(), name='WeatherStation-operation'),
     path('tree-operation/', views.TreeOperation.as_view(), name='tree-operation'),
     path('waterpump-operation/', views.WaterPumpOperation.as_view(), name='waterpump-operation'),
     path('offlinescenario-operation/', views.OfflineScenarioOperation.as_view(), name='offlinescenario-operation'),

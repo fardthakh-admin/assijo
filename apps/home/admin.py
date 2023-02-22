@@ -54,7 +54,7 @@ class WaterPumpAdmin(admin.ModelAdmin):
 
 
 class WaterTankAdmin(admin.ModelAdmin):
-    list_display = ('location', 'water_level', 'latitude', 'longitude')
+    list_display = ('location', 'water_level', 'water_capacity', 'latitude', 'longitude')
     inlines = [ResultInline, StringResultInline]
 
 

@@ -69,7 +69,15 @@ def index(request):
     html_template = loader.get_template('home/index.html')
     return HttpResponse(html_template.render(context, request))
 
-
+def weather_station(request):
+    weather = WeatherStation.objects.last()
+    print("I am called")
+    print(weather)
+    context = {
+               'weather': weather,
+               }
+    html_template = loader.get_template('home/weather_station.html')
+    return HttpResponse(html_template.render(context, request))
 @login_required(login_url="/login/")
 def pages(request):
     context = {}
@@ -218,6 +226,7 @@ def mydata_watertank(request):
                        .exclude(longitude__exact='') \
                        .values('id',
                                'water_level',
+                               'water_capacity',
                                'location',
                                'latitude',
                                'longitude',
@@ -426,6 +435,7 @@ class WaterTankOperation(APIView):
         operation = request.POST.get('operation', None)
         location = request.POST.get('location', None)
         water_level = request.POST.get('water_level', None)
+        water_capacity = request.POST.get('water_capacity', None)
         latitude = request.POST.get('latitude', None)
         longitude = request.POST.get('longitude', None)
         watertank_id = request.POST.get('id', None)
@@ -436,6 +446,8 @@ class WaterTankOperation(APIView):
                 watertank.location = location
             if water_level:
                 watertank.water_level = water_level
+            if water_capacity:
+                watertank.water_capacity = water_capacity
             if latitude:
                 watertank.latitude = latitude
             if longitude:
@@ -443,8 +455,8 @@ class WaterTankOperation(APIView):
             watertank.save()
 
         if operation == 'add':
-            if location and water_level and latitude and longitude:
-                water_tank = WaterTank.objects.create(location=location, water_level=water_level,latitude=latitude,longitude=longitude)
+            if location and water_level and water_capacity and latitude and longitude:
+                water_tank = WaterTank.objects.create(location=location, water_level=water_level, water_capacity=water_capacity, latitude=latitude,longitude=longitude)
 
         return redirect('/water_tank')
 
@@ -452,7 +464,12 @@ class WaterTankOperation(APIView):
 @login_required(login_url="/login/")
 def weather_station_view(request):
     weather_station = WeatherStation.objects.all()
-
+    weather = WeatherStation.objects.last()
+    print("I am called")
+    print(weather)
+    context = {
+        'weather': weather,
+    }
     return render(request, 'home/weather_station.html', context={'list': weather_station})
 
 
@@ -460,8 +477,11 @@ class WeatherStationView(View):
 
     def get(self, request):
         weather_station = WeatherStation.objects.all()
+        weather = WeatherStation.objects.last()
+        print("I am called")
+        print(weather)
 
-        return render(request, 'home/weather_station.html', context={'list': weather_station})
+        return render(request, 'home/weather_station.html', context={'list': weather_station , 'weather': weather})
 
     def post(self, request):
         location = request.POST.get('location')
@@ -583,5 +603,35 @@ class DeleteWaterTank(APIView):
         water_tank.delete()
         return Response({'status': 'sucsses'})
 
+class DeleteWeatherstation(APIView):
+    def delete(self, request):
+        id = request.POST.get('id', None)
+        Weather_Station = WeatherStation.objects.get(pk=id)
+        print(Weather_Station)
+        Weather_Station.delete()
+        return Response({'status': 'sucsses'})
 
+class WeatherStationOperation(APIView):
+    def post(self, request):
+        operation = request.POST.get('operation', None)
+        location = request.POST.get('location', None)
+        latitude = request.POST.get('latitude', None)
+        longitude = request.POST.get('longitude', None)
+        WeatherStation_id = request.POST.get('id', None)
 
+        if operation == 'edit':
+            weather_station = WeatherStation.objects.get(pk=WeatherStation_id)
+
+            if location:
+                weather_station.location = location
+            if latitude:
+                weather_station.latitude = latitude
+            if longitude:
+                weather_station.longitude = longitude
+            weather_station.save()
+
+        if operation == 'add':
+            if location and latitude and longitude:
+                weather_station = WeatherStation.objects.create(location=location, latitude=latitude,longitude=longitude)
+
+        return redirect('/weather_station')
