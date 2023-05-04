@@ -24,6 +24,25 @@
     .leaflet-control-layers label {
     display: table-cell;
 }
+    .create-farm{
+        text-decoration: none;
+        background-color: white;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 23px;
+        padding-right: 20px;
+        border-radius: 60px;
+        transition: 0.6s;
+        color: #5e72e4;
+    }
+
+    .create-farm:hover{
+        transition: 0.6s;
+        background-color: #1a174d;
+        color: white;
+        font-size: 50px;
+    }
+
     g[class^='raphael-group'][class$='-creditgroup'] {
          display:none !important;
     }
@@ -52,9 +71,32 @@
         text-align: center;
     }
 
+    #borderDiv{
+        height: 350px;
+        {#font-size: 20px;#}
+        font-weight: bolder;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #2c2c2cfb;
+        background-color: rgb(255, 255, 255);
+        text-align: center;
+        pointer-events: none;
+    }
     </style>
+
+
+
     <div class="header bg-primary pb-6">
       <div class="container-fluid">
+          {% if user.farm == null %}
+            <div style="color: white; padding-top: 60px;font-size: 45px;font-weight: 400">
+                <center>
+                    <div style="margin-bottom: 40px">You do not have a farm Yet</div>
+                    <a href="{% url 'create_farm' %}" class="btn btn-light">
+                        Create Farm
+                    </a>
+                </center>
+            </div>
+          {% else %}
         <div class="header-body">
           <div class="row align-items-center py-4">
             <div class="col-lg-6 col-7">
@@ -64,10 +106,34 @@
               </nav>
             </div>
             <div class="col-lg-6 col-5 text-right">
-              <a href="#" class="btn btn-sm btn-neutral">New</a>
-              <a href="#" class="btn btn-sm btn-neutral">Filters</a>
+                  <div class="input-daterange datepicker row align-items-center">
+                        <form method="GET" class="row" action="{% url 'home' %}">
+                            <div class="col">
+                                <div class="form-group">
+                                    <div class="input-group input-group-alternative">
+                                        <input class="form-control" placeholder="Start date" name="start_date" id="start_date" type="date">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <div class="input-group input-group-alternative">
+                                        <input class="form-control" placeholder="End date" name="end_date" id="end_date" type="date">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <div class="input-group input-group-alternative">
+                                        <button class="btn btn-light" type="submit">Filter</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                  </div>
             </div>
           </div>
+
           <!-- Card stats -->
           <div class="row">
             <div class="col-xl-3 col-md-6" >
@@ -77,11 +143,9 @@
                   <div class="row">
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">temperature</h5>
-
-              <span class="h2 font-weight-bold mb-0">
-                    {{  weather.weather_station.last.temperature }}
-
-        </span>
+                      <span class="h2 font-weight-bold mb-0">
+                            {{  weather.weather_station.last.temperature }}
+                      </span>
                     </div>
                     <div class="col-auto">
                       <div class="icon icon-shape bg-gradient-danger text-white rounded-circle shadow">
@@ -105,12 +169,11 @@
                 <div class="card-body" >
                   <div class="row">
                     <div class="col">
-                      <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">valve</h5>
+                        <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">valve</h5>
 
-        <span class="h2 font-weight-bold mb-0">
-                    {{ valve.state }}
-
-        </span>
+                        <span class="h2 font-weight-bold mb-0">
+                                    {{ valve.state }}
+                        </span>
                     </div>
                     <div class="col-auto">
                       <div class="icon icon-shape bg-gradient-primary text-white rounded-circle shadow">
@@ -119,7 +182,6 @@
                     </div>
                   </div>
                   <p class="mt-3 mb-0 text-sm">
-
                     <span class="text-nowrap"> Valve state</span>
                   </p>
                 </div>
@@ -136,14 +198,10 @@
 
                   <div class="row">
                     <div class="col">
-                      <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Water Level</h5>
-
-        <span class="h2 font-weight-bold mb-0" >
-
-            {{waterlevel.swatertank.last.string_result}}
-
-        </span>
-
+                        <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Water Level</h5>
+                        <span class="h2 font-weight-bold mb-0" >
+                            {{waterlevel.watertank.last.string_result}}
+                        </span>
                     </div>
                     <div class="col-auto">
                       <div class="fa-solid icon icon-shape bg-gradient-info text-white rounded-circle shadow">
@@ -152,14 +210,11 @@
                     </div>
                   </div>
                   <p class="mt-3 mb-0 text-sm">
-
                     <span class="text-nowrap"> last day</span>
                   </p>
                 </div>
               </div>
             </div>
-
-
 
           <div class="col-xl-3 col-md-6" >
               <div class="card card-stats">
@@ -168,29 +223,23 @@
                   <div class="row">
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">water pump</h5>
-
-        <span class="h2 font-weight-bold mb-0">
-                    {{  waterpump.state }}
-
-        </span>
-
+                        <span class="h2 font-weight-bold mb-0">
+                            {{  waterpump.state }}
+                        </span>
                     </div>
+
                     <div class="col-auto">
                       <div class=" icon-shape bg-gradient-success text-white rounded-circle shadow">
                           <i class="fa-solid fa-gauge"></i>
-
                       </div>
                     </div>
                   </div>
                   <p class="mt-3 mb-0 text-sm">
-
                     <span class="text-nowrap">Water pump state</span>
                   </p>
                 </div>
               </div>
             </div>
-
-
           </div>
         </div>
       </div>
@@ -200,97 +249,113 @@
 
     <!-- Page content -->
     <div class="container-fluid mt--6">
-      <div class="row">
-        <div class="col-xl-8">
-          <div class="card bg-default">
-            <div class="card-header bg-transparent">
-              <div class="row align-items-center">
-                <div class="col">
-                  <h6 class="text-light text-uppercase ls-1 mb-1">Overview</h6>
-                  <h5 class="h3 text-white mb-0">Humidity in soil </h5>
+        <div class="row">
+            <div class="col-xl-8">
+              <div class="card bg-default">
+                <div class="card-header bg-transparent">
+                  <div class="row align-items-center">
+                    <div class="col">
+                      <h6 class="text-light text-uppercase ls-1 mb-1">Overview</h6>
+                      <h5 class="h3 text-white mb-0">Water Level </h5>
+                    </div>
+                    <div class="col">
+                      <ul class="nav nav-pills justify-content-end">
+                        <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-watertank-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 60, 60]}]}}' data-prefix="$" data-suffix="k">
+                          <a href="#" class="nav-link py-2 px-3 active" data-toggle="tab">
+                            <span class="d-none d-md-block">Month</span>
+                            <span class="d-md-none">M</span>
+                          </a>
+                        </li>
+                        <li class="nav-item" data-toggle="chart" data-target="#chart-watertank-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 5, 25, 10, 30, 15, 40, 40]}]}}' data-prefix="$" data-suffix="k">
+                          <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
+                            <span class="d-none d-md-block">Week</span>
+                            <span class="d-md-none">W</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
-                <div class="col">
-                  <ul class="nav nav-pills justify-content-end">
-                    <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-sensor-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 60, 60]}]}}' data-prefix="$" data-suffix="k">
-                      <a href="#" class="nav-link py-2 px-3 active" data-toggle="tab">
-                        <span class="d-none d-md-block">Month</span>
-                        <span class="d-md-none">M</span>
-                      </a>
-                    </li>
-                    <li class="nav-item" data-toggle="chart" data-target="#chart-sensor-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 5, 25, 10, 30, 15, 40, 40]}]}}' data-prefix="$" data-suffix="k">
-                      <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
-                        <span class="d-none d-md-block">Week</span>
-                        <span class="d-md-none">W</span>
-                      </a>
-                    </li>
-                  </ul>
+                <div class="card-body">
+                  <!-- Chart -->
+                  <div class="chart">
+                    <!-- Chart wrapper -->
+                    <canvas id="chart-watertank-dark" class="chart-canvas"></canvas>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="card-body">
-              <!-- Chart -->
-              <div class="chart">
-                <!-- Chart wrapper -->
-                <canvas id="chart-sensor-dark" class="chart-canvas"></canvas>
+
+            <div class="col-xl-4">
+              <div class="card">
+                <div class="card-header bg-transparent">
+                  <div class="row align-items-center">
+                    <div class="col">
+                      <h6 class="text-uppercase text-muted ls-1 mb-1">Performance</h6>
+                      <h5 class="h3 mb-0">Water level </h5>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                    <div id="chart-container" style="padding-left: inherit;"></div>
+    {#             <!-- Chart -->#}
+    {#              <div class="chart">#}
+    {#                <canvas id="chart-bar" class="chart-canvas"></canvas>#}
+    {#              </div>#}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="col-xl-4">
-          <div class="card">
-            <div class="card-header bg-transparent">
-              <div class="row align-items-center">
-                <div class="col">
-                  <h6 class="text-uppercase text-muted ls-1 mb-1">Performance</h6>
-                  <h5 class="h3 mb-0">Water level </h5>
+        <div class="row">
+        <div class="col-xl-12">
+              <div class="card">
+                  <div class="card-header border-0">
+                      <div class="row align-items-center">
+                          <div class="col">
+                              <h3 class="mb-0">Farm Location</h3>
+                          </div>
+                      </div>
+                  </div>
+                <div class="table-responsive">
+                  <!-- Projects table -->
+                   <div id="viewDiv">
+                   </div>
+                   <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
                 </div>
               </div>
             </div>
-            <div class="card-body">
-                <div id="chart-container" style="padding-left: inherit;"></div>
-{#              <!-- Chart -->#}
-{#              <div class="chart">#}
-{#                <canvas id="chart-bar" class="chart-canvas"></canvas>#}
-{#              </div>#}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-      <div class="col-xl-12">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col">
-                  <h3 class="mb-0">Farm Map</h3>
+
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-header border-0">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h3 class="mb-0">Farm Borders</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive" style="padding-bottom: 30px">
+                            {% if user.farm.polygon == "" %}
+                                <div style="color: white; padding-top: 60px;font-size: 45px;font-weight: 400">
+                                    <center>
+                                        <div style="margin-bottom: 40px; color: #1a174d">You have not established your farm borders yet</div>
+                                        <a href="{% url 'create_farm_borders' %}" class="create-farm">
+                                            Create Borders
+                                        </a>
+                                    </center>
+                                </div>
+                            {% else %}
+                            <!-- Projects table -->
+                            <div id="borderDiv"></div>
+                             <div class="blur-hidden">
+                                <input id="wktStringTextArea" class="fade" style="font-size: 1px" onchange="restoreDefaultColors()" value="{{ user.farm.polygon }}">
+                             </div>
+
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
 
-              </div>
-            </div>
-            <div class="table-responsive">
-              <!-- Projects table -->
-               <div id="viewDiv">
-               </div>
-               <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
-            </div>
-          </div>
-        </div>
-      <div class="col-xl-12">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col">
-                  <h3 class="mb-0">Weather Map</h3>
-                </div>
-
-              </div>
-            </div>
-            <div class="table-responsive">
-              <!-- Projects table -->
-                <div id="map"></div>
-            </div>
-          </div>
-        </div>
         <div class="col-xl-12">
           <div class="card">
             <div class="card-header border-0">
@@ -298,12 +363,14 @@
                 <div class="col">
                   <h3 class="mb-0">Sensors</h3>
                 </div>
-
               </div>
             </div>
-            <div class="table-responsive">
-              <!-- Projects table -->
-              <table class="table align-items-center table-flush">
+            <div>
+
+            <div class="col-xl-15" style="display: flex">
+                <div class="table-responsive">
+                    <!-- Projects table -->
+                    <table class="table align-items-center table-flush">
                 <thead class="thead-light">
                   <tr>
                     <th scope="col">id</th>
@@ -312,7 +379,6 @@
                     <th scope="col">Number Result</th>
                     <th scope="col">string result</th>
                       <th class="sortable">Location</th>
-
                   </tr>
                 </thead>
                 <tbody>
@@ -347,31 +413,69 @@
 
                 </tbody>
               </table>
+                </div>
+                <div class="col-xl-7">
+                    <div class="card bg-default">
+                        <div class="card-header bg-transparent">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h6 class="text-light text-uppercase ls-1 mb-1">Overview</h6>
+                                    <h5 class="h3 text-white mb-0">Humidity in soil </h5>
+                                </div>
+                                <div class="col">
+                                    <ul class="nav nav-pills justify-content-end">
+                                        <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-sensor-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 60, 60]}]}}' data-prefix="$" data-suffix="k">
+                                            <a href="#" class="nav-link py-2 px-3 active" data-toggle="tab">
+                                                <span class="d-none d-md-block">Month</span>
+                                                <span class="d-md-none">M</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item" data-toggle="chart" data-target="#chart-sensor-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 5, 25, 10, 30, 15, 40, 40]}]}}' data-prefix="$" data-suffix="k">
+                                          <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
+                                            <span class="d-none d-md-block">Week</span>
+                                            <span class="d-md-none">W</span>
+                                          </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                              </div>
+                            </div>
+                        <div class="card-body">
+                        <!-- Chart -->
+                            <div class="chart">
+                                <!-- Chart wrapper -->
+                                <canvas id="chart-sensor-dark" class="chart-canvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
           </div>
         </div>
-      <div class="col-xl-12">
+
+        <div class="col-xl-12">
           <div class="card">
             <div class="card-header border-0">
               <div class="row align-items-center">
                 <div class="col">
                   <h3 class="mb-0"> Trees </h3>
                 </div>
-                <div >
 
-                </div>
+                <div></div>
+
               </div>
             </div>
-            <div class="table-responsive">
+              <div class="col-xl-15" style="display: flex">
+              <div class="table-responsive">
               <!-- Projects table -->
-              <table class="table align-items-center table-flush">
+                <table class="table align-items-center table-flush">
                 <thead class="thead-light">
                   <tr>
                     <th scope="col">id</th>
                     <th scope="col">Type</th>
                     <th scope="col">state</th>
                     <th scope="col">time</th>
-                      <th scope="col">WATER SHARE</th>
+{#                      <th scope="col">WATER SHARE</th>#}
                       <th class="sortable">Location</th>
                   </tr>
                 </thead>
@@ -386,21 +490,18 @@
                         {{ item.type}}
                     </td>
                      <td>
-                     {{ item.time}}
+                     {{ item.state }}
                      </td>
 
                     <td>
-
-
-                          {{ item.state }}
-
+                        {{ item.time}}
                     </td>
-                    <td >
-                     {% if not item.item.water_share.all %}   -   {% endif %}
-                        {% for item in item.item.water_share.all %}
-                             {{ item.number }}
-                        {% endfor %}
-                    </td>
+{#                    <td >#}
+{#                     {% if not item.item.water_share.all %}   -   {% endif %}#}
+{#                        {% for item in item.item.water_share.all %}#}
+{#                             {{ item.number }}#}
+{#                        {% endfor %}#}
+{#                    </td>#}
                      <td>
                        {{ item.location }}
                     </td>
@@ -408,9 +509,232 @@
 
                 </tbody>
               </table>
+              </div>
+              <div class="col-xl-7">
+                    <div class="card bg-default">
+                <div class="card-header bg-transparent">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h6 class="text-light text-uppercase ls-1 mb-1">Overview</h6>
+                  <h5 class="h3 text-white mb-0">Water Share </h5>
+                </div>
+                <div class="col">
+                  <ul class="nav nav-pills justify-content-end">
+                    <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-watershare-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 30, 30]}]}}' data-prefix="$" data-suffix="k">
+                      <a href="#" class="nav-link py-2 px-3 active" data-toggle="tab">
+                        <span class="d-none d-md-block">Month</span>
+                        <span class="d-md-none">M</span>
+                      </a>
+                    </li>
+                    <li class="nav-item" data-toggle="chart" data-target="#chart-watershare-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 5, 25, 10, 30, 15, 40, 40]}]}}' data-prefix="$" data-suffix="k">
+                      <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
+                        <span class="d-none d-md-block">Week</span>
+                        <span class="d-md-none">W</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+                <div class="card-body">
+                <!-- Chart -->
+                <div class="chart">
+                    <!-- Chart wrapper -->
+                    <canvas id="chart-watershare-dark" class="chart-canvas"></canvas>
+                </div>
             </div>
           </div>
-        </div>
+                </div>
+              </div>
+          </div>
+      </div>
+
+
+        <div class="col-xl-12">
+          <div class="card">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0"> Valves </h3>
+                </div>
+
+                <div></div>
+
+              </div>
+            </div>
+              <div class="col-xl-15" style="display: flex">
+              <div class="table-responsive">
+              <!-- Projects table -->
+                <table class="table align-items-center table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">state</th>
+{#                    <th scope="col">time</th>#}
+{#                      <th scope="col">WATER SHARE</th>#}
+                      <th class="sortable">Location</th>
+                  </tr>
+                </thead>
+                <tbody>
+                 {% for valve in valves %}
+                  <tr>
+                    <th scope="row">
+                        {{valve.id}}
+                    </th>
+                    <td>
+                        {{ valve.type}}
+                    </td>
+                     <td>
+                     {{ valve.state }}
+                     </td>
+
+                    <td>
+                        {{ valve.location}}
+                    </td>
+{#                    <td >#}
+{#                     {% if not item.item.water_share.all %}   -   {% endif %}#}
+{#                        {% for item in item.item.water_share.all %}#}
+{#                             {{ item.number }}#}
+{#                        {% endfor %}#}
+{#                    </td>#}
+                      {% endfor %}
+                </tbody>
+              </table>
+              </div>
+              <div class="col-xl-7">
+                    <div class="card bg-default">
+                <div class="card-header bg-transparent">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h6 class="text-light text-uppercase ls-1 mb-1">Overview</h6>
+                  <h5 class="h3 text-white mb-0">Valve Flowmeter </h5>
+                </div>
+                <div class="col">
+                  <ul class="nav nav-pills justify-content-end">
+                    <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-valve-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 30, 30]}]}}' data-prefix="$" data-suffix="k">
+                      <a href="#" class="nav-link py-2 px-3 active" data-toggle="tab">
+                        <span class="d-none d-md-block">Month</span>
+                        <span class="d-md-none">M</span>
+                      </a>
+                    </li>
+                    <li class="nav-item" data-toggle="chart" data-target="#chart-valve-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 5, 25, 10, 30, 15, 40, 40]}]}}' data-prefix="$" data-suffix="k">
+                      <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
+                        <span class="d-none d-md-block">Week</span>
+                        <span class="d-md-none">W</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+                <div class="card-body">
+                <!-- Chart -->
+                <div class="chart">
+                    <!-- Chart wrapper -->
+                    <canvas id="chart-valve-dark" class="chart-canvas"></canvas>
+                </div>
+            </div>
+          </div>
+                </div>
+              </div>
+          </div>
+      </div>
+
+
+        <div class="col-xl-12">
+          <div class="card">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0"> Water Pumps </h3>
+                </div>
+                <div></div>
+              </div>
+            </div>
+              <div class="col-xl-15" style="display: flex">
+              <div class="table-responsive">
+              <!-- Projects table -->
+                <table class="table align-items-center table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">state</th>
+                    <th scope="col">energy level</th>
+{#                  <th scope="col">WATER SHARE</th>#}
+                    <th class="sortable">Location</th>
+                  </tr>
+                </thead>
+                <tbody>
+                 {% for water_pump in waterpumps %}
+                  <tr>
+
+                    <th scope="row">
+                        {{water_pump.id}}
+                    </th>
+                    <td>
+                        {{ water_pump.state}}
+                    </td>
+                     <td>
+                     {% if not water_pump.water_pump.all.count %}   -   {% endif %}
+                         {% for water_pump in water_pump.water_pump.all %}
+                        {{ water_pump.energy_result }}
+                             {% endfor %}
+                     </td>
+
+                    <td>
+                        {{ water_pump.location}}
+                    </td>
+{#                    <td >#}
+{#                     {% if not item.item.water_share.all %}   -   {% endif %}#}
+{#                        {% for item in item.item.water_share.all %}#}
+{#                             {{ item.number }}#}
+{#                        {% endfor %}#}
+{#                    </td>#}
+                      {% endfor %}
+
+                </tbody>
+              </table>
+              </div>
+              <div class="col-xl-7">
+                    <div class="card bg-default">
+                <div class="card-header bg-transparent">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h6 class="text-light text-uppercase ls-1 mb-1">Overview</h6>
+                  <h5 class="h3 text-white mb-0">Pump Energy Level </h5>
+                </div>
+                <div class="col">
+                  <ul class="nav nav-pills justify-content-end">
+                    <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-energy-level-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 30, 30]}]}}' data-prefix="$" data-suffix="k">
+                      <a href="#" class="nav-link py-2 px-3 active" data-toggle="tab">
+                        <span class="d-none d-md-block">Month</span>
+                        <span class="d-md-none">M</span>
+                      </a>
+                    </li>
+                    <li class="nav-item" data-toggle="chart" data-target="#chart-energy-level-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 5, 25, 10, 30, 15, 40, 40]}]}}' data-prefix="$" data-suffix="k">
+                      <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
+                        <span class="d-none d-md-block">Week</span>
+                        <span class="d-md-none">W</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+                <div class="card-body">
+                <!-- Chart -->
+                <div class="chart">
+                    <!-- Chart wrapper -->
+                    <canvas id="chart-energy-level-dark" class="chart-canvas"></canvas>
+                </div>
+            </div>
+          </div>
+                </div>
+              </div>
+          </div>
+      </div>
+      {% endif %}
 
 {#        <div class="col-xl-4">#}
 {##}
@@ -539,31 +863,43 @@
     </div>
 
 {% endblock content %}
-e
-<!-- Specific JS goes HERE --> 
-{% block javascripts %}
 
-  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
-  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
-  <script src="/static/assets/js/echart.min.js"></script>
-  <script src="/static/assets/js/echarts-liquid.min.js"></script>
-<script>
-var chart = echarts.init(document.getElementById("water-level-card"));
- var options ={
-                series: [{
-                    type: 'liquidFill',
-                    data: [0.6],
-                    radius: '70%',
-                    outline: {
-                        show: false
-                    },}]}
-                chart.setOption(options);
-</script>
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+    <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+    <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+    <script src="/static/assets/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+    <script src="/static/assets/js/echart.min.js"></script>
+    <script src="/static/assets/js/echarts-liquid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+    <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
+
+
     <script>
+        var chart = echarts.init(document.getElementById("water-level-card"));
+        var options ={
+                    series: [{
+                        type: 'liquidFill',
+                        data: [0.6],
+                        radius: '70%',
+                        outline: {
+                            show: false
+                        },}]}
+                    chart.setOption(options);
+    </script>
+
+    <!--    CHARTS SCRIPTS    -->
+    <script>
+    // CHART OVERALL THEME
     var Charts = (function() {
 
-	// Variable
-
+	// Variables
 	var $toggle = $('[data-toggle="chart"]');
 	var mode = 'light';//(themeMode) ? themeMode : 'light';
 	var fonts = {
@@ -601,8 +937,9 @@ var chart = echarts.init(document.getElementById("water-level-card"));
 	// Methods
 
 	// Chart.js global options
+    // THE METHOD FOR THE CHART THAT SETS THE COLORS
+    // AND ALSO THE OVERALL THEME
 	function chartOptions() {
-
 		// Options
 		var options = {
 			defaults: {
@@ -665,13 +1002,15 @@ var chart = echarts.init(document.getElementById("water-level-card"));
 							content += label;
 							content += '</span>';
 						});
-
 						return content;
 					}
 				}
 			}
 		}
 
+
+        // THE CHART SECTION THAT SETS
+        // THE LINES INSIDE THE CHART
 		// yAxes
 		Chart.scaleService.updateScaleDefaults('linear', {
 			gridLines: {
@@ -709,10 +1048,9 @@ var chart = echarts.init(document.getElementById("water-level-card"));
 			},
 			maxBarThickness: 10
 		});
-
 		return options;
-
 	}
+
 
 	// Parse global options
 	function parseOptions(parent, options) {
@@ -724,6 +1062,7 @@ var chart = echarts.init(document.getElementById("water-level-card"));
 			}
 		}
 	}
+
 
 	// Push options
 	function pushOptions(parent, options) {
@@ -738,6 +1077,7 @@ var chart = echarts.init(document.getElementById("water-level-card"));
 		}
 	}
 
+
 	// Pop options
 	function popOptions(parent, options) {
 		for (var item in options) {
@@ -750,6 +1090,7 @@ var chart = echarts.init(document.getElementById("water-level-card"));
 			}
 		}
 	}
+
 
 	// Toggle options
 	function toggleOptions(elem) {
@@ -858,40 +1199,100 @@ var chart = echarts.init(document.getElementById("water-level-card"));
 
 })();
 
-
-  // Variables
-    let times = {{ times|safe }};
+    //CHARTS VIEW SECTION
+    // Variables
+    let times = {{ times2|safe }};
         //
         // 3 9 3 2 new Date(3)
     let results = {{ sensor_results|safe }};
     {#let numbers = numbersss.map(function(result) {return new Date(result);});#}
-   // let chartData = results.map((result,index)=> (result));
+    // let chartData = results.map((result,index)=> (result));
+
 
     const $chart = $('#chart-sensor-dark');
+    function init( $chart ) {
+        const chart = new Chart( $chart , {
+            type: 'line',
+            data:  {
+                labels: times,
+                datasets: [
+                    {% for sensor in list_of_humidity_results %}
+                        {
+                        label: "Sensor ID.{{ humidity_sensors.id }}",
+                        data: {{ sensor|safe }},
+                        },
+                    {% endfor %}
+                ]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            callback:(value)=>value,
+                            max: Math.max(...results),
+                            min: Math.min(...results),
+                            stepSize: 1
+                        }
+                    }]
+                }
+            }
+        });// Save to jQuery object{#$chart.data('chart', chart);#}
 
-  function init($chart) {
-        const chart = new Chart($chart, {
+    };
+
+    {#function filterData($chart){#}
+    {#    const times2 = [...times];#}
+    {#    console.log(times2);#}
+    {#    const startDate = document.getElementById('start_date');#}
+    {#    const endDate = document.getElementById('end_date');#}
+    {##}
+    {#    // get the index number in array#}
+    {#    const indexStartDate = times2.indexOf(startDate.value);#}
+    {#    const indexEndDate = times2.indexOf(endDate.value);#}
+    {##}
+    {##}
+    {#    // divide the array to only show the selected date#}
+    {#    const filterDate = times2.slice(indexStartDate, indexEndDate + 1);#}
+    {#    console.log(filterDate);#}
+    {##}
+    {#    // replace the labels in the charts#}
+    {#    $chart.config.data.labels = filterDate;#}
+    {##}
+    {#    // datapoints#}
+    {#    const results2 = [...results];#}
+    {#    const filterDatapoints = times2.slice(indexStartDate, indexEndDate + 1);#}
+    {#    $chart.config.data.datasets[0].data = filterDatapoints;#}
+    {##}
+    {#    $chart.update()#}
+    {#}#}
+    //  END HUMIDITY SENSOR RESULTS **************************
+
+
+    let water_tank_results = {{ water_tank_results|safe }};
+    const $water_tank_chart = $('#chart-watertank-dark');
+    function init_water_tank($water_tank_chart) {
+        const chart_tank = new Chart($water_tank_chart, {
             type: 'line',
             data:  {
                 labels: times,
                 datasets: [{
-                  label: 'Humidity',
-                  data: results
+                  label: 'WaterTank',
+                  data: water_tank_results
                 }]
             },
             options: {
-    scales: {
-        yAxes: [{
+            scales: {
+                yAxes: [{
 
-            ticks: {
-                  callback:(value)=>value,
-                max: Math.max(...results),
-                min: Math.min(...results),
-                stepSize: 1
-            }
-        }]
+                    ticks: {
+                    callback:(value)=>value,
+                    max: Math.max(...water_tank_results),
+                    min: Math.min(...water_tank_results),
+                    stepSize: 1
+                }
+            }]
+        }
     }
-}
         });
 
     // Save to jQuery object
@@ -901,12 +1302,183 @@ var chart = echarts.init(document.getElementById("water-level-card"));
   };
 
 
-  // Events
+    let water_share_results = {{ water_share_results|safe }};
+    const $water_share_chart = $('#chart-watershare-dark');
+    function init_water_share($water_share_chart) {
+        const chart_share = new Chart($water_share_chart, {
+            type: 'line',
+            data:  {
+                labels: times,
+                datasets: [
+                    {% for tree in list_of_watershare_results %}
+                    {
+                        label: 'Tree ID.{{ tree.id }}',
+                        data: {{ tree|safe }},
+                    },
+                    {% endfor %}
+                ]
+            },
+            options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                    callback:(value)=>value,
+                    max: Math.max(...water_share_results),
+                    min: Math.min(...water_share_results),
+                    stepSize: 1
+                }
+            }]
+        }
+    }
+        });
 
-  if ($chart.length) {
-      init($chart);
+    // Save to jQuery object
+
+    {#$chart.data('chart', chart);#}
+
   };
-    </script>
+
+    let valve_flow_results = {{ valve_flow_results|safe }};
+    const $valve_flow_chart = $('#chart-valve-dark');
+    function init_valve_flow($valve_flow_chart) {
+        const chart_share = new Chart($valve_flow_chart, {
+            type: 'line',
+            data:  {
+                labels: times,
+                datasets: [
+                    {% for valve in list_of_flow_meter_results %}
+                    {
+                        label: 'valve ID. {{ valve.id }}',
+                        data: {{ valve|safe }},
+                    },{% endfor %}
+                ]
+            },
+            options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                    callback:(value)=>value,
+                    max: Math.max(...valve_flow_results),
+                    min: Math.min(...valve_flow_results),
+                    stepSize: 1
+                }
+            }]
+        }
+    }
+        });
+
+    // Save to jQuery object
+
+    {#$chart.data('chart', chart);#}
+
+  };
+
+    let energy_level_results = {{ energy_level_results|safe }};
+    const $energy_level_chart = $('#chart-energy-level-dark');
+    function init_energy_level($energy_level_chart) {
+        const chart_share = new Chart($energy_level_chart, {
+            type: 'line',
+            data:  {
+                labels: times,
+                datasets: [
+                    {% for waterpump in list_of_energy_level_results %}
+                    {
+                        label: 'Water Pump ID. {{ waterpump.id }}',
+                        data: {{ waterpump|safe }},
+                        borderColor: [
+                            'rgba(75, 192, 192,1)',
+                            'rgba(175, 105, 192,1)',
+                            'rgba(60, 200, 102,1)',
+                        ]
+                    },
+                    {% endfor %}
+                    ]
+            },
+            options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                    callback:(value)=>value,
+                    max: Math.max(...energy_level_results),
+                    min: Math.min(...energy_level_results),
+                    stepSize: 1
+                }
+            }]
+        }
+    }
+        });
+
+    // Save to jQuery object
+
+    {#$chart.data('chart', chart);#}
+
+  };
+
+  {#  let water_share_results = {{ water_share_results|safe }};#}
+  {#  const $water_share_chart = $('#chart-watershare-dark');#}
+  {#  function init_water_share($water_share_chart) {#}
+  {#      const chart_share = new Chart($water_share_chart, {#}
+  {#          type: 'line',#}
+  {#          data:  {#}
+  {#              labels: times,#}
+  {#              datasets: [{#}
+  {#                label: 'watershare',#}
+  {#                data: water_share_results#}
+  {#              }]#}
+  {#          },#}
+  {#          options: {#}
+  {#          scales: {#}
+  {#              yAxes: [{#}
+  {#                  ticks: {#}
+  {#                  callback:(value)=>value,#}
+  {#                  max: Math.max(...water_share_results),#}
+  {#                  min: Math.min(...water_share_results),#}
+  {#                  stepSize: 1#}
+  {#              }#}
+  {#          }]#}
+  {#      }#}
+  {#  }#}
+  {#      });#}
+  {##}
+  {#  // Save to jQuery object#}
+  {##}
+    {#$chart.data('chart', chart);#}
+  {##}
+  {#;#}
+
+    // Events
+    //HUMIDITY LEVEL CHART
+    if ($chart.length) {
+          init($chart);
+    };
+
+
+    //WATER TANK CHART
+    if ($water_tank_chart.length) {
+          init_water_tank($water_tank_chart);
+    };
+
+
+    // WATER SHARE
+    if ($water_share_chart.length) {
+          init_water_share($water_share_chart);
+    };
+
+
+    // VALVE FLOW METER CHART
+    if ($valve_flow_chart.length) {
+          init_valve_flow($valve_flow_chart);
+    };
+
+
+    // ENERGY LEVEL CHART
+    if ($energy_level_chart.length) {
+          init_energy_level($energy_level_chart);
+    };
+</script>
+
+
+<!--  ICONS ON MAP SCRIPT  -->
 <script>
 $(document).ready(function(){
         $.ajax({
@@ -984,11 +1556,10 @@ function Pass(data) {
 }
 </script>
 
+
 <script>
    $(document).ready(function(){
     var data = [];
-
-
     $.ajax({
         url: "{% url 'mydata_sensor'%}",
         method: 'GET',
@@ -1046,16 +1617,33 @@ function Pass(data) {
     });
 });
 
+
     function initMap(data) {
         map = new OpenLayers.Map("viewDiv");
-        map.addLayer(new OpenLayers.Layer.OSM());
+
+        var Navigation = new OpenLayers.Control.Navigation({
+            'zoomWheelEnabled': false,
+            'defaultDblClick': function ( event ) {
+            return;
+            }
+        });
+
+        map.addControl(Navigation);
+
+        var NavigationControls = map.getControlsByClass('OpenLayers.Control.Navigation')
+          , i;
+
+        for ( i = 0; i < NavigationControls.length; i++ ) {
+            NavigationControls[i].disableZoomWheel();
+        }
+
+        map.addLayer(new OpenLayers.Layer.OSM);
 
         var markers = new OpenLayers.Layer.Markers("Markers");
         map.addLayer(markers);
-
         var markersArray = data;
-        console.log("markersArray")
-        console.log(markersArray)
+        {#console.log("markersArray")#}
+        {#console.log(markersArray)#}
         for (var i = 0; i < markersArray.length; i++) {
             var lonLat = new OpenLayers.LonLat(markersArray[i].longitude, markersArray[i].latitude)
                 .transform(
@@ -1080,13 +1668,14 @@ function Pass(data) {
             }
 
         }
-        var lonLatcenter = new OpenLayers.LonLat(36.2384, 30.5852)
+        var lonLatcenter = new OpenLayers.LonLat({{user.farm.longitude}}, {{user.farm.latitude}})
             .transform(
                 new OpenLayers.Projection("EPSG:4326"),
                 map.getProjectionObject()
             );
-        var zoom = 7;
+        var zoom = 10;
         map.setCenter(lonLatcenter, zoom);
+
     }
     </script>
 {#<script>#}
@@ -1149,7 +1738,7 @@ function Pass(data) {
 {#            initMap(data);#}
 {#        }#}
 {#    });#}
-{#});#}
+{#);#}
 {#    function initMap(data) {#}
 {#    // define icons for each group#}
 {#    var icons = {#}
@@ -1196,131 +1785,163 @@ function Pass(data) {
 {#    map.setCenter(lonLatcenter, zoom);#}
 {#}#}
 {#    </script>#}
-    <script>
-
-
-
-	    let time = {{ time|safe }};
-        console.log(time);// which listtt ?go to view
-
-        let result = {{ water_tank_results|safe }};
-        console.log(result);
-
-	const $barchart = $('#chart-bar');
-
-
-	//
-	// Methods
-	//
-
-	// Init chart
-  function init($barchart) {
-        const chart = new Chart($barchart, {
-            type: 'bar',
-            data:  {
-                labels: time,
-                datasets: [{
-                  label: 'level',
-                  data: result
-                }]
-            },
-            options: {
-    scales: {
-        yAxes: [{
-
-            ticks: {
-                  callback:(value)=>value,
-                max: Math.max(...result),
-                min: Math.min(0),
-                stepSize: 1
-            }
-        }]
-    }
-}
-
-
-
-        });
-
-    // Save to jQuery object
-
-    $barchart.data('chart', chart);
-
-  };
-
-
-  // Events
-
-  if ($barchart.length) {
-      init($barchart);
-  };
-    </script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
     <script type="text/javascript" src="static/assets/js/leaflet/leaflet-src.js"></script>
     <script type="text/javascript" src="static/assets/js/leaflet-owm.js"></script>
     <script type="text/javascript" src="static/assets/js/iconLayer.js"></script>
+
+    <!--    POLYGONS MAP SCRIPTS    -->
     <script>
-        var providers = {};
 
-        providers['OSM'] = {
-            title: 'OSM',
-            icon: 'static/assets/img/layers-osm.png',
-            layer: L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-                maxZoom: 18,
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            })
-        };
+    var raster;
+    var source;
+    var vector;
+    var borderMap;
+    var typeSelect;
+    var draw;
+    var features = new ol.Collection();
+    var format = new ol.format.WKT();
+    var current_shape = "point";
 
-    </script>
-    <script>
-        var map = L.map('map').setView([30.5852 , 36.2384], 5);
+    var fill = new ol.style.Fill({
+      color: 'rgba(210, 122, 167,0.2)'
+    });
 
+    var stroke = new ol.style.Stroke({
+      color: '#B40404',
+      width: 2
+    });
 
-        //http://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=d9cfe451d5a775abaf178aec4951b4b0
+    var styles = [
+        new ol.style.Style({
+            image: new ol.style.Circle({
+                fill: fill,
+                stroke: stroke,
+                radius: 5
+            }),
+            fill: fill,
+            stroke: stroke
+        })
+    ];
 
-        var Temp = L.tileLayer('http://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=d22d9a6a3ff2aa523d5917bbccc89211', {
-            maxZoom: 18,
-            attribution: '&copy; <a href="http://owm.io">VANE</a>',
-            id: 'temp'
-        }),
+    /**
+    * Let user change the geometry type.
+    * @param {Event} e Change event.
+    */
+    function createVector() {
+        vector = new ol.layer.Vector({
+            source: new ol.source.Vector({ features: features }),
+            style: styles
+        });
+    }
 
-        Precipitation = L.tileLayer('http://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=d22d9a6a3ff2aa523d5917bbccc89211', {
-            maxZoom: 18,
-            attribution: '&copy; <a href="http://owm.io">VANE</a>'
-        }),
+    function toEPSG4326(element, index, array) {
+      element = element.getGeometry().transform('EPSG:3857', 'EPSG:4326');
+    }
 
-        Wind = L.tileLayer('http://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=d22d9a6a3ff2aa523d5917bbccc89211', {
-            maxZoom: 18,
-            attribution: '&copy; <a href="http://owm.io">VANE</a>'
-        }),
+    function toEPSG3857(element, index, array) {
+      element = element.getGeometry().transform('EPSG:4326', 'EPSG:3857');
+    }
 
-        Pressure = L.tileLayer('http://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=d22d9a6a3ff2aa523d5917bbccc89211', {
-            maxZoom: 18,
-            attribution: '&copy; <a href="http://owm.io">VANE</a>'
-        }),
+    function selectGeom(shape) {
+      current_shape = shape;
+      borderMap.removeInteraction(draw);
+    }
 
-
-        Clouds = L.tileLayer('http://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=d22d9a6a3ff2aa523d5917bbccc89211', {
-            maxZoom: 18,
-            attribution: '&copy; <a href="http://owm.io">VANE</a>'
+    function initBorderMap() {
+        // document.getElementById("missing_wkt").style.display = "block";
+        createVector();
+        raster = new ol.layer.Tile({
+            source: new ol.source.OSM()
         });
 
-        var owm = new L.OWMLayer({key: 'b1b15e88fa797225412429c1c50c122a1'});
-        map.addLayer(owm);
+        features.on("add", function (e) {
+            restoreDefaultColors();
+            features.forEach(toEPSG4326);
+            document.getElementById('wktStringTextArea').value = format.writeFeatures(features.getArray(), { rightHanded: true });
+            features.forEach(toEPSG3857);
+        });
 
-        Temp.addTo(map);
+        borderMap = new ol.Map({
+            layers: [raster, vector],
+            target: 'borderDiv',
+            view: new ol.View({
+                center: [
+                41000{{ user.farm.latitude }},
+                37000{{ user.farm.longitude }},
+            ],
+            zoom: 8
+            })
+        });
 
-        var overlays = {"Temperature": Temp, "Precipitation": Precipitation, "Clouds": Clouds, "Pressure": Pressure, "Wind": Wind};
-        L.control.layers(overlays, null, {collapsed:false}).addTo(map);
+        if (window.location && window.location.hash) {
+            loadWKTfromURIFragment(window.location.hash);
+        }
+        plotWKT();
+        selectGeom('Polygon');
+        }
 
-        var layers = [];
-            for (var providerId in providers) {
-                layers.push(providers[providerId]);
-            }
+    function restoreDefaultColors() {
+      document.getElementById("wktStringTextArea").style.borderColor = "";
+      document.getElementById("wktStringTextArea").style.backgroundColor = "";
+    };
 
-        L.control.iconLayers(layers).addTo(map);
-    </script>
+    // Plot wkt string on map
+    function plotWKT() {
+        var new_feature = "{{ user.farm.polygon }}";
+
+        wkt_string = "{{ user.farm.polygon }}";
+        if (wkt_string == "") {
+            document.getElementById("wktStringTextArea").style.borderColor = "red";
+            document.getElementById("wktStringTextArea").style.backgroundColor = "#F7E8F3";
+            return;
+        } else {
+            try {
+                new_feature = format.readFeature(wkt_string);
+            } catch (err) { }
+        }
+        console.log(new_feature)
+        if (!new_feature) {
+            document.getElementById("wktStringTextArea").style.borderColor = "red";
+            document.getElementById("wktStringTextArea").style.backgroundColor = "#F7E8F3";
+            return;
+        } else {
+            borderMap.removeLayer(vector);
+            features.clear();
+            new_feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');
+            features.push(new_feature);
+        }
+        vector = new ol.layer.Vector({
+            source: new ol.source.Vector({ features: features }),
+            style: styles
+        });
+
+      selectGeom(current_shape);
+      borderMap.addLayer(vector);
+      derived_feature = features.getArray()[0];
+      extent = derived_feature.getGeometry().getExtent();
+      minx = derived_feature.getGeometry().getExtent()[0];
+      miny = derived_feature.getGeometry().getExtent()[1];
+      maxx = derived_feature.getGeometry().getExtent()[2];
+      maxy = derived_feature.getGeometry().getExtent()[3];
+      centerx = (minx + maxx) / 2;
+      centery = (miny + maxy) / 2;
+      borderMap.setView(new ol.View({
+        center: [{{ user.farm.longitude }}, {{ user.farm.latitude }}],
+        zoom: 8
+      }));
+      borderMap.getView().fit(extent, borderMap.getSize());
+    }
+
+
+    function loadWKTfromURIFragment(fragment) {
+      // remove first character from fragment as it contains '#'
+      var wkt = window.location.hash.slice(1);
+      document.getElementById("wktStringTextArea").value = decodeURI(wkt);
+    }
+    initBorderMap();
+</script>
 
 {% endblock javascripts %}
 Footer

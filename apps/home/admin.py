@@ -13,6 +13,8 @@ from .models import WaterShare
 from .models import WeatherStation
 from .models import PacketResult
 from .models import Title
+from .models import User
+from .models import Farm
 from django.contrib.auth.models import Group
 
 
@@ -90,3 +92,5 @@ admin.site.register(WaterShare)
 admin.site.register(WeatherStation, WeatherStationAdmin)
 admin.site.register(PacketResult)
 admin.site.register(Title)
+admin.site.register(User)
+admin.site.register(Farm)

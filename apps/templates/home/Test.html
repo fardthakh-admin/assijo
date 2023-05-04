@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>OpenWeatherMap Example</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        // Replace with your own OpenWeatherMap API key
+        var apiKey = "17c1bc4ea3ccda00ff89e17d159d7e84";
+        // Replace with the name of the city you want to get the weather for
+        var city = "New York";
+        // Make a request to the OpenWeatherMap API
+        $.get("https://api.openweathermap.org/data/2.5/weather", {
+          q: city,
+          appid: apiKey,
+          units: "metric"
+        }).done(function(data) {
+          // Update the page with the current weather conditions
+          var weather = data.weather[0].description;
+          var temperature = data.main.temp;
+          var humidity = data.main.humidity;
+          var windSpeed = data.wind.speed;
+          $("#city").text(city);
+          $("#weather").text(weather);
+          $("#temperature").text(temperature + " °C");
+          $("#humidity").text(humidity + "%");
+          $("#windSpeed").text(windSpeed + " m/s");
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+          // Display an error message if the request fails
+          $("#error").text("Failed to get weather data: " + textStatus);
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Current Weather Conditions for <span id="city"></span></h1>
+    <ul>
+      <li><strong>Weather:</strong> <span id="weather"></span></li>
+      <li><strong>Temperature:</strong> <span id="temperature"></span></li>
+      <li><strong>Humidity:</strong> <span id="humidity"></span></li>
+      <li><strong>Wind Speed:</strong> <span id="windSpeed"></span></li>
+    </ul>
+    <div id="error"></div>
+<div id="weather_widget">Reeeeeeeem</div>
+    <div id="map">
+  <iframe src="https://maps.openweathermap.org/maps/2.0/weather/1h/WNDUV/{z}/{x}/{y}?date=1527811099&appid=17c1bc4ea3ccda00ff89e17d159d7e84" width="100%" height="600"></iframe>
+</div>
+
+<script>
+function weather_widget() {
+  var api_key = '17c1bc4ea3ccda00ff89e17d159d7e84';
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'http://api.openweathermap.org/data/2.5/weather?q=Montreal&mode=html&appid=' + api_key, true);
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      document.getElementById('weather_widget').innerHTML = xhr.responseText;
+    } else {
+      console.log('Request failed.  Returned status of ' + xhr.status);
+    }
+  };
+  xhr.send();
+}
+weather_widget();
+</script>
+
+  </body>
+</html>

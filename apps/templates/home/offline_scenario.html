@@ -6,8 +6,7 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-    <link rel="stylesheet" href="https://js.arcgis.com/4.9/esri/css/main.css"/>
-    <script src="https://js.arcgis.com/4.9/"></script>
+
     <style>
 .main-content{
     overflow-x: hidden;
@@ -29,52 +28,7 @@
     }
     </style>
 
-    <script>
-        require([
-                "esri/Map",
-                "esri/views/MapView",
-                "esri/widgets/BasemapGallery",
-                "esri/widgets/Expand",
-                "esri/widgets/Search"
-            ],
 
-            function (Map, MapView, BasemapGallery, Expand, Search) {
-                var map = new Map({
-                    basemap: "topo",
-                });
-
-                var view = new MapView({
-                    container: "viewDiv",
-                    center: [35.94503, 31.955219],
-                    zoom: 6,
-                    map: map
-                });
-
-                var basemapGallery = new BasemapGallery({
-                    view: view,
-                    source: {
-                        portal: {
-                            url: "https://www.arcgis.com",
-                        }
-                    }
-                });
-
-                var search = new Search({
-                    view: view
-                });
-
-                var searchExpand = new Expand({
-                    content: search
-                })
-
-                var baseMapExpand = new Expand({content: basemapGallery});
-                view.ui.add(baseMapExpand, "top-left");
-                view.ui.add(searchExpand, "top-right");
-
-
-            });
-
-    </script>
     <!-- Header -->
 
     <div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
@@ -83,6 +37,8 @@
         <div style="align-items: center">
         <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 <div class="container">
+
+
 <div class="row flex-lg-nowrap">
   <div class="col-12 col-lg-auto mb-3" style="width: 200px;">
     <div >
@@ -91,6 +47,13 @@
       </div>
     </div>
   </div>
+
+
+
+
+
+
+
 
   <div class="col">
     <div class="e-tabs px-3">

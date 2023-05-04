@@ -3,16 +3,47 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
+
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
 
 # Create your models here.
+class Farm(models.Model):
+    '''
+    a farm can have many users
+    a farm can have many trees
+    a farm can have many sensors
+    a farm can have many valves
+    a farm can have many watertanks
+    a farm can have many waterpumps
+    a farm can have many offline scenarios
+    a farm can have one weather station
+    a farm can have one gateway
+    a farm has longitude and latitude
+    '''
+
+    farmName = models.CharField(max_length = 200, default = "MyFarm")
+    owner = models.IntegerField()
+    latitude = models.CharField(max_length=200, blank=True, null=True)
+    longitude = models.CharField(max_length=200, blank=True, null=True)
+    polygon = models.TextField(default="", blank=True)
+    def __str__(self):
+        return self.farmName
+
+class User(AbstractUser):
+    farm = models.ForeignKey(Farm, on_delete=models.SET_NULL, null=True)
+    def __str__(self):
+        return self.username
+
 class Title(models.Model):
     title = models.CharField(max_length=60)
+    def __str__(self):
+        return self.title
 
 
 class Sensor(models.Model):
+    farm = models.ForeignKey(Farm, on_delete=models.SET_NULL, null=True)
     location = models.CharField(max_length=30)
     type = models.CharField(max_length=30)
     category = models.CharField(max_length=30)
@@ -23,19 +54,21 @@ class Sensor(models.Model):
 
 
 class Valve(models.Model):
+    farm = models.ForeignKey(Farm, on_delete=models.SET_NULL, null=True)
     location = models.CharField(max_length=40)
     type = models.CharField(max_length=30)
     state = models.CharField(max_length=30)
     latitude = models.CharField(max_length=200, blank=True, null=True)
     longitude = models.CharField(max_length=200, blank=True, null=True)
-    #
-    # def __str__(self):
-    #     return "%s %s" % (self.id, self.type, self.location)
+
+    def __int__(self):
+         return self.id
 
 
 class WaterTank(models.Model):
-    water_level = models.CharField(max_length=40)
-    water_capacity = models.CharField(max_length=40, blank=True, null=True)
+    farm = models.ForeignKey(Farm, on_delete=models.SET_NULL, null=True)
+    water_level = models.FloatField(default = 0.0)
+    water_capacity = models.FloatField(default = 100.0)
     location = models.CharField(max_length=40, blank=True, null=True)
     latitude = models.CharField(max_length=200, blank=True, null=True)
     longitude = models.CharField(max_length=200, blank=True, null=True)
@@ -44,6 +77,7 @@ class WaterTank(models.Model):
 
 
 class WaterPump(models.Model):
+    farm = models.ForeignKey(Farm, on_delete=models.SET_NULL, null=True)
     location = models.CharField(max_length=40)
     state = models.CharField(max_length=30)
     latitude = models.CharField(max_length=200, blank=True, null=True)
@@ -79,7 +113,7 @@ class Result(models.Model):
         try:
             return "sensor {}".format(str(self.sensor.pk))
         except:
-            return 'no sesnsors'
+            return 'no sensors'
 
 
 class StringResult(models.Model):
@@ -95,10 +129,11 @@ class StringResult(models.Model):
         try:
             return str(self.sensors.pk)
         except:
-            return 'no sesnsors'
+            return 'no sensors'
 
 
 class OfflineScenario(models.Model):
+    farm = models.ForeignKey(Farm, on_delete=models.SET_NULL, null=True)
     target_parameter = models.CharField(max_length=100)
     condition = models.CharField(max_length=40)
     action = models.CharField(max_length=30)
@@ -113,6 +148,7 @@ class OfflineScenario(models.Model):
 
 
 class Gateway(models.Model):
+    farm = models.OneToOneField(Farm, null=True, on_delete=models.SET_NULL)
     list_filter = ()
     location = models.CharField(max_length=100)
     state = models.CharField(max_length=30)
@@ -124,6 +160,7 @@ class Gateway(models.Model):
 
 
 class Tree(models.Model):
+    farm = models.ForeignKey(Farm, on_delete=models.SET_NULL, null=True)
     location = models.CharField(max_length=100)
     type = models.CharField(max_length=30)
     time = models.CharField(max_length=30)
@@ -151,6 +188,7 @@ class WeatherStation(models.Model):
     """
     takes the result as a forgin key from the packet result
     """
+    farm = models.OneToOneField(Farm, null=True, on_delete=models.SET_NULL)
     packet = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
     latitude = models.CharField(max_length=200, blank=True, null=True)

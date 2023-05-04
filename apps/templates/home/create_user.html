@@ -1,0 +1,188 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Dashboard {% endblock title %}
+{% load static %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block content %}
+    <script src="https://openlayers.org/api/OpenLayers.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<link rel="stylesheet" href="https://js.arcgis.com/4.9/esri/css/main.css"/>
+<script src="https://js.arcgis.com/4.9/"></script>
+<style>
+.main-content{
+overflow-x: hidden;
+}
+
+#map {
+        width: 100%;
+        height: 500px;
+        border-radius: 10px;
+    }
+#viewDiv{
+    height: 350px;
+    font-size: 20px;
+    font-weight: bolder;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #2c2c2cfb;
+    background-color: rgb(255, 255, 255);
+    text-align: center;
+}
+</style>
+
+<!-- Header -->
+
+<!-- User Form Modal -->
+<div class="modal-fade" role="dialog" tabindex="-1" id="user-form-modal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+
+      <div class="modal-body">
+        <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+
+          <div class="card bg-secondary shadow border-0">
+            <div class="card-header bg-transparent pb-5">
+              <div class="text-muted text-center mt-2 mb-4">
+                Creat User For Farm
+              </div>
+            </div>
+            <div class="card-body px-lg-5 py-lg-5">
+              <div class="text-center text-muted mb-4">
+
+                {% if msg %}
+                  <small>{{ msg | safe }}</small>
+                {% else %}
+                  Add your credentials
+                {% endif %}
+
+              </div>
+
+              {% if not success %}
+
+                <form method="POST">
+                  {% csrf_token %}
+                  <div class="form-group">
+                    <div class="input-group input-group-alternative mb-3">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                      </div>
+                      {{ form.username }}
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="input-group input-group-alternative mb-3">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="ni ni-email-83"></i></span>
+                      </div>
+                      {{ form.email }}
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="input-group input-group-alternative">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                      </div>
+                      {{ form.password1 }}
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="input-group input-group-alternative">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                      </div>
+                      {{ form.password2 }}
+                    </div>
+                  </div>
+
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-primary mt-4">Create account</button>
+                  </div>
+                </form>
+
+              {% endif %}
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <!-- Card stats -->
+
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+<script>
+function DeleteSensor(id){
+        console.log(id)
+
+if(confirm('Are you sure you want to delete this item?')){
+     let formdata = new FormData();
+    formdata.append("id", id);
+
+    let requestOptions = {
+      method: 'DELETE',
+      body: formdata,
+      redirect: 'follow'
+    };
+
+    fetch("/api/delete/sensor/", requestOptions)
+      .then(response => response.text())
+      .then(result => console.log(result))
+      .then(result => location.reload())
+      .catch(error => console.log('error', error));
+}
+
+}
+
+function EditSensor(id){
+    let location_input = document.getElementById('location')
+    let type_input = document.getElementById('type')
+    let category_input = document.getElementById('category')
+    let sensor_id_input = document.getElementById('sensor-form-id')
+    let operation = document.getElementById('operation')
+    let latitude = document.getElementById('latitude')
+    let longitude = document.getElementById('longitude')
+    let sensor = document.getElementById(`sensor-${id}`)
+
+    location_input.value = sensor.dataset.location
+    type_input.value = sensor.dataset.type
+    category_input.value = sensor.dataset.category
+    latitude.value = sensor.dataset.latitude
+    longitude.value = sensor.dataset.longitude
+    sensor_id_input.value = id
+    operation.value = 'edit'
+
+}
+function AddUser(){
+    let location_input = document.getElementById('location')
+    let type_input = document.getElementById('type')
+    let category_input = document.getElementById('category')
+    let latitude = document.getElementById('latitude')
+    let longitude = document.getElementById('longitude')
+    let operation = document.getElementById('operation')
+
+    location_input.value = ''
+    type_input.value = ''
+    category_input.value = ''
+    latitude.value = ''
+    longitude.value = ''
+    operation.value = 'add'
+
+}
+</script>
+<script src="/static/assets/vendor/clipboard/dist/clipboard.min.js"></script>
+
+{% endblock javascripts %}

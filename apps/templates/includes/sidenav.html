@@ -9,6 +9,9 @@
       <div class="collapse navbar-collapse" id="sidenav-collapse-main">
         <!-- Nav items -->
         <ul class="navbar-nav">
+        {% if user.farm == null %}
+
+        {% else %}
         <li class="nav-item">
             <a class="nav-link {% if 'index' in segment %} active {% endif %}" href="/">
               <i class="ni ni-tv-2 text-primary"></i>
@@ -46,6 +49,14 @@
               <span class="nav-link-text">Trees</span>
             </a>
           </li>
+          {% if request.user.id == user.farm.owner %}
+          <li class="nav-item">
+            <a class="nav-link {% if 'users' in segment %} active {% endif %}" href="{% url 'users' %}">
+              <i class="fa fa-user-circle" aria-hidden="true"></i>
+              <span class="nav-link-text">users</span>
+            </a>
+          </li>
+          {% endif %}
           <li class="nav-item">
             <a class="nav-link {% if 'weather_station' in segment %} active {% endif %}" href="{% url 'weather_station' %}">
               <i class="fa fa-thermometer-three-quarters" aria-hidden="true"></i>
@@ -58,11 +69,7 @@
               <span class="nav-link-text">Offline Scenarios</span>
             </a>
           </li>
-
-
-
-
-
+            {% endif %}
 
 
           <li class="nav-item">

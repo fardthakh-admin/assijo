@@ -20,59 +20,221 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import routers,  viewsets
+from django.core import serializers
+from django.db.models import Q
+import numpy as np
+import datetime
 
-from .models import Sensor, Valve, Tree, WaterPump, WaterTank, WeatherStation, Title, Result, OfflineScenario
-
+from .models import Sensor, \
+    Valve, \
+    Tree, \
+    WaterPump, \
+    WaterTank, \
+    WeatherStation, \
+    Title, \
+    Result, \
+    OfflineScenario, \
+    Farm, \
+    User, \
+    WaterShare, \
+    EnergyLevel
+from . customuserform import CustomUserCreationForm
 
 
 @login_required(login_url="/login/")
 def index(request):
-    results = Result.objects.filter(sensor__type='humidity').values('number', 'timestamp')
+    user = User.objects.get(id=request.user.id)
+    sensors = Sensor.objects.filter(farm_id=user.farm)
+    weather = WeatherStation.objects.filter(farm_id=user.farm)
+    valves = Valve.objects.filter(farm_id=user.farm)
+    waterpumps = WaterPump.objects.filter(farm_id=user.farm)
+    waterlevel = WaterTank.objects.filter(farm_id=user.farm)
+    trees = Tree.objects.filter(farm_id=user.farm)
+
+    #edit this query to get all sensors of type humidity
+    start_date = request.GET.get('start_date') if request.GET.get('start_date') != '' else datetime.datetime.today() - datetime.timedelta(days=30)
+    end_date = request.GET.get('end_date') if request.GET.get('end_date') != '' else datetime.datetime.today()
+    if start_date is None:
+        start_date = datetime.datetime.today() - datetime.timedelta(days=30)
+    if end_date is None:
+        end_date = datetime.datetime.today()
+    humidity_results = Result.objects.filter(sensor__type='humidity', sensor__farm = user.farm, timestamp__range = (start_date, end_date)).order_by('timestamp').values('number', 'timestamp')
+    print(humidity_results)
     times = []
     sensor_results = []
-    result_lists = [[result['timestamp'], result['number']] for result in results]
+    result_lists = [[result['timestamp'], result['number']] for result in humidity_results]
 
-    wresults = Result.objects.values('number', 'timestamp')
-    time = []
-    water_tank_results = []
-    result_list = [[result['timestamp'], result['number']] for result in results]
-
-    for result in results:
+    for result in humidity_results:
         times.append(result['timestamp'].strftime('%Y-%m-%d'))
         sensor_results.append(result['number'])
 
-    for result in wresults:
-        time.append(result['timestamp'].strftime('%Y-%m-%d'))
+    humidity_sensors = Sensor.objects.filter(farm_id = user.farm, type = 'humidity')
+    list_of_humidity_results = []
+
+    times2 = np.unique(times)
+    times2 = list(times2)
+
+
+    print("start date:")
+    print(start_date)
+    print("end date:")
+    print(end_date)
+    print("times array:")
+    print(times)
+    print("times 2 array:")
+    print(times2)
+    for sensor in humidity_sensors:
+        # query to get number results by sensor ID
+        # humidity_sensors_results = serializers.serialize("json", list(Result.objects.filter(sensor__id = sensor.id)), fields = ("number"))
+        humidity_sensors_results = list(Result.objects.filter(sensor__id = sensor.id).values_list('number', flat=True))
+        list_of_humidity_results.append(humidity_sensors_results)
+        #list_of_results.append(results list for each sensor)
+
+
+    ###   WATER TANK   ###
+    water_reading_results = Result.objects.values('number', 'timestamp')
+    water_time = []
+    water_tank_results = []
+    result_list = [[result['timestamp'], result['number']] for result in water_reading_results]
+
+    for result in water_reading_results:
+        water_time.append(result['timestamp'].strftime('%Y-%m-%d'))
         water_tank_results.append(result['number'])
+    ###   END WATER TANK   ###
 
-    sensors = Sensor.objects.all()
-    weather = WeatherStation.objects.last()
-    valve = Valve.objects.last()
-    waterpump = WaterPump.objects.last()
-    waterlevel = WaterTank.objects.last()
 
-    trees = Tree.objects.all()
-    context = {'results': result_lists,
-               'times': times,
-               'sensor_results': sensor_results,
-               'sensors': sensors,
-               'trees': trees,
-               'weather': weather,
-               'valve': valve,
-               'waterlevel': waterlevel,
-               'waterpump': waterpump,
-               'result': result_list,
-               'time': time,
-               'water_tank_results': water_tank_results,
-               }
+    ###   WATER SHARE   ###
+    water_share_reading_results = WaterShare.objects.values('number', 'timestamp')
+    water_share_time = []
+    water_share_results = []
+    water_share_result_list = [[result['timestamp'], result['number']] for result in water_share_reading_results]
+
+    for result in water_share_reading_results:
+        water_share_time.append(result['timestamp'])
+        water_share_results.append(result['number'])
+
+
+    list_of_watershare_results = []
+
+    for tree in trees:
+        watershare_results = list(WaterShare.objects.filter(tree__id=tree.id).values_list('number', flat=True))
+        list_of_watershare_results.append(watershare_results)
+    ###   END WATER SHARE   ###
+
+
+    ###   VALVE FLOW METER   ###
+    valve_flow_reading_results = Result.objects.filter(valve__type='flowmeter', valve__farm = user.farm).values('number', 'timestamp')
+
+    valve_flow_time = []
+    valve_flow_results = []
+    valve_flow_result_lists = [[result['timestamp'], result['number']] for result in valve_flow_reading_results]
+
+    for result in valve_flow_reading_results:
+        valve_flow_time.append(result['timestamp'].strftime('%Y-%m-%d'))
+        valve_flow_results.append(result['number'])
+
+    valve_flow_meter = Valve.objects.filter(farm_id=user.farm, type='flowmeter')
+    list_of_flow_meter_results = []
+
+    for valve in valve_flow_meter:
+        flow_meter_results = list(Result.objects.filter(valve__id = valve.id).values_list('number', flat=True))
+        list_of_flow_meter_results.append(flow_meter_results)
+    ###   END VALVE FLOW METER   ###
+
+
+    ###   ENERGY LEVEL   ###
+    energy_level_reading_results = EnergyLevel.objects.values('energy_result')
+    energy_level_results = []
+    energy_level_result_list = [[ result['energy_result']] for result in energy_level_reading_results]
+
+    for result in energy_level_reading_results:
+        energy_level_results.append(result['energy_result'])
+
+    list_of_energy_level_results = []
+
+    for pump in waterpumps:
+        pump_energy_level_results = list(EnergyLevel.objects.filter(water_pump__id = pump.id).values_list('energy_result', flat=True))
+        list_of_energy_level_results.append(pump_energy_level_results)
+    ###   END ENERGY LEVEL   ###
+
+    context = {
+        'user': user,
+        'results': result_lists,
+        'times': times,
+        'times2':times2,
+        'sensor_results': sensor_results,
+        'sensors': sensors,
+        'trees': trees,
+        'weather': weather,
+        'valves': valves,
+        'waterlevel': waterlevel,
+        'waterpumps': waterpumps,
+        'result': result_list,
+        'time': water_time,
+
+
+        'water_tank_results': water_tank_results,
+        'water_share_results': water_share_results,
+        'water_share_result_list': water_share_result_list,
+        'energy_level_results': energy_level_results,
+        'energy_level_result_list': energy_level_result_list,
+        'valve_flow_results' : valve_flow_results,
+        'valve_flow_result_lists': valve_flow_result_lists,
+        'humidity_sensors': humidity_sensors,
+
+
+        'list_of_humidity_results': list_of_humidity_results,
+        'list_of_flow_meter_results': list_of_flow_meter_results,
+        'list_of_watershare_results': list_of_watershare_results,
+        'list_of_energy_level_results': list_of_energy_level_results,
+       }
 
     html_template = loader.get_template('home/index.html')
     return HttpResponse(html_template.render(context, request))
 
+def create_farm(request):
+    user = User.objects.get(id = request.user.id)
+    if user.farm is None:
+        farm_name = request.POST.get('farm_name')
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
+        if request.method == "POST":
+            farm_object = Farm.objects.create(
+                owner = request.user.id,
+                farmName = farm_name,
+                latitude = latitude,
+                longitude = longitude,
+            )
+            user.farm = farm_object
+            user.save()
+            return redirect('create_farm_borders')
+    else:
+        return redirect('create_farm_borders')
+
+    return render(request, 'home/create_farm.html')
+
+def create_farm_borders(request):
+    user = User.objects.get(id = request.user.id)
+    farm = Farm.objects.get(id = user.farm_id)
+    if user.farm.polygon == "":
+        polygon = request.POST.get('wktStringTextArea')
+        if request.method == "POST":
+            if polygon:
+                farm.polygon = polygon
+
+            farm.save()
+            return redirect('home')
+    else:
+        return redirect('home')
+
+    context = {
+        'user': user,
+    }
+    return render(request, 'home/create_farm_borders.html', context)
+
 def weather_station(request):
-    weather = WeatherStation.objects.last()
-    print("I am called")
-    print(weather)
+    user = User.objects.get(id = request.user.id)
+    weather = WeatherStation.objects.get(farm_id = user.farm)
     context = {
                'weather': weather,
                }
@@ -84,7 +246,6 @@ def pages(request):
     # All resource paths end in .html.
     # Pick out the html file name from the url. And load that template.
     try:
-
         load_template = request.path.split('/')[-1]
 
         if load_template == 'admin':
@@ -164,14 +325,43 @@ def title_view(request):
 
     return render(request, 'layouts/base-fullscreen.html', context={'list': titles})
 
+@login_required(login_url="/login/")
+def users_view(request):
+    current_user = User.objects.get(id = request.user.id)
+    farm_owner =  User.objects.get (id = current_user.farm.owner)
+    if request.user.id != current_user.farm.owner:
+        return redirect('home')
+    users = User.objects.filter(farm_id = current_user.farm)
+    context = {'list': users , 'farm_owner': farm_owner}
+
+    return render(request, 'home/users.html', context)
+
+@login_required(login_url = '/login/')
+def create_users(request):
+    msg = None
+    success = False
+    if request.method == "POST":
+        form = CustomUserCreationForm()
+        if form.is_valid():
+            form.save()
+            return redirect("/users")
+        else:
+            msg = 'Form is not valid'
+    else:
+        form = CustomUserCreationForm()
+
+    context = {'msg':msg, 'success':success, 'form': form}
+    return render(request, 'home/create_user.html', context)
 
 @login_required(login_url="/login/")
 def sensor_view(request):
-    sensors = Sensor.objects.all()
+    user =  User.objects.get( id = request.user.id)
+    sensors = Sensor.objects.filter( farm_id = user.farm )
 
-    return render(request, 'home/Sensor.html', context={'list': sensors})
+    return render(request, 'home/Sensor.html', context={'sensors': sensors})
 
 def mydata_sensor(request):
+    user = User.objects.get(id=request.user.id)
     result_list = list(Sensor.objects \
                        .exclude(latitude__isnull=True) \
                        .exclude(longitude__isnull=True) \
@@ -183,11 +373,15 @@ def mydata_sensor(request):
                                'category',
                                'latitude',
                                'longitude',
-                               ))
+                               'farm',
+                               )\
+                       .filter(farm_id = user.farm)
+                       )
 
     return JsonResponse(result_list, safe=False)
 
 def mydata_valve(request):
+    user = User.objects.get(id=request.user.id)
     result_list = list(Valve.objects \
                        .exclude(latitude__isnull=True) \
                        .exclude(longitude__isnull=True) \
@@ -199,11 +393,14 @@ def mydata_valve(request):
                                'state',
                                'latitude',
                                'longitude',
-                               ))
+                               )\
+                       .filter(farm_id = user.farm)
+                       )
 
     return JsonResponse(result_list, safe=False)
 
 def mydata_waterpump(request):
+    user = User.objects.get(id=request.user.id)
     result_list = list(WaterPump.objects \
                        .exclude(latitude__isnull=True) \
                        .exclude(longitude__isnull=True) \
@@ -214,11 +411,15 @@ def mydata_waterpump(request):
                                'state',
                                'latitude',
                                'longitude',
-                               ))
+                               'farm',
+                               )\
+                       .filter(farm_id = user.farm)
+                       )
 
     return JsonResponse(result_list, safe=False)
 
 def mydata_watertank(request):
+    user = User.objects.get(id=request.user.id)
     result_list = list(WaterTank.objects \
                        .exclude(latitude__isnull=True) \
                        .exclude(longitude__isnull=True) \
@@ -230,28 +431,38 @@ def mydata_watertank(request):
                                'location',
                                'latitude',
                                'longitude',
-                               ))
+                               'farm',
+                       )\
+                       .filter( farm_id = user.farm )
+                       )
 
     return JsonResponse(result_list, safe=False)
 
 def mydata_Trees(request):
+    user = User.objects.get(id = request.user.id)
     result_list = list(Tree.objects \
-                       .exclude(latitude__isnull=True) \
-                       .exclude(longitude__isnull=True) \
-                       .exclude(latitude__exact='') \
-                       .exclude(longitude__exact='') \
-                       .values('id',
-                               'location',
-                               'type',
-                               'time',
-                               'state',
-                               'latitude',
-                               'longitude',
-                               ))
+        .exclude(latitude__isnull=True) \
+        .exclude(longitude__isnull=True) \
+        .exclude(latitude__exact='') \
+        .exclude(longitude__exact='') \
+        .values(
+            'id',
+            'location',
+            'type',
+            'time',
+            'state',
+            'latitude',
+            'longitude',
+            'farm',
+        ) \
+        .filter ( farm_id = user.farm)
+
+    )
 
     return JsonResponse(result_list, safe=False)
 
 def mydata_weatherstation(request):
+    user = User.objects.get( id = request.user.id )
     result_list = list(WeatherStation.objects \
                        .exclude(latitude__isnull=True) \
                        .exclude(longitude__isnull=True) \
@@ -262,7 +473,10 @@ def mydata_weatherstation(request):
                                'location',
                                'latitude',
                                'longitude',
-                               ))
+                               'farm',
+                               ) \
+                       .filter( farm_id = user.farm)
+                       )
 
     return JsonResponse(result_list, safe=False)
 
@@ -270,6 +484,7 @@ def mydata_weatherstation(request):
 class SensorOperation(APIView):
 
     def post(self, request):
+        user = User.objects.get(id = request.user.id)
         operation = request.POST.get('operation', None)
         location = request.POST.get('location', None)
         type = request.POST.get('type', None)
@@ -294,7 +509,14 @@ class SensorOperation(APIView):
 
         if operation == 'add':
             if location and category and type and latitude and longitude:
-                sensor = Sensor.objects.create(location=location, category=category, type=type, latitude=latitude, longitude=longitude)
+                sensor = Sensor.objects.create(
+                    location=location,
+                    category=category,
+                    type=type,
+                    latitude=latitude,
+                    longitude=longitude,
+                    farm = user.farm,
+                )
 
         # sensors = Sensor.objects.all()
         return redirect('/sensor')
@@ -302,14 +524,16 @@ class SensorOperation(APIView):
 
 @login_required(login_url="/login/")
 def valve_view(request):
-    valves = Valve.objects.all()
+    user = User.objects.get( id = request.user.id)
+    valves = Valve.objects.filter(farm_id = user.farm)
 
-    return render(request, 'home/valve.html', context={'list': valves})
+    return render(request, 'home/valve.html', context={'valves': valves})
 
 
 class ValveOperation(APIView):
 
     def post(self, request):
+        user = User.objects.get(id = request.user.id)
         operation = request.POST.get('operation', None)
         location = request.POST.get('location', None)
         type = request.POST.get('type', None)
@@ -334,7 +558,14 @@ class ValveOperation(APIView):
 
         if operation == 'add':
             if location and state and type and latitude and longitude:
-                valve = Valve.objects.create(location=location, state=state, type=type, latitude=latitude, longitude=longitude)
+                valve = Valve.objects.create(
+                    location=location,
+                    state=state,
+                    type=type,
+                    latitude=latitude,
+                    longitude=longitude,
+                    farm = user.farm
+                )
 
         # sensors = Sensor.objects.all()
         return redirect('/valve')
@@ -342,7 +573,8 @@ class ValveOperation(APIView):
 
 @login_required(login_url="/login/")
 def tree_view(request):
-    trees = Tree.objects.all()
+    user = User.objects.get( id = request.user.id )
+    trees = Tree.objects.filter( farm_id = user.farm )
 
     return render(request, 'home/Tree.html', context={'list': trees})
 
@@ -350,6 +582,7 @@ def tree_view(request):
 class TreeOperation(APIView):
 
     def post(self, request):
+        user = User.objects.get( id = request.user.id)
         operation = request.POST.get('operation', None)
         location = request.POST.get('location', None)
         type = request.POST.get('type', None)
@@ -377,7 +610,15 @@ class TreeOperation(APIView):
 
         if operation == 'add':
             if location and state and type and time and latitude and longitude:
-                tree = Tree.objects.create(location=location, state=state, type=type, time=time, latitude=latitude, longitude=longitude)
+                tree = Tree.objects.create(
+                    location=location,
+                    state=state,
+                    type=type,
+                    time=time,
+                    latitude=latitude,
+                    longitude=longitude,
+                    farm = user.farm,
+                )
 
         # sensors = Sensor.objects.all()
         return redirect('/tree')
@@ -385,9 +626,10 @@ class TreeOperation(APIView):
 
 @login_required(login_url="/login/")
 def water_pump_view(request):
-    water_pumps = WaterPump.objects.all()
+    user = User.objects.get( id = request.user.id )
+    water_pumps = WaterPump.objects.filter( farm_id = user.farm )
 
-    return render(request, 'home/water_pump.html', context={'list': water_pumps})
+    return render(request, 'home/water_pump.html', context={'water_pumps': water_pumps})
 
 
 #
@@ -395,6 +637,7 @@ def water_pump_view(request):
 class WaterPumpOperation(APIView):
 
     def post(self, request):
+        user = User.objects.get( id = request.user.id)
         operation = request.POST.get('operation', None)
         location = request.POST.get('location', None)
         state = request.POST.get('state', None)
@@ -416,7 +659,13 @@ class WaterPumpOperation(APIView):
 
         if operation == 'add':
             if location and state and latitude and longitude:
-                waterpump = WaterPump.objects.create(location=location, state=state, latitude=latitude, longitude=longitude)
+                waterpump = WaterPump.objects.create(
+                    location=location,
+                    state=state,
+                    latitude=latitude,
+                    longitude=longitude,
+                    farm = user.farm,
+                )
 
         # sensors = Sensor.objects.all()
         return redirect('/water_pump')
@@ -424,14 +673,16 @@ class WaterPumpOperation(APIView):
 
 @login_required(login_url="/login/")
 def water_tank_view(request):
-    water_tanks = WaterTank.objects.all()
+    user = User.objects.get( id = request.user.id )
+    water_tanks = WaterTank.objects.filter( farm_id = user.farm )
 
-    return render(request, 'home/water_tank.html', context={'list': water_tanks})
+    return render(request, 'home/water_tank.html', context={'water_tanks': water_tanks})
 
 
 class WaterTankOperation(APIView):
 
     def post(self, request):
+        user = User.objects.get( id = request.user.id )
         operation = request.POST.get('operation', None)
         location = request.POST.get('location', None)
         water_level = request.POST.get('water_level', None)
@@ -456,39 +707,51 @@ class WaterTankOperation(APIView):
 
         if operation == 'add':
             if location and water_level and water_capacity and latitude and longitude:
-                water_tank = WaterTank.objects.create(location=location, water_level=water_level, water_capacity=water_capacity, latitude=latitude,longitude=longitude)
+                water_tank = WaterTank.objects.create(
+                    location=location,
+                    water_level=water_level,
+                    water_capacity=water_capacity,
+                    latitude=latitude,
+                    longitude=longitude,
+                    farm = user.farm,
+                )
 
         return redirect('/water_tank')
 
 
 @login_required(login_url="/login/")
 def weather_station_view(request):
-    weather_station = WeatherStation.objects.all()
-    weather = WeatherStation.objects.last()
-    print("I am called")
-    print(weather)
-    context = {
-        'weather': weather,
-    }
-    return render(request, 'home/weather_station.html', context={'list': weather_station})
+    user = User.objects.get(id = request.user.id)
+    weather_station = WeatherStation.objects.get(farm_id = user.farm)
+    return render(request, 'home/weather_station.html', context={'weather_station': weather_station})
 
 
 class WeatherStationView(View):
-
     def get(self, request):
-        weather_station = WeatherStation.objects.all()
-        weather = WeatherStation.objects.last()
-        print("I am called")
-        print(weather)
+        user = User.objects.get(id=request.user.id)
+        weather_station = WeatherStation.objects.filter( farm_id = user.farm )
+        if weather_station:
+            weather_station = WeatherStation.objects.get( farm_id = user.farm )
+        else:
+            weather_station = {}
 
-        return render(request, 'home/weather_station.html', context={'list': weather_station , 'weather': weather})
+
+        return render(request, 'home/weather_station.html', context={'weather_station': weather_station })
 
     def post(self, request):
+        user = User.objects.get( id = request.user.id )
         location = request.POST.get('location')
         packet = request.POST.get('packet')
         latitude = request.POST.get('latitude', None)
         longitude = request.POST.get('longitude', None)
-        new_weather_station = WeatherStation.objects.create(location=location, packet=packet, latitude=latitude, longitude=longitude)
+        new_weather_station = WeatherStation.objects.create(
+            location=location,
+            packet=packet,
+            latitude=latitude,
+            longitude=longitude,
+            farm=user.farm,
+        )
+        WeatherStation.save()
 
         return HttpResponse(new_weather_station)
 
@@ -499,7 +762,6 @@ from django.utils.deprecation import MiddlewareMixin
 
 
 class DisableCsrfCheck(MiddlewareMixin):
-
     def process_request(self, req):
         attr = '_dont_enforce_csrf_checks'
         if not getattr(req, attr, False):
@@ -507,7 +769,6 @@ class DisableCsrfCheck(MiddlewareMixin):
 
 
 class WeatherStationAPI(APIView):
-
     def get_object(self, pk):
         try:
             return WeatherStation.objects.get(pk=pk)
@@ -535,13 +796,21 @@ class WeatherStationAPI(APIView):
         return Response(model_to_dict(weather_station))
 
     def post(self, request):
+        user = User.objects.get( id = request.user.id)
+
         location = request.data.get('location', None)
         packet = request.data.get('packet', None)
         latitude = request.POST.get('latitude', None)
         longitude = request.POST.get('longitude', None)
 
         if location and packet and latitude and longitude:
-            new_weather_station = WeatherStation.objects.create(location=location, packet=packet, latitude=latitude,longitude=longitude)
+            new_weather_station = WeatherStation.objects.create(
+                location=location,
+                packet=packet,
+                latitude=latitude,
+                longitude=longitude,
+                farm = user.farm,
+            )
             return Response(status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk):
@@ -551,12 +820,11 @@ class WeatherStationAPI(APIView):
 
 
 class DeleteSensor(APIView):
-
     def delete(self, request):
         id = request.POST.get('id', None)
         sensor = Sensor.objects.get(pk=id)
         sensor.delete()
-        return Response({'status': 'sucsses'})
+        return Response({'status': 'success'})
 
 
 class DeleteValve(APIView):
@@ -565,7 +833,7 @@ class DeleteValve(APIView):
         id = request.POST.get('id', None)
         valve = Valve.objects.get(pk=id)
         valve.delete()
-        return Response({'status': 'sucsses'})
+        return Response({'status': 'success'})
 
 
 class DeleteTree(APIView):
@@ -574,7 +842,7 @@ class DeleteTree(APIView):
         id = request.POST.get('id', None)
         tree = Tree.objects.get(pk=id)
         tree.delete()
-        return Response({'status': 'sucsses'})
+        return Response({'status': 'success'})
 
 
 class DeleteWaterPump(APIView):
@@ -583,25 +851,26 @@ class DeleteWaterPump(APIView):
         id = request.POST.get('id', None)
         water_pump = WaterPump.objects.get(pk=id)
         water_pump.delete()
-        return Response({'status': 'sucsses'})
+        return Response({'status': 'success'})
+
 
 
 class DeleteOfflineScenario(APIView):
-
     def delete(self, request):
         id = request.POST.get('id', None)
         offline_scenario = OfflineScenario.objects.get(pk=id)
         offline_scenario.delete()
-        return Response({'status': 'sucsses'})
+        return Response({'status': 'success'})
+
 
 
 class DeleteWaterTank(APIView):
-
     def delete(self, request):
         id = request.POST.get('id', None)
         water_tank = WaterTank.objects.get(pk=id)
         water_tank.delete()
-        return Response({'status': 'sucsses'})
+        return Response({'status': 'success'})
+
 
 class DeleteWeatherstation(APIView):
     def delete(self, request):
@@ -609,10 +878,12 @@ class DeleteWeatherstation(APIView):
         Weather_Station = WeatherStation.objects.get(pk=id)
         print(Weather_Station)
         Weather_Station.delete()
-        return Response({'status': 'sucsses'})
+        return Response({'status': 'success'})
+
 
 class WeatherStationOperation(APIView):
     def post(self, request):
+        user = User.objects.get(id = request.user.id)
         operation = request.POST.get('operation', None)
         location = request.POST.get('location', None)
         latitude = request.POST.get('latitude', None)
@@ -632,6 +903,49 @@ class WeatherStationOperation(APIView):
 
         if operation == 'add':
             if location and latitude and longitude:
-                weather_station = WeatherStation.objects.create(location=location, latitude=latitude,longitude=longitude)
+                weather_station = WeatherStation.objects.create(
+                    location=location,
+                    latitude=latitude,
+                    longitude=longitude,
+                    farm = user.farm,
+                )
 
         return redirect('/weather_station')
+
+
+class UserOperation(APIView):
+    def post(self, request):
+        print("reem request")
+        print(request.POST)
+        user = User.objects.get(id = request.user.id)
+        username = request.POST.get('username', None)
+        email = request.POST.get('email', None)
+        password = request.POST.get('password', None)
+        operation = 'add'
+        # operation = request.POST.get('operation', None)
+        user_id = request.POST.get('id', None)
+
+        if operation == 'edit':
+            sensor = Sensor.objects.get(pk=sensor_id)
+            if location:
+                sensor.location = location
+            if category:
+                sensor.category = category
+            if type:
+                sensor.type = type
+            if latitude:
+                sensor.latitude = latitude
+            if longitude:
+                sensor.longitude = longitude
+            sensor.save()
+
+        if operation == 'add':
+            if username and email and password:
+                varuser = User.objects.create(
+                    username=username,
+                    email=email,
+                    password=password,
+                    farm = user.farm,
+                )
+
+        return redirect('/users')

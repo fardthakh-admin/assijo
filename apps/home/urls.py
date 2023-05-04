@@ -14,7 +14,7 @@ urlpatterns = [
 
     # The home page
     path('', views.index, name='home'),
-    path('', views.weather_station, name='WS'),
+    # path('', views.weather_station, name='WS'),
 
     # Matches any html file
     # re_path(r'^.*\.*', views.pages, name='pages'),
@@ -24,9 +24,13 @@ urlpatterns = [
     path('tree', views.tree_view, name='tree'),
     path('water_pump', views.water_pump_view, name='water_pump'),
     path('water_tank', views.water_tank_view, name='water_tank'),
+    path('users', views.users_view, name='users'),
     path('offline_scenario', views.offline_scenario_view, name='offline_scenario'),
     path('weather_station', views.WeatherStationView.as_view(), name='weather_station'),
 
+    path('create_farm', views.create_farm, name = "create_farm" ),
+    path('create_farm_borders', views.create_farm_borders, name = "create_farm_borders" ),
+    path('create-user', views.UserOperation.as_view(), name = "create-user" ),
     path('mydata_sensor',views.mydata_sensor, name="mydata_sensor"),
     path('mydata_valve',views.mydata_valve, name="mydata_valve"),
     path('mydata_waterpump',views.mydata_waterpump, name="mydata_waterpump"),
