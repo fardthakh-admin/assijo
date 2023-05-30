@@ -186,7 +186,7 @@ class WaterShare(models.Model):
 
 class WeatherStation(models.Model):
     """
-    takes the result as a forgin key from the packet result
+    takes the result as a foreign key from the packet result
     """
     farm = models.OneToOneField(Farm, null=True, on_delete=models.SET_NULL)
     packet = models.CharField(max_length=100)
