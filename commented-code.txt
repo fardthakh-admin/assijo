@@ -1,0 +1,177 @@
+<!-- {#<script>#}
+{#    $(document).ready(function(){#}
+{#    var data = [];#}
+{##}
+{#    $.ajax({#}
+{#        url: "{% url 'mydata_sensor'%}",#}
+{#        method: 'GET',#}
+{#        success: function (data_sensor) {#}
+{#            for (var i = 0; i < data_sensor.length; i++) {#}
+{#            data_sensor[i].group = "sensors";#}
+{#        }#}
+{#        data = data.concat(data_sensor);#}
+{#        }#}
+{#    });#}
+{##}
+{#    $.ajax({#}
+{#        url: "{% url 'mydata_waterpump'%}",#}
+{#        method: 'GET',#}
+{#        success: function (data_waterpump) {#}
+{#            for (var i = 0; i < data_waterpump.length; i++) {#}
+{#            data_waterpump[i].group = "waterpump";#}
+{#        }#}
+{#        data = data.concat(data_waterpump);#}
+{#        }#}
+{#    });#}
+{##}
+{#    $.ajax({#}
+{#        url: "{% url 'mydata_watertank'%}",#}
+{#        method: 'GET',#}
+{#        success: function (data_watertank) {#}
+{#                for (var i = 0; i < data_watertank.length; i++) {#}
+{#            data_watertank[i].group = "watertank";#}
+{#        }#}
+{#            data = data.concat(data_watertank);#}
+{#        }#}
+{#    });#}
+{##}
+{#    $.ajax({#}
+{#        url: "{% url 'mydata_Trees'%}",#}
+{#        method: 'GET',#}
+{#        success: function (data_tree) {#}
+{#                    for (var i = 0; i < data_tree.length; i++) {#}
+{#            data_tree[i].group = "tree";#}
+{#        }#}
+{#            data = data.concat(data_tree);#}
+{#        }#}
+{#    });#}
+{##}
+{#    $.ajax({#}
+{#        url: "{% url 'mydata_valve'%}",#}
+{#        method: 'GET',#}
+{#        success: function (data_valve) {#}
+{#            for (var i = 0; i < data_valve.length; i++) {#}
+{#            data_valve[i].group = "valve";#}
+{#        }#}
+{#            data = data.concat(data_valve);#}
+{#            console.log(data);#}
+{#            initMap(data);#}
+{#        }#}
+{#    });#}
+{#);#}
+{#    function initMap(data) {#}
+{#    // define icons for each group#}
+{#    var icons = {#}
+{#        "sensors": new OpenLayers.Icon("static/assets/img/icons/sensor-icon.png", new OpenLayers.Size(32, 32)),#}
+{#        "waterpump": new OpenLayers.Icon("static/assets/img/icons/water_pump.png", new OpenLayers.Size(50, 32)),#}
+{#        "watertank": new OpenLayers.Icon("static/assets/img/icons/water_tank.png", new OpenLayers.Size(32, 32)),#}
+{#        "tree": new OpenLayers.Icon("static/assets/img/icons/tree.png", new OpenLayers.Size(32, 32)),#}
+{#        "valve": new OpenLayers.Icon("static/assets/img/icons/valve.png", new OpenLayers.Size(32, 32)),#}
+{#    };#}
+{##}
+{#    // create map and add OSM layer#}
+{#    map = new OpenLayers.Map("viewDiv");#}
+{#    map.addLayer(new OpenLayers.Layer.OSM());#}
+{##}
+{#    // create a separate layer for each group of markers and add them to the map#}
+{#    var layers = {};#}
+{##}
+{#    for (var group in icons) {#}
+{#        layers[group] = new OpenLayers.Layer.Markers(group);#}
+{#        console.log(layers[group])#}
+{#        map.addLayer(layers[group]);#}
+{#    }#}
+{##}
+{#    // iterate through the data array and add markers with the appropriate icon for each group#}
+{#    var markersArray = data;#}
+{#    for (var i = 0; i < markersArray.length; i++) {#}
+{#        var lonLat = new OpenLayers.LonLat(markersArray[i].longitude, markersArray[i].latitude)#}
+{#            .transform(#}
+{#                new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984#}
+{#                map.getProjectionObject() // to Spherical Mercator Projection#}
+{#            );#}
+{#        var icon = icons[markersArray[i].group];#}
+{#        var layer = layers[markersArray[i].group];#}
+{#        layer.addMarker(new OpenLayers.Marker(lonLat, icon));#}
+{#    }#}
+{##}
+{#    // set center and zoom level#}
+{#    var lonLatcenter = new OpenLayers.LonLat(36.2384, 30.5852)#}
+{#        .transform(#}
+{#            new OpenLayers.Projection("EPSG:4326"),#}
+{#            map.getProjectionObject()#}
+{#        );#}
+{#    var zoom = 7;#}
+{#    map.setCenter(lonLatcenter, zoom);#}
+{#}#}
+{#    </script>#} -->
+
+
+
+
+
+
+
+
+ /* {#  let water_share_results = {{ water_share_results|safe }};#}
+  {#  const $water_share_chart = $('#chart-watershare-dark');#}
+  {#  function init_water_share($water_share_chart) {#}
+  {#      const chart_share = new Chart($water_share_chart, {#}
+  {#          type: 'line',#}
+  {#          data:  {#}
+  {#              labels: times,#}
+  {#              datasets: [{#}
+  {#                label: 'watershare',#}
+  {#                data: water_share_results#}
+  {#              }]#}
+  {#          },#}
+  {#          options: {#}
+  {#          scales: {#}
+  {#              yAxes: [{#}
+  {#                  ticks: {#}
+  {#                  callback:(value)=>value,#}
+  {#                  max: Math.max(...water_share_results),#}
+  {#                  min: Math.min(...water_share_results),#}
+  {#                  stepSize: 1#}
+  {#              }#}
+  {#          }]#}
+  {#      }#}
+  {#  }#}
+  {#      });#}
+  {##}
+  {#  // Save to jQuery object#}
+  {##}
+    {#$chart.data('chart', chart);#}
+  {##}
+  {#;#} */
+
+
+
+
+
+
+/* {#function filterData($chart){#}
+    {#    const times2 = [...times];#}
+    {#    console.log(times2);#}
+    {#    const startDate = document.getElementById('start_date');#}
+    {#    const endDate = document.getElementById('end_date');#}
+    {##}
+    {#    // get the index number in array#}
+    {#    const indexStartDate = times2.indexOf(startDate.value);#}
+    {#    const indexEndDate = times2.indexOf(endDate.value);#}
+    {##}
+    {##}
+    {#    // divide the array to only show the selected date#}
+    {#    const filterDate = times2.slice(indexStartDate, indexEndDate + 1);#}
+    {#    console.log(filterDate);#}
+    {##}
+    {#    // replace the labels in the charts#}
+    {#    $chart.config.data.labels = filterDate;#}
+    {##}
+    {#    // datapoints#}
+    {#    const results2 = [...results];#}
+    {#    const filterDatapoints = times2.slice(indexStartDate, indexEndDate + 1);#}
+    {#    $chart.config.data.datasets[0].data = filterDatapoints;#}
+    {##}
+    {#    $chart.update()#}
+    {#}#}

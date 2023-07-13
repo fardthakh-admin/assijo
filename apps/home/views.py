@@ -74,15 +74,15 @@ def index(request):
     times2 = np.unique(times)
     times2 = list(times2)
 
+    # print("start date:")
+    # print(start_date)
+    # print("end date:")
+    # print(end_date)
+    # print("times array:")
+    # print(times)
+    # print("times 2 array:")
+    # print(times2)
 
-    print("start date:")
-    print(start_date)
-    print("end date:")
-    print(end_date)
-    print("times array:")
-    print(times)
-    print("times 2 array:")
-    print(times2)
     for sensor in humidity_sensors:
         # query to get number results by sensor ID
         # humidity_sensors_results = serializers.serialize("json", list(Result.objects.filter(sensor__id = sensor.id)), fields = ("number"))

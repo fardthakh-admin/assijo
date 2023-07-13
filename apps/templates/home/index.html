@@ -11,7 +11,7 @@
 {% block content %}
     <!-- Header -->
     <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js"></script>
-	<script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js"></script>
+	  <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js"></script>
     <link rel="stylesheet" href="static/assets/js/leaflet/leaflet.css" />
     <link rel="stylesheet" href="static/assets/css/leaflet-owm.css" />
     <link rel="stylesheet" href="static/assets/css/iconLayers.css" />
@@ -50,20 +50,20 @@
          display:none !important;
     }
     #map {
-    width: 1180px;
-    height: 433px;
-    {#inset: 50% auto auto 50%;#}
-    transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    {#z-index: 100;#}
-    /* position: fixed; */
-    margin: auto;
-    overflow: visible;
-    z-index: 1;
-    text-align: center;
-        }
+      width: 1180px;
+      height: 433px;
+      /* {#inset: 50% auto auto 50%;#} */
+      transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+      /* {#z-index: 100;#} */
+      /* position: fixed; */
+      margin: auto;
+      overflow: visible;
+      z-index: 1;
+      text-align: center;
+    }
     #viewDiv{
         height: 350px;
-        {#font-size: 20px;#}
+        /* {#font-size: 20px;#} */
         font-weight: bolder;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         color: #2c2c2cfb;
@@ -73,7 +73,7 @@
 
     #borderDiv{
         height: 350px;
-        {#font-size: 20px;#}
+        /* {#font-size: 20px;#} */
         font-weight: bolder;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         color: #2c2c2cfb;
@@ -736,6 +736,7 @@
       </div>
       {% endif %}
 
+      
 {#        <div class="col-xl-4">#}
 {##}
 {#          <div class="card">#}
@@ -857,12 +858,9 @@
 {#          </div>#}
 {#        </div>#}
 {#      </div>#}
-
-
-
-    </div>
-
+</div>
 {% endblock content %}
+
 
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
@@ -872,7 +870,7 @@
     <script src="/static/assets/js/echart.min.js"></script>
     <script src="/static/assets/js/echarts-liquid.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
     <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -896,316 +894,14 @@
 
     <!--    CHARTS SCRIPTS    -->
     <script>
-    // CHART OVERALL THEME
-    var Charts = (function() {
-
-	// Variables
-	var $toggle = $('[data-toggle="chart"]');
-	var mode = 'light';//(themeMode) ? themeMode : 'light';
-	var fonts = {
-		base: 'Open Sans'
-	}
-
-	// Colors
-	var colors = {
-		gray: {
-			100: '#f6f9fc',
-			200: '#e9ecef',
-			300: '#dee2e6',
-			400: '#ced4da',
-			500: '#adb5bd',
-			600: '#8898aa',
-			700: '#525f7f',
-			800: '#32325d',
-			900: '#212529'
-		},
-		theme: {
-			'default': '#172b4d',
-			'primary': '#5e72e4',
-			'secondary': '#f4f5f7',
-			'info': '#11cdef',
-			'success': '#2dce89',
-			'danger': '#f5365c',
-			'warning': '#fb6340'
-		},
-		black: '#12263F',
-		white: '#FFFFFF',
-		transparent: 'transparent',
-	};
-
-
-	// Methods
-
-	// Chart.js global options
-    // THE METHOD FOR THE CHART THAT SETS THE COLORS
-    // AND ALSO THE OVERALL THEME
-	function chartOptions() {
-		// Options
-		var options = {
-			defaults: {
-				global: {
-					responsive: true,
-					maintainAspectRatio: false,
-					defaultColor: (mode == 'dark') ? colors.gray[700] : colors.gray[600],
-					defaultFontColor: (mode == 'dark') ? colors.gray[700] : colors.gray[600],
-					defaultFontFamily: fonts.base,
-					defaultFontSize: 13,
-					layout: {
-						padding: 0
-					},
-					legend: {
-						display: false,
-						position: 'bottom',
-						labels: {
-							usePointStyle: true,
-							padding: 16
-						}
-					},
-					elements: {
-						point: {
-							radius: 0,
-							backgroundColor: colors.theme['primary']
-						},
-						line: {
-							tension: .4,
-							borderWidth: 4,
-							borderColor: colors.theme['primary'],
-							backgroundColor: colors.transparent,
-							borderCapStyle: 'rounded'
-						},
-						rectangle: {
-							backgroundColor: colors.theme['warning']
-						},
-						arc: {
-							backgroundColor: colors.theme['primary'],
-							borderColor: (mode == 'dark') ? colors.gray[800] : colors.white,
-							borderWidth: 4
-						}
-					},
-					tooltips: {
-						enabled: true,
-						mode: 'index',
-						intersect: false,
-					}
-				},
-				doughnut: {
-					cutoutPercentage: 83,
-					legendCallback: function(chart) {
-						var data = chart.data;
-						var content = '';
-
-						data.labels.forEach(function(label, index) {
-							var bgColor = data.datasets[0].backgroundColor[index];
-
-							content += '<span class="chart-legend-item">';
-							content += '<i class="chart-legend-indicator" style="background-color: ' + bgColor + '"></i>';
-							content += label;
-							content += '</span>';
-						});
-						return content;
-					}
-				}
-			}
-		}
-
-
-        // THE CHART SECTION THAT SETS
-        // THE LINES INSIDE THE CHART
-		// yAxes
-		Chart.scaleService.updateScaleDefaults('linear', {
-			gridLines: {
-				borderDash: [2],
-				borderDashOffset: [2],
-				color: (mode == 'dark') ? colors.gray[900] : colors.gray[300],
-				drawBorder: false,
-				drawTicks: false,
-				drawOnChartArea: true,
-				zeroLineWidth: 0,
-				zeroLineColor: 'rgba(0,0,0,0)',
-				zeroLineBorderDash: [2],
-				zeroLineBorderDashOffset: [2]
-			},
-			ticks: {
-				beginAtZero: true,
-				padding: 10,
-				callback: function(value) {
-					if (!(value % 10)) {
-						return value
-					}
-				}
-			}
-		});
-
-		// xAxes
-		Chart.scaleService.updateScaleDefaults('category', {
-			gridLines: {
-				drawBorder: false,
-				drawOnChartArea: false,
-				drawTicks: false
-			},
-			ticks: {
-				padding: 20
-			},
-			maxBarThickness: 10
-		});
-		return options;
-	}
-
-
-	// Parse global options
-	function parseOptions(parent, options) {
-		for (var item in options) {
-			if (typeof options[item] !== 'object') {
-				parent[item] = options[item];
-			} else {
-				parseOptions(parent[item], options[item]);
-			}
-		}
-	}
-
-
-	// Push options
-	function pushOptions(parent, options) {
-		for (var item in options) {
-			if (Array.isArray(options[item])) {
-				options[item].forEach(function(data) {
-					parent[item].push(data);
-				});
-			} else {
-				pushOptions(parent[item], options[item]);
-			}
-		}
-	}
-
-
-	// Pop options
-	function popOptions(parent, options) {
-		for (var item in options) {
-			if (Array.isArray(options[item])) {
-				options[item].forEach(function(data) {
-					parent[item].pop();
-				});
-			} else {
-				popOptions(parent[item], options[item]);
-			}
-		}
-	}
-
-
-	// Toggle options
-	function toggleOptions(elem) {
-		var options = elem.data('add');
-		var $target = $(elem.data('target'));
-		var $chart = $target.data('chart');
-
-		if (elem.is(':checked')) {
-
-			// Add options
-			pushOptions($chart, options);
-
-			// Update chart
-			$chart.update();
-		} else {
-
-			// Remove options
-			popOptions($chart, options);
-
-			// Update chart
-			$chart.update();
-		}
-	}
-
-	// Update options
-	function updateOptions(elem) {
-		var options = elem.data('update');
-		var $target = $(elem.data('target'));
-		var $chart = $target.data('chart');
-
-		// Parse options
-		parseOptions($chart, options);
-
-		// Toggle ticks
-		toggleTicks(elem, $chart);
-
-		// Update chart
-		$chart.update();
-	}
-
-	// Toggle ticks
-	function toggleTicks(elem, $chart) {
-
-		if (elem.data('prefix') !== undefined || elem.data('prefix') !== undefined) {
-			var prefix = elem.data('prefix') ? elem.data('prefix') : '';
-			var suffix = elem.data('suffix') ? elem.data('suffix') : '';
-
-			// Update ticks
-			$chart.options.scales.yAxes[0].ticks.callback = function(value) {
-				if (!(value % 10)) {
-					return prefix + value + suffix;
-				}
-			}
-
-			// Update tooltips
-			$chart.options.tooltips.callbacks.label = function(item, data) {
-				var label = data.datasets[item.datasetIndex].label || '';
-				var yLabel = item.yLabel;
-				var content = '';
-
-				if (data.datasets.length > 1) {
-					content += '<span class="popover-body-label mr-auto">' + label + '</span>';
-				}
-
-				content += '<span class="popover-body-value">' + prefix + yLabel + suffix + '</span>';
-				return content;
-			}
-
-		}
-	}
-
-
-	// Events
-
-	// Parse global options
-	if (window.Chart) {
-		parseOptions(Chart, chartOptions());
-	}
-
-	// Toggle options
-	$toggle.on({
-		'change': function() {
-			var $this = $(this);
-
-			if ($this.is('[data-add]')) {
-				toggleOptions($this);
-			}
-		},
-		'click': function() {
-			var $this = $(this);
-
-			if ($this.is('[data-update]')) {
-				updateOptions($this);
-			}
-		}
-	});
-
-
-	// Return
-
-	return {
-		colors: colors,
-		fonts: fonts,
-		mode: mode
-	};
-
-})();
 
     //CHARTS VIEW SECTION
     // Variables
     let times = {{ times2|safe }};
-        //
-        // 3 9 3 2 new Date(3)
+      // 3 9 3 2 new Date(3)
+      
     let results = {{ sensor_results|safe }};
-    {#let numbers = numbersss.map(function(result) {return new Date(result);});#}
+    // {#let numbers = numbersss.map(function(result) {return new Date(result);});#}
     // let chartData = results.map((result,index)=> (result));
 
 
@@ -1239,33 +935,7 @@
         });// Save to jQuery object{#$chart.data('chart', chart);#}
 
     };
-
-    {#function filterData($chart){#}
-    {#    const times2 = [...times];#}
-    {#    console.log(times2);#}
-    {#    const startDate = document.getElementById('start_date');#}
-    {#    const endDate = document.getElementById('end_date');#}
-    {##}
-    {#    // get the index number in array#}
-    {#    const indexStartDate = times2.indexOf(startDate.value);#}
-    {#    const indexEndDate = times2.indexOf(endDate.value);#}
-    {##}
-    {##}
-    {#    // divide the array to only show the selected date#}
-    {#    const filterDate = times2.slice(indexStartDate, indexEndDate + 1);#}
-    {#    console.log(filterDate);#}
-    {##}
-    {#    // replace the labels in the charts#}
-    {#    $chart.config.data.labels = filterDate;#}
-    {##}
-    {#    // datapoints#}
-    {#    const results2 = [...results];#}
-    {#    const filterDatapoints = times2.slice(indexStartDate, indexEndDate + 1);#}
-    {#    $chart.config.data.datasets[0].data = filterDatapoints;#}
-    {##}
-    {#    $chart.update()#}
-    {#}#}
-    //  END HUMIDITY SENSOR RESULTS **************************
+    //  END HUMIDITY SENSOR RESULTS ************************** */
 
 
     let water_tank_results = {{ water_tank_results|safe }};
@@ -1297,7 +967,7 @@
 
     // Save to jQuery object
 
-    {#$chart.data('chart', chart);#}
+    /* {#$chart.data('chart', chart);#} */
 
   };
 
@@ -1334,7 +1004,7 @@
 
     // Save to jQuery object
 
-    {#$chart.data('chart', chart);#}
+    /* {#$chart.data('chart', chart);#} */
 
   };
 
@@ -1369,112 +1039,50 @@
 
     // Save to jQuery object
 
-    {#$chart.data('chart', chart);#}
+    // {#$chart.data('chart', chart);#}
 
   };
 
-    let energy_level_results = {{ energy_level_results|safe }};
-    const $energy_level_chart = $('#chart-energy-level-dark');
-    function init_energy_level($energy_level_chart) {
-        const chart_share = new Chart($energy_level_chart, {
-            type: 'line',
-            data:  {
-                labels: times,
-                datasets: [
-                    {% for waterpump in list_of_energy_level_results %}
-                    {
-                        label: 'Water Pump ID. {{ waterpump.id }}',
-                        data: {{ waterpump|safe }},
-                        borderColor: [
-                            'rgba(75, 192, 192,1)',
-                            'rgba(175, 105, 192,1)',
-                            'rgba(60, 200, 102,1)',
-                        ]
-                    },
-                    {% endfor %}
-                    ]
-            },
-            options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                    callback:(value)=>value,
-                    max: Math.max(...energy_level_results),
-                    min: Math.min(...energy_level_results),
-                    stepSize: 1
-                }
-            }]
-        }
-    }
-        });
+    // let energy_level_results = {{ energy_level_results|safe }};
+    // const $energy_level_chart = $('#chart-energy-level-dark');
+    // function init_energy_level($energy_level_chart) {
+    //     const chart_share = new Chart($energy_level_chart, {
+    //         type: 'line',
+    //         data:  {
+    //             labels: times,
+    //             datasets: [
+    //                 {% for waterpump in list_of_energy_level_results %}
+    //                 {
+    //                     label: 'Water Pump ID. {{ waterpump.id }}',
+    //                     data: {{ waterpump|safe }},
+    //                     borderColor: [
+    //                         'rgba(75, 192, 192,1)',
+    //                         'rgba(175, 105, 192,1)',
+    //                         'rgba(60, 200, 102,1)',
+    //                     ]
+    //                 },
+    //                 {% endfor %}
+    //                 ]
+    //         },
+    //         options: {
+    //         scales: {
+    //             yAxes: [{
+    //                 ticks: {
+    //                 callback:(value)=>value,
+    //                 max: Math.max(...energy_level_results),
+    //                 min: Math.min(...energy_level_results),
+    //                 stepSize: 1
+    //             }
+    //         }]
+    //     }
+    // }
+    //     });
 
     // Save to jQuery object
 
-    {#$chart.data('chart', chart);#}
+    // {#$chart.data('chart', chart);#}
 
-  };
-
-  {#  let water_share_results = {{ water_share_results|safe }};#}
-  {#  const $water_share_chart = $('#chart-watershare-dark');#}
-  {#  function init_water_share($water_share_chart) {#}
-  {#      const chart_share = new Chart($water_share_chart, {#}
-  {#          type: 'line',#}
-  {#          data:  {#}
-  {#              labels: times,#}
-  {#              datasets: [{#}
-  {#                label: 'watershare',#}
-  {#                data: water_share_results#}
-  {#              }]#}
-  {#          },#}
-  {#          options: {#}
-  {#          scales: {#}
-  {#              yAxes: [{#}
-  {#                  ticks: {#}
-  {#                  callback:(value)=>value,#}
-  {#                  max: Math.max(...water_share_results),#}
-  {#                  min: Math.min(...water_share_results),#}
-  {#                  stepSize: 1#}
-  {#              }#}
-  {#          }]#}
-  {#      }#}
-  {#  }#}
-  {#      });#}
-  {##}
-  {#  // Save to jQuery object#}
-  {##}
-    {#$chart.data('chart', chart);#}
-  {##}
-  {#;#}
-
-    // Events
-    //HUMIDITY LEVEL CHART
-    if ($chart.length) {
-          init($chart);
-    };
-
-
-    //WATER TANK CHART
-    if ($water_tank_chart.length) {
-          init_water_tank($water_tank_chart);
-    };
-
-
-    // WATER SHARE
-    if ($water_share_chart.length) {
-          init_water_share($water_share_chart);
-    };
-
-
-    // VALVE FLOW METER CHART
-    if ($valve_flow_chart.length) {
-          init_valve_flow($valve_flow_chart);
-    };
-
-
-    // ENERGY LEVEL CHART
-    if ($energy_level_chart.length) {
-          init_energy_level($energy_level_chart);
-    };
+  // };
 </script>
 
 
@@ -1642,8 +1250,10 @@ function Pass(data) {
         var markers = new OpenLayers.Layer.Markers("Markers");
         map.addLayer(markers);
         var markersArray = data;
-        {#console.log("markersArray")#}
-        {#console.log(markersArray)#}
+
+        // {#console.log("markersArray")#}
+        // {#console.log(markersArray)#}
+
         for (var i = 0; i < markersArray.length; i++) {
             var lonLat = new OpenLayers.LonLat(markersArray[i].longitude, markersArray[i].latitude)
                 .transform(
@@ -1678,118 +1288,15 @@ function Pass(data) {
 
     }
     </script>
-{#<script>#}
-{#    $(document).ready(function(){#}
-{#    var data = [];#}
-{##}
-{#    $.ajax({#}
-{#        url: "{% url 'mydata_sensor'%}",#}
-{#        method: 'GET',#}
-{#        success: function (data_sensor) {#}
-{#            for (var i = 0; i < data_sensor.length; i++) {#}
-{#            data_sensor[i].group = "sensors";#}
-{#        }#}
-{#        data = data.concat(data_sensor);#}
-{#        }#}
-{#    });#}
-{##}
-{#    $.ajax({#}
-{#        url: "{% url 'mydata_waterpump'%}",#}
-{#        method: 'GET',#}
-{#        success: function (data_waterpump) {#}
-{#            for (var i = 0; i < data_waterpump.length; i++) {#}
-{#            data_waterpump[i].group = "waterpump";#}
-{#        }#}
-{#        data = data.concat(data_waterpump);#}
-{#        }#}
-{#    });#}
-{##}
-{#    $.ajax({#}
-{#        url: "{% url 'mydata_watertank'%}",#}
-{#        method: 'GET',#}
-{#        success: function (data_watertank) {#}
-{#                for (var i = 0; i < data_watertank.length; i++) {#}
-{#            data_watertank[i].group = "watertank";#}
-{#        }#}
-{#            data = data.concat(data_watertank);#}
-{#        }#}
-{#    });#}
-{##}
-{#    $.ajax({#}
-{#        url: "{% url 'mydata_Trees'%}",#}
-{#        method: 'GET',#}
-{#        success: function (data_tree) {#}
-{#                    for (var i = 0; i < data_tree.length; i++) {#}
-{#            data_tree[i].group = "tree";#}
-{#        }#}
-{#            data = data.concat(data_tree);#}
-{#        }#}
-{#    });#}
-{##}
-{#    $.ajax({#}
-{#        url: "{% url 'mydata_valve'%}",#}
-{#        method: 'GET',#}
-{#        success: function (data_valve) {#}
-{#            for (var i = 0; i < data_valve.length; i++) {#}
-{#            data_valve[i].group = "valve";#}
-{#        }#}
-{#            data = data.concat(data_valve);#}
-{#            console.log(data);#}
-{#            initMap(data);#}
-{#        }#}
-{#    });#}
-{#);#}
-{#    function initMap(data) {#}
-{#    // define icons for each group#}
-{#    var icons = {#}
-{#        "sensors": new OpenLayers.Icon("static/assets/img/icons/sensor-icon.png", new OpenLayers.Size(32, 32)),#}
-{#        "waterpump": new OpenLayers.Icon("static/assets/img/icons/water_pump.png", new OpenLayers.Size(50, 32)),#}
-{#        "watertank": new OpenLayers.Icon("static/assets/img/icons/water_tank.png", new OpenLayers.Size(32, 32)),#}
-{#        "tree": new OpenLayers.Icon("static/assets/img/icons/tree.png", new OpenLayers.Size(32, 32)),#}
-{#        "valve": new OpenLayers.Icon("static/assets/img/icons/valve.png", new OpenLayers.Size(32, 32)),#}
-{#    };#}
-{##}
-{#    // create map and add OSM layer#}
-{#    map = new OpenLayers.Map("viewDiv");#}
-{#    map.addLayer(new OpenLayers.Layer.OSM());#}
-{##}
-{#    // create a separate layer for each group of markers and add them to the map#}
-{#    var layers = {};#}
-{##}
-{#    for (var group in icons) {#}
-{#        layers[group] = new OpenLayers.Layer.Markers(group);#}
-{#        console.log(layers[group])#}
-{#        map.addLayer(layers[group]);#}
-{#    }#}
-{##}
-{#    // iterate through the data array and add markers with the appropriate icon for each group#}
-{#    var markersArray = data;#}
-{#    for (var i = 0; i < markersArray.length; i++) {#}
-{#        var lonLat = new OpenLayers.LonLat(markersArray[i].longitude, markersArray[i].latitude)#}
-{#            .transform(#}
-{#                new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984#}
-{#                map.getProjectionObject() // to Spherical Mercator Projection#}
-{#            );#}
-{#        var icon = icons[markersArray[i].group];#}
-{#        var layer = layers[markersArray[i].group];#}
-{#        layer.addMarker(new OpenLayers.Marker(lonLat, icon));#}
-{#    }#}
-{##}
-{#    // set center and zoom level#}
-{#    var lonLatcenter = new OpenLayers.LonLat(36.2384, 30.5852)#}
-{#        .transform(#}
-{#            new OpenLayers.Projection("EPSG:4326"),#}
-{#            map.getProjectionObject()#}
-{#        );#}
-{#    var zoom = 7;#}
-{#    map.setCenter(lonLatcenter, zoom);#}
-{#}#}
-{#    </script>#}
+
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
     <script type="text/javascript" src="static/assets/js/leaflet/leaflet-src.js"></script>
     <script type="text/javascript" src="static/assets/js/leaflet-owm.js"></script>
     <script type="text/javascript" src="static/assets/js/iconLayer.js"></script>
+    <script type="text/javascript" src="static/assets/js/charts/charts.js"></script>
+    
+
 
     <!--    POLYGONS MAP SCRIPTS    -->
     <script>
@@ -1941,7 +1448,7 @@ function Pass(data) {
       document.getElementById("wktStringTextArea").value = decodeURI(wkt);
     }
     initBorderMap();
-</script>
+    </script>
 
 {% endblock javascripts %}
 Footer
