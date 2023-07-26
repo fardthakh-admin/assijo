@@ -4,11 +4,8 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from django.http import JsonResponse
-from django.template.context_processors import request
-from rest_framework import generics
 from django import template
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import model_to_dict
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect
@@ -16,12 +13,8 @@ from django.template import loader
 from django.urls import reverse
 from django.views import View
 from rest_framework import status
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import routers,  viewsets
-from django.core import serializers
-from django.db.models import Q
 import numpy as np
 import datetime
 
@@ -915,8 +908,6 @@ class WeatherStationOperation(APIView):
 
 class UserOperation(APIView):
     def post(self, request):
-        print("reem request")
-        print(request.POST)
         user = User.objects.get(id = request.user.id)
         username = request.POST.get('username', None)
         email = request.POST.get('email', None)

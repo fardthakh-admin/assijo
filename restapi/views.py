@@ -82,15 +82,21 @@ def farm_energy_levels(request):
     serializer = serializers.EnergyLevelSerializer(energy_levels, many = True)
     data = serializer.data
 
-    energy_level_results = []
+    energy_level_result_list = []
     
-
     for result in data:
-        # energy_level = list(models.Result.objects.filter(sensor__id = result.id).values_list('number', flat=True))
-        energy_level_results.append(int(result["energy_result"]))
+        # energy_level = list(models.EnergyLevel.objects.filter(water_pump__id = result.id).values_list('number', flat=True))
+        energy_level_result_list.append(int(result["energy_result"]))
 
 
-    return Response(energy_level_results)
+    list_of_energy_level_results = []
+
+    for pump in waterpumps:
+        pump_energy_level_results = list(models.EnergyLevel.objects.filter(water_pump__id = pump.id).values_list('energy_result', flat=True))
+        pump_energy_level_results = list(map(int, pump_energy_level_results))
+        list_of_energy_level_results.append(pump_energy_level_results)
+
+    return Response(list_of_energy_level_results)
 
 
 @api_view(['GET'])

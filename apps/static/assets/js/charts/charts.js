@@ -491,46 +491,47 @@ var Charts = (function() {
 // };
 
 function init_energy_level(energy_level_chart) {
-    
-    
+
     // ENERGY LEVEL CHART
     fetch('/api/farm-energy-levels/')
     .then((resp) => resp.json())//get data and turn it into JSON
     .then(function(data){
-        console.log(data)
-        const datasets_array = []
-        datasets_array = [{
-            label: 'Water Pump ID. som',
-            data: data,
-            borderColor: [
-                'rgba(75, 192, 192,1)',
-                'rgba(175, 105, 192,1)',
-                'rgba(60, 200, 102,1)',
-            ]
-        },
-        {
-            label: 'Water Pump ID. som',
-            data: [35,20,10],
-            borderColor: [
-                'rgba(75, 192, 192,1)',
-                'rgba(175, 105, 192,1)',
-                'rgba(60, 200, 102,1)',
-            ]
-        },
-        ]
+        let list_of_results = [];
+
+        //this function turns the array of arrays (data) into one single array
+        let flattenedArray = data.flat();
+        
+
+        for(let array of data){
+            list_of_results.push(
+                {
+                    label: 'Water Pump ID. som',
+                    data: array,
+                    borderColor: [
+                        'rgba(75, 192, 192,1)',
+                        'rgba(175, 105, 192,1)',
+                        'rgba(60, 200, 102,1)',
+                    ]
+                },                
+            )
+        }
+
+        
+
+        console.log(list_of_results)
         const chart_share = new Chart($(energy_level_chart[0]), {
             type: 'line',
             data:  {
                 labels: times,
-                datasets: datasets_array,
+                datasets: list_of_results
             },
             options: {
             scales: {
                 yAxes: [{
                     ticks: {
                     callback:(value)=>value,
-                    max: Math.max(...data),
-                    min: Math.min(...data),
+                    max: Math.max(...flattenedArray),
+                    min: Math.min(...flattenedArray),
                     stepSize: 1
                 }
             }]
@@ -548,7 +549,8 @@ function init_energy_level(energy_level_chart) {
     .catch(error => {
         console.error('Error:', error);
     });
-};
+    };
+
 
 // Events
 //HUMIDITY LEVEL CHART
