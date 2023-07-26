@@ -1092,9 +1092,7 @@ $(document).ready(function(){
         $.ajax({
             url: "{% url 'mydata_watertank'%}",
             method: 'GET',
-            success: function (data) {
-                console.log("data1");
-                console.log(data[0]);
+            success: function (data) {                
                 Pass(data);
             }
       });

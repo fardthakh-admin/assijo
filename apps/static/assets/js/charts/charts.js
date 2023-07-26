@@ -301,13 +301,10 @@ var Charts = (function() {
 //  END OF CHARTS SHAPE AND COLOR DEFENITION
 
 
-
-
-  //CHARTS VIEW SECTION
-  // Variables
+//CHARTS VIEW SECTION
+// Variables
 //   let times = {{ times2|safe }};
-//       //
-//       // 3 9 3 2 new Date(3)
+//   3 9 3 2 new Date(3)
 //   let results = {{ sensor_results|safe }};
   // {#let numbers = numbersss.map(function(result) {return new Date(result);});#}
   // let chartData = results.map((result,index)=> (result));
@@ -493,96 +490,95 @@ var Charts = (function() {
 
 // };
 
-
-
-// ENERGY LEVEL CHART
-fetch('http://127.0.0.1:8000/api/farm-energy-levels/')
-.then((resp) => resp.json())//get data and turn it into JSON
-.then(function(data){
-
-
-    let energy_level_results = [];
-    let i = 0
-    for(let energyLevel of data){
-        energy_level_results[i] = energyLevel.energy_result;
-        i = i + 1;
-    }
-    console.log("Water pump energy level Resuls: [" + energy_level_results + "]")
-
-    let times = new Date()
+function init_energy_level(energy_level_chart) {
     
-    const $energy_level_chart = $('#chart-energy-level-dark');
-    function init_energy_level($energy_level_chart) {
-        const chart_share = new Chart($energy_level_chart, {
+    
+    // ENERGY LEVEL CHART
+    fetch('/api/farm-energy-levels/')
+    .then((resp) => resp.json())//get data and turn it into JSON
+    .then(function(data){
+        console.log(data)
+        const datasets_array = []
+        datasets_array = [{
+            label: 'Water Pump ID. som',
+            data: data,
+            borderColor: [
+                'rgba(75, 192, 192,1)',
+                'rgba(175, 105, 192,1)',
+                'rgba(60, 200, 102,1)',
+            ]
+        },
+        {
+            label: 'Water Pump ID. som',
+            data: [35,20,10],
+            borderColor: [
+                'rgba(75, 192, 192,1)',
+                'rgba(175, 105, 192,1)',
+                'rgba(60, 200, 102,1)',
+            ]
+        },
+        ]
+        const chart_share = new Chart($(energy_level_chart[0]), {
             type: 'line',
             data:  {
                 labels: times,
-                datasets: [
-                    // {% for waterpump in list_of_energy_level_results %}
-                    
-                    {
-                        label: 'Water Pump ID. som',
-                        data: energy_level_results,
-                        borderColor: [
-                            'rgba(75, 192, 192,1)',
-                            'rgba(175, 105, 192,1)',
-                            'rgba(60, 200, 102,1)',
-                        ]
-                    },
-                    // {% endfor %}
-                    ]
+                datasets: datasets_array,
             },
             options: {
             scales: {
                 yAxes: [{
                     ticks: {
                     callback:(value)=>value,
-                    max: Math.max(...energy_level_results),
-                    min: Math.min(...energy_level_results),
+                    max: Math.max(...data),
+                    min: Math.min(...data),
                     stepSize: 1
                 }
             }]
         }
     }
         });
-
-    // Save to jQuery object
-
-    // {#$chart.data('chart', chart);#}
-
-  };
     
-})
-.catch(error => {
-    console.error('Error:', error);
-});
-
-  // Events
-  //HUMIDITY LEVEL CHART
-  if ($chart.length) {
-    init($chart);
+    // Save to jQuery object
+    
+    // {#$chart.data('chart', chart);#}
+        
+     
+        
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 };
+
+// Events
+//HUMIDITY LEVEL CHART
+$(document).ready(function(){
+    init($chart);
+});
 
 
 //WATER TANK CHART
-if ($water_tank_chart.length) {
+$(document).ready(function(){
     init_water_tank($water_tank_chart);
-};
-
+});
 
 // WATER SHARE
-if ($water_share_chart.length) {
+$(document).ready(function(){
     init_water_share($water_share_chart);
-};
+});
 
 
 // VALVE FLOW METER CHART
-if ($valve_flow_chart.length) {
+$(document).ready(function(){
     init_valve_flow($valve_flow_chart);
-};
+});
 
 
 // ENERGY LEVEL CHART
-if ($energy_level_chart.length) {
-    init_energy_level($energy_level_chart);
-};
+// if ($energy_level_chart.length) {
+//     init_energy_level($energy_level_chart);
+// };
+
+$(document).ready(function(){
+    init_energy_level($('#chart-energy-level-dark'));
+});

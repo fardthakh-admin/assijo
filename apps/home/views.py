@@ -117,7 +117,7 @@ def index(request):
     list_of_watershare_results = []
 
     for tree in trees:
-        watershare_results = list(WaterShare.objects.filter(tree__id=tree.id).values_list('number', flat=True))
+        watershare_results = list(WaterShare.objects.filter(tree__id = tree.id).values_list('number', flat=True))
         list_of_watershare_results.append(watershare_results)
     ###   END WATER SHARE   ###
 
