@@ -14,6 +14,10 @@ def api_over_view(request):
         'Water-Pumps': '/farm-water-pumps/',
         'Energy-Levels': '/farm-energy-levels/',
         'Results': '/farm-reading-results/',
+        'Results': '/farm-reading-results/',
+        'Results': '/farm-reading-results/',
+        'Results': '/farm-reading-results/',
+        'Valve-Flow-Results': '/farm-valveflow-results/',
         'String-Results': '/farm-string-results/',
         'Offline-Scenarios': 'farm-offline-scenarios/',
         'Gate-Way': 'farm-gate-way/',
@@ -106,6 +110,23 @@ def farm_reading_results(request):
     results = models.Result.objects.filter(sensor__in = sensors).order_by('-id')
     serializer = serializers.ResultSerializer(results, many = True)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def farm_valveflow_results(request):
+    user = models.User.objects.get(id = request.user.id)
+    valves = models.Valve.objects.filter(farm_id=user.farm)
+    results = models.Result.objects.filter(valve__in = valves).order_by('-id')
+    serializer = serializers.ResultSerializer(results, many = True)
+
+    list_of_valve_flow_results = []
+
+    for valve in valves:
+        valve_flow_results = list(models.Result.objects.filter(valve__id = valve.id).values_list('number', flat=True))
+        valve_flow_results = list(map(int, valve_flow_results))
+        list_of_valve_flow_results.append(valve_flow_results)
+    
+    return Response(list_of_valve_flow_results)
 
 
 @api_view(['GET'])

@@ -414,85 +414,67 @@ var Charts = (function() {
 
 // };
 
-//   let valve_flow_results = {{ valve_flow_results|safe }};
-//   const $valve_flow_chart = $('#chart-valve-dark');
-//   function init_valve_flow($valve_flow_chart) {
-//       const chart_share = new Chart($valve_flow_chart, {
-//           type: 'line',
-//           data:  {
-//               labels: times,
-//               datasets: [
-//                   {% for valve in list_of_flow_meter_results %}
-//                   {
-//                       label: 'valve ID. {{ valve.id }}',
-//                       data: {{ valve|safe }},
-//                   },{% endfor %}
-//               ]
-//           },
-//           options: {
-//           scales: {
-//               yAxes: [{
-//                   ticks: {
-//                   callback:(value)=>value,
-//                   max: Math.max(...valve_flow_results),
-//                   min: Math.min(...valve_flow_results),
-//                   stepSize: 1
-//               }
-//           }]
-//       }
-//   }
-//       });
+  
+const $valve_flow_chart = $('#chart-valve-dark');
+function init_valve_flow($valve_flow_chart) {
+    fetch('/api/farm-valveflow-results/')
+    .then((resp) => resp.json())//get data and turn it into JSON
+    .then(function(data){
+        let list_of_results = [];
 
-//   // Save to jQuery object
+        //this function turns the array of arrays (data) into one single array
+        let flattenedArray = data.flat();
+        
+        let i = 50
+        let j = 20
+        //place holder
+        let itterator = 1
+        for(let array of data){
+            list_of_results.push(
+                {
+                    label: `Valve ID ${itterator}`,
+                    data: array,
+                    borderColor: `rgba(200, ${i}, ${j})`,
+                },                
+            )
+            i += 50
+            j += 10
+            itterator += 1
+        }
 
-//   // {#$chart.data('chart', chart);#}
+        
 
-// };
+        console.log(list_of_results)
+        const chart_share = new Chart(($valve_flow_chart), {
+            type: 'line',
+            data:  {
+                labels: times,
+                datasets: list_of_results
+            },
+            options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                    callback:(value)=>value,
+                    max: Math.max(...flattenedArray),
+                    min: Math.min(...flattenedArray),
+                    stepSize: 1
+                }
+            }]
+        }
+    }
+        });
+          
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+};
 
-//   let energy_level_results = {{ energy_level_results|safe }};
-//   const $energy_level_chart = $('#chart-energy-level-dark');
-//   function init_energy_level($energy_level_chart) {
-//       const chart_share = new Chart($energy_level_chart, {
-//           type: 'line',
-//           data:  {
-//               labels: times,
-//               datasets: [
-//                   {% for waterpump in list_of_energy_level_results %}
-//                   {
-//                       label: 'Water Pump ID. {{ waterpump.id }}',
-//                       data: {{ waterpump|safe }},
-//                       borderColor: [
-//                           'rgba(75, 192, 192,1)',
-//                           'rgba(175, 105, 192,1)',
-//                           'rgba(60, 200, 102,1)',
-//                       ]
-//                   },
-//                   {% endfor %}
-//                   ]
-//           },
-//           options: {
-//           scales: {
-//               yAxes: [{
-//                   ticks: {
-//                   callback:(value)=>value,
-//                   max: Math.max(...energy_level_results),
-//                   min: Math.min(...energy_level_results),
-//                   stepSize: 1
-//               }
-//           }]
-//       }
-//   }
-//       });
 
-  // Save to jQuery object
-
-  // {#$chart.data('chart', chart);#}
-
-// };
+// ENERGY LEVEL CHART
 
 function init_energy_level(energy_level_chart) {
-
-    // ENERGY LEVEL CHART
     fetch('/api/farm-energy-levels/')
     .then((resp) => resp.json())//get data and turn it into JSON
     .then(function(data){
@@ -501,19 +483,21 @@ function init_energy_level(energy_level_chart) {
         //this function turns the array of arrays (data) into one single array
         let flattenedArray = data.flat();
         
-
+        let i = 50
+        let j = 20
+        //place holder
+        let itterator = 1
         for(let array of data){
             list_of_results.push(
                 {
-                    label: 'Water Pump ID. som',
+                    label: `Water Pump ID. ${itterator}`,
                     data: array,
-                    borderColor: [
-                        'rgba(75, 192, 192,1)',
-                        'rgba(175, 105, 192,1)',
-                        'rgba(60, 200, 102,1)',
-                    ]
+                    borderColor: `rgba(200, ${i}, ${j})`,
                 },                
             )
+            i += 50
+            j += 10
+            itterator += 1
         }
 
         
@@ -549,8 +533,7 @@ function init_energy_level(energy_level_chart) {
     .catch(error => {
         console.error('Error:', error);
     });
-    };
-
+};
 
 // Events
 //HUMIDITY LEVEL CHART

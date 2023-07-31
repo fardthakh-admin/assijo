@@ -1008,40 +1008,41 @@
 
   };
 
-    let valve_flow_results = {{ valve_flow_results|safe }};
-    const $valve_flow_chart = $('#chart-valve-dark');
-    function init_valve_flow($valve_flow_chart) {
-        const chart_share = new Chart($valve_flow_chart, {
-            type: 'line',
-            data:  {
-                labels: times,
-                datasets: [
-                    {% for valve in list_of_flow_meter_results %}
-                    {
-                        label: 'valve ID. {{ valve.id }}',
-                        data: {{ valve|safe }},
-                    },{% endfor %}
-                ]
-            },
-            options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                    callback:(value)=>value,
-                    max: Math.max(...valve_flow_results),
-                    min: Math.min(...valve_flow_results),
-                    stepSize: 1
-                }
-            }]
-        }
-    }
-        });
+
+    // let valve_flow_results = {{ valve_flow_results|safe }};
+    // const $valve_flow_chart = $('#chart-valve-dark');
+    // function init_valve_flow($valve_flow_chart) {
+    //     const chart_share = new Chart($valve_flow_chart, {
+    //         type: 'line',
+    //         data:  {
+    //             labels: times,
+    //             datasets: [
+    //                 {% for valve in list_of_flow_meter_results %}
+    //                 {
+    //                     label: 'valve ID. {{ valve.id }}',
+    //                     data: {{ valve|safe }},
+    //                 },{% endfor %}
+    //             ]
+    //         },
+    //         options: {
+    //         scales: {
+    //             yAxes: [{
+    //                 ticks: {
+    //                 callback:(value)=>value,
+    //                 max: Math.max(...valve_flow_results),
+    //                 min: Math.min(...valve_flow_results),
+    //                 stepSize: 1
+    //             }
+    //         }]
+    //     }
+    // }
+    //     });
 
     // Save to jQuery object
 
     // {#$chart.data('chart', chart);#}
 
-  };
+  // };
 
     // let energy_level_results = {{ energy_level_results|safe }};
     // const $energy_level_chart = $('#chart-energy-level-dark');
