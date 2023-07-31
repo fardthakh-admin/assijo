@@ -16,13 +16,13 @@ def api_over_view(request):
         'Results': '/farm-reading-results/',
         'Results': '/farm-reading-results/',
         'Results': '/farm-reading-results/',
-        'Results': '/farm-reading-results/',
+        'Results': '/farm-water-share-results/',
+        'Water-Share': 'farm-water-share/',
         'Valve-Flow-Results': '/farm-valveflow-results/',
         'String-Results': '/farm-string-results/',
         'Offline-Scenarios': 'farm-offline-scenarios/',
         'Gate-Way': 'farm-gate-way/',
         'Trees': 'farm-trees/',
-        'Water-Share': 'farm-water-share/',
         'Weather-Station': 'farm-weather-station/',
         'Packet-Result': 'farm-packet-results/',
     }
@@ -113,6 +113,25 @@ def farm_reading_results(request):
 
 
 @api_view(['GET'])
+def farm_water_share(request):
+    user = models.User.objects.get(id = request.user.id)
+    trees = models.Tree.objects.filter(farm_id=user.farm)
+    water_share = models.WaterShare.objects.filter(tree__in = trees).order_by('-id')
+    serializer = serializers.WaterShareSerializer(water_share, many = True)
+
+
+    list_of_water_share_results = []
+
+    for tree in trees:
+        water_share_results = list(models.WaterShare.objects.filter(tree__id = tree.id).values_list('number', flat=True))
+        water_share_results = list(map(int, water_share_results))
+        list_of_water_share_results.append(water_share_results)
+
+
+    return Response(list_of_water_share_results)
+
+
+@api_view(['GET'])
 def farm_valveflow_results(request):
     user = models.User.objects.get(id = request.user.id)
     valves = models.Valve.objects.filter(farm_id=user.farm)
@@ -159,15 +178,6 @@ def farm_trees(request):
     user = models.User.objects.get(id = request.user.id)
     trees = models.Tree.objects.filter(farm_id = user.farm).order_by('-id')
     serializer = serializers.TreeSerializer(trees, many = True)
-    return Response(serializer.data)
-
-
-@api_view(['GET'])
-def farm_water_share(request):
-    user = models.User.objects.get(id = request.user.id)
-    trees = models.Tree.objects.filter(farm_id=user.farm)
-    water_share = models.WaterShare.objects.filter(tree__in = trees).order_by('-id')
-    serializer = serializers.WaterShareSerializer(water_share, many = True)
     return Response(serializer.data)
 
 
