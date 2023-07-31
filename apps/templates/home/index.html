@@ -892,87 +892,6 @@
                     chart.setOption(options);
     </script>
 
-    <!--    CHARTS SCRIPTS    -->
-    <script>
-
-    //CHARTS VIEW SECTION
-    // Variables
-    let times = {{ times2|safe }};
-      // 3 9 3 2 new Date(3)
-      
-    let results = {{ sensor_results|safe }};
-    // {#let numbers = numbersss.map(function(result) {return new Date(result);});#}
-    // let chartData = results.map((result,index)=> (result));
-
-
-    const $chart = $('#chart-sensor-dark');
-    function init( $chart ) {
-        const chart = new Chart( $chart , {
-            type: 'line',
-            data:  {
-                labels: times,
-                datasets: [
-                    {% for sensor in list_of_humidity_results %}
-                        {
-                        label: "Sensor ID.{{ humidity_sensors.id }}",
-                        data: {{ sensor|safe }},
-                        },
-                    {% endfor %}
-                ]
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            callback:(value)=>value,
-                            max: Math.max(...results),
-                            min: Math.min(...results),
-                            stepSize: 1
-                        }
-                    }]
-                }
-            }
-        });// Save to jQuery object{#$chart.data('chart', chart);#}
-
-    };
-    //  END HUMIDITY SENSOR RESULTS ************************** */
-
-
-    let water_tank_results = {{ water_tank_results|safe }};
-    const $water_tank_chart = $('#chart-watertank-dark');
-    function init_water_tank($water_tank_chart) {
-        const chart_tank = new Chart($water_tank_chart, {
-            type: 'line',
-            data:  {
-                labels: times,
-                datasets: [{
-                  label: 'WaterTank',
-                  data: water_tank_results
-                }]
-            },
-            options: {
-            scales: {
-                yAxes: [{
-
-                    ticks: {
-                    callback:(value)=>value,
-                    max: Math.max(...water_tank_results),
-                    min: Math.min(...water_tank_results),
-                    stepSize: 1
-                }
-            }]
-        }
-    }
-        });
-
-    // Save to jQuery object
-
-    /* {#$chart.data('chart', chart);#} */
-
-  };
-</script>
-
-
 <!--  ICONS ON MAP SCRIPT  -->
 <script>
 $(document).ready(function(){
@@ -1164,10 +1083,10 @@ function Pass(data) {
 
         }
         var lonLatcenter = new OpenLayers.LonLat({{user.farm.longitude}}, {{user.farm.latitude}})
-            .transform(
+        .transform(
                 new OpenLayers.Projection("EPSG:4326"),
                 map.getProjectionObject()
-            );
+        );
         var zoom = 10;
         map.setCenter(lonLatcenter, zoom);
 

@@ -290,7 +290,6 @@ var Charts = (function() {
 
 
   // Return
-
   return {
       colors: colors,
       fonts: fonts,
@@ -301,84 +300,154 @@ var Charts = (function() {
 //  END OF CHARTS SHAPE AND COLOR DEFENITION
 
 
-//CHARTS VIEW SECTION
-// Variables
-//   let times = {{ times2|safe }};
-//   3 9 3 2 new Date(3)
-//   let results = {{ sensor_results|safe }};
-  // {#let numbers = numbersss.map(function(result) {return new Date(result);});#}
-  // let chartData = results.map((result,index)=> (result));
-
-
-//   const $chart = $('#chart-sensor-dark');
-//   function init( $chart ) {
-//       const chart = new Chart( $chart , {
-//           type: 'line',
-//           data:  {
-//               labels: times,
-//               datasets: [
-//                   {% for sensor in list_of_humidity_results %}
-//                       {
-//                       label: "Sensor ID.{{ humidity_sensors.id }}",
-//                       data: {{ sensor|safe }},
-//                       },
-//                   {% endfor %}
-//               ]
-//           },
-//           options: {
-//               scales: {
-//                   yAxes: [{
-//                       ticks: {
-//                           callback:(value)=>value,
-//                           max: Math.max(...results),
-//                           min: Math.min(...results),
-//                           stepSize: 1
-//                       }
-//                   }]
-//               }
-//           }
-//       });// Save to jQuery object{#$chart.data('chart', chart);#}
-
-//   };
-
-  //  END HUMIDITY SENSOR RESULTS ************************** */
-
-
-//   let water_tank_results = {{ water_tank_results|safe }};
-//   const $water_tank_chart = $('#chart-watertank-dark');
-//   function init_water_tank($water_tank_chart) {
-//       const chart_tank = new Chart($water_tank_chart, {
-//           type: 'line',
-//           data:  {
-//               labels: times,
-//               datasets: [{
-//                 label: 'WaterTank',
-//                 data: water_tank_results
-//               }]
-//           },
-//           options: {
-//           scales: {
-//               yAxes: [{
-
-//                   ticks: {
-//                   callback:(value)=>value,
-//                   max: Math.max(...water_tank_results),
-//                   min: Math.min(...water_tank_results),
-//                   stepSize: 1
-//               }
-//           }]
-//       }
-//   }
-//       });
-
-//   // Save to jQuery object
-
-//   /* {#$chart.data('chart', chart);#} */
-
-// };
 
 
 
+//TIMESTAMPS
+let times = []
+fetch('/api/farm-timestamps/')
+.then((resp) => resp.json())//get data and turn it into JSON
+.then(function(data){
+    console.log(data);
+    times = data;
+})
+.catch(error => {
+    console.error('Error:', error);
+});
+
+
+
+const $chart = $('#chart-sensor-dark');
+function init( $chart ) {
+    fetch('/api/farm-humidity-results/')
+    .then((resp) => resp.json())//get data and turn it into JSON
+    .then(function(data){
+        let list_of_results = [];
+
+        //this function turns the array of arrays (data) into one single array
+        let flattenedArray = data.flat();
+        
+        let i = 50;
+        let j = 20;
+        //place holder
+        let itterator = 1
+        for(let array of data){
+            list_of_results.push(
+                {
+                    label: `Water Tank ID ${itterator}`,
+                    data: array,
+                    borderColor: `rgba(200, ${i}, ${j})`,
+                },                
+            )
+            i += 50;
+            j += 10;
+            itterator += 1;
+
+            if(i >= 255){
+                i = 0;
+            }
+
+            if(j >= 255){
+                j = 0;
+            }
+        }
+
+        console.log(list_of_results)
+        const chart_share = new Chart(($chart), {
+            type: 'line',
+            data:  {
+                labels: times,
+                datasets: list_of_results
+            },
+            options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                    callback:(value)=>value,
+                    max: Math.max(...flattenedArray),
+                    min: Math.min(...flattenedArray),
+                    stepSize: 1
+                }
+            }]
+        }
+    }
+        });
+          
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+};
+//  END HUMIDITY SENSOR RESULTS ************************** */
+
+
+  
+const $water_tank_chart = $('#chart-watertank-dark');
+function init_water_tank($water_tank_chart) {
+    fetch('/api/farm-water-level-results/')
+    .then((resp) => resp.json())//get data and turn it into JSON
+    .then(function(data){
+        let list_of_results = [];
+
+        //this function turns the array of arrays (data) into one single array
+        let flattenedArray = data.flat();
+        
+        let i = 50;
+        let j = 20;
+        //place holder
+        let itterator = 1
+        for(let array of data){
+            list_of_results.push(
+                {
+                    label: `Water Tank ID ${itterator}`,
+                    data: array,
+                    borderColor: `rgba(200, ${i}, ${j})`,
+                },                
+            )
+            i += 50;
+            j += 10;
+            itterator += 1;
+
+            if(i >= 255){
+                i = 0;
+            }
+
+            if(j >= 255){
+                j = 0;
+            }
+        }
+
+        console.log(list_of_results)
+        const chart_share = new Chart(($water_tank_chart), {
+            type: 'line',
+            data:  {
+                labels: times,
+                datasets: list_of_results
+            },
+            options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                    callback:(value)=>value,
+                    max: Math.max(...flattenedArray),
+                    min: Math.min(...flattenedArray),
+                    stepSize: 1
+                }
+            }]
+        }
+    }
+        });
+          
+    })
+    .catch(function(error){
+        console.error('Error:', error);
+    });
+};
+// END OF WATER TANK CHART  
+
+
+
+//WATER SHARE CHART
 const $water_share_chart = $('#chart-watershare-dark');
 function init_water_share($water_share_chart) {
     fetch('/api/farm-water-share/')
@@ -396,7 +465,7 @@ function init_water_share($water_share_chart) {
         for(let array of data){
             list_of_results.push(
                 {
-                    label: `Valve ID ${itterator}`,
+                    label: `Tree ID ${itterator}`,
                     data: array,
                     borderColor: `rgba(200, ${i}, ${j})`,
                 },                
@@ -440,6 +509,7 @@ function init_water_share($water_share_chart) {
         console.error('Error:', error);
     });    
 };
+// END OF WATER SHARE CHART
 
 
 // VALVE FLOW CHART
@@ -504,7 +574,7 @@ function init_valve_flow($valve_flow_chart) {
         console.error('Error:', error);
     });
 };
-
+// END POF VALVE FLOWMETER CHART
 
 
 // ENERGY LEVEL CHART
@@ -566,12 +636,9 @@ function init_energy_level(energy_level_chart) {
     .catch(error => {
         console.error('Error:', error);
     });
-
-
-
-    // Save to jQuery object
-    // {#$chart.data('chart', chart);#}
 };
+// END OF ENERGY LEVEL CHART
+
 
 // Events
 //HUMIDITY LEVEL CHART
@@ -616,11 +683,98 @@ $(document).ready(function(){
 
 
 
-
-/* 
+/*
+ 
     OLD IMPLEMENTATION AND CODE UNDERNEATH FOR DOCMENTATION AND REFERENCE PURPOSES
-*/
 
+
+        <script>
+
+    //CHARTS VIEW SECTION
+    // Variables
+    // let times = {{ times2|safe }};
+      // 3 9 3 2 new Date(3)
+      
+</script>
+
+
+//CHARTS VIEW SECTION
+// Variables
+//   let times = {{ times2|safe }};
+//   3 9 3 2 new Date(3)
+//   let results = {{ sensor_results|safe }};
+  // {#let numbers = numbersss.map(function(result) {return new Date(result);});#}
+  // let chartData = results.map((result,index)=> (result));
+
+
+// let water_tank_results = {{ water_tank_results|safe }};
+// const $water_tank_chart = $('#chart-watertank-dark');
+// function init_water_tank($water_tank_chart) {
+//     const chart_tank = new Chart($water_tank_chart, {
+//         type: 'line',
+//         data:  {
+//             labels: times,
+//             datasets: [{
+//               label: 'WaterTank',
+//               data: water_tank_results
+//             }]
+//         },
+//         options: {
+//         scales: {
+//             yAxes: [{
+
+//                 ticks: {
+//                 callback:(value)=>value,
+//                 max: Math.max(...water_tank_results),
+//                 min: Math.min(...water_tank_results),
+//                 stepSize: 1
+//             }
+//         }]
+//     }
+// }
+//     });
+
+// // Save to jQuery object
+
+// /* {#$chart.data('chart', chart);#}
+
+// };
+
+    // // {#let numbers = numbersss.map(function(result) {return new Date(result);});#}
+    // // let chartData = results.map((result,index)=> (result));
+
+
+    // const $chart = $('#chart-sensor-dark');
+    // function init( $chart ) {
+    //     const chart = new Chart( $chart , {
+    //         type: 'line',
+    //         data:  {
+    //             labels: times,
+    //             datasets: [
+    //                 {% for sensor in list_of_humidity_results %}
+    //                     {
+    //                     label: "Sensor ID.{{ humidity_sensors.id }}",
+    //                     data: {{ sensor|safe }},
+    //                     },
+    //                 {% endfor %}
+    //             ]
+    //         },
+    //         options: {
+    //             scales: {
+    //                 yAxes: [{
+    //                     ticks: {
+    //                         callback:(value)=>value,
+    //                         max: Math.max(...results),
+    //                         min: Math.min(...results),
+    //                         stepSize: 1
+    //                     }
+    //                 }]
+    //             }
+    //         }
+    //     });// Save to jQuery object{#$chart.data('chart', chart);#}
+
+    // };
+    // //  END HUMIDITY SENSOR RESULTS ************************** */
 
     // let water_share_results = {{ water_share_results|safe }};
     // const $water_share_chart = $('#chart-watershare-dark');
@@ -654,7 +808,7 @@ $(document).ready(function(){
 
     // Save to jQuery object
 
-    /* {#$chart.data('chart', chart);#} */
+    /* {#$chart.data('chart', chart);#} 
 
   // };
     // let valve_flow_results = {{ valve_flow_results|safe }};
@@ -732,3 +886,4 @@ $(document).ready(function(){
     // {#$chart.data('chart', chart);#}
 
   // };
+*/

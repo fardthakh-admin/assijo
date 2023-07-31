@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from apps.home import models
+import numpy as np
 from . import serializers
 
 @api_view(['GET'])
@@ -13,10 +14,9 @@ def api_over_view(request):
         'Water-Tanks': '/farm-water-tanks/',
         'Water-Pumps': '/farm-water-pumps/',
         'Energy-Levels': '/farm-energy-levels/',
-        'Results': '/farm-reading-results/',
-        'Results': '/farm-reading-results/',
-        'Results': '/farm-reading-results/',
-        'Results': '/farm-water-share-results/',
+        'Sensor-Humidity-Results': '/farm-humidity-results/',
+        'Timestamps': '/farm_timestamps/',
+        'Water-Tanks': '/farm-water-level-results/',
         'Water-Share': 'farm-water-share/',
         'Valve-Flow-Results': '/farm-valveflow-results/',
         'String-Results': '/farm-string-results/',
@@ -79,6 +79,21 @@ def farm_water_pumps(request):
 
 
 @api_view(['GET'])
+def farm_timestamps(request):
+    user = models.User.objects.get(id = request.user.id)
+    sensors = models.Sensor.objects.filter(farm_id=user.farm)
+
+    list_of_timestamps = []
+
+    results = models.Result.objects.filter(sensor__farm = user.farm).order_by('timestamp').values('number', 'timestamp')
+    for result in results:
+        list_of_timestamps.append(result['timestamp'].strftime('%Y-%m-%d'))
+
+    list_of_timestamps = np.unique(list_of_timestamps)
+    return Response(list_of_timestamps)
+
+
+@api_view(['GET'])
 def farm_energy_levels(request):
     user = models.User.objects.get(id = request.user.id)
     waterpumps = models.WaterPump.objects.filter(farm_id=user.farm)
@@ -104,12 +119,35 @@ def farm_energy_levels(request):
 
 
 @api_view(['GET'])
-def farm_reading_results(request):
+def farm_humidity_results(request):
     user = models.User.objects.get(id = request.user.id)
     sensors = models.Sensor.objects.filter(farm_id=user.farm)
     results = models.Result.objects.filter(sensor__in = sensors).order_by('-id')
     serializer = serializers.ResultSerializer(results, many = True)
-    return Response(serializer.data)
+    
+    list_of_humidity_results = []
+
+    for sensor in sensors:
+        humidity_result = list(models.Result.objects.filter(sensor__id = sensor.id).values_list('number', flat=True))
+        humidity_result = list(map(int, humidity_result))
+        list_of_humidity_results.append(humidity_result)
+
+    return Response(list_of_humidity_results)
+
+
+@api_view(['GET'])
+def farm_water_level_results(request):
+    user = models.User.objects.get(id = request.user.id)
+    water_tanks = models.WaterTank.objects.filter(farm_id = user.farm)
+
+    list_of_water_level_results = []
+
+    for tank in water_tanks:
+        water_level_result = list(models.Result.objects.filter(water_tank__id = tank.id).values_list('number', flat=True))
+        water_level_result = list(map(int, water_level_result))
+        list_of_water_level_results.append(water_level_result)
+
+    return Response(list_of_water_level_results)
 
 
 @api_view(['GET'])
