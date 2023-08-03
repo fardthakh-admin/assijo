@@ -452,21 +452,22 @@ const $water_share_chart = $('#chart-watershare-dark');
 function init_water_share($water_share_chart) {
     fetch('/api/farm-water-share/')
     .then((resp) => resp.json())//get data and turn it into JSON
-    .then(function(data){
+    .then(function(response){
         let list_of_results = [];
 
         //this function turns the array of arrays (data) into one single array
-        let flattenedArray = data.flat();
+        // let flattenedArray = response.shares.flat();
+        // console.log(flattenedArray)
         
         let i = 50;
         let j = 20;
         //place holder
         let itterator = 1
-        for(let array of data){
+        for(let object of response){
             list_of_results.push(
                 {
-                    label: `Tree ID ${itterator}`,
-                    data: array,
+                    label: `Tree ID ${object.tree_id} \n Unit :(${object.unit}) and Value is`,
+                    data: object.shares,
                     borderColor: `rgba(200, ${i}, ${j})`,
                 },                
             )
@@ -495,8 +496,8 @@ function init_water_share($water_share_chart) {
                 yAxes: [{
                     ticks: {
                     callback:(value)=>value,
-                    max: Math.max(...flattenedArray),
-                    min: Math.min(...flattenedArray),
+                    max: Math.max(100),
+                    min: Math.min(0),
                     stepSize: 1
                 }
             }]
@@ -548,7 +549,7 @@ function init_valve_flow($valve_flow_chart) {
             }
         }
 
-        console.log(list_of_results)
+        
         const chart_share = new Chart(($valve_flow_chart), {
             type: 'line',
             data:  {
@@ -612,7 +613,6 @@ function init_energy_level(energy_level_chart) {
             }
         }
 
-        console.log(list_of_results)
         const chart_share = new Chart($(energy_level_chart[0]), {
             type: 'line',
             data:  {

@@ -152,21 +152,61 @@ def farm_water_level_results(request):
 
 @api_view(['GET'])
 def farm_water_share(request):
+    # Get the authenticated user
     user = models.User.objects.get(id = request.user.id)
+
+    # Filter trees based on the user's farm
     trees = models.Tree.objects.filter(farm_id=user.farm)
-    water_share = models.WaterShare.objects.filter(tree__in = trees).order_by('-id')
-    serializer = serializers.WaterShareSerializer(water_share, many = True)
+
+    # Filter water shares for the trees and order by ID in descending order
+    water_share = models.WaterShare.objects.filter(tree__in=trees).order_by('-id')
+
+    # Create a dictionary to store the data grouped by tree ID and unit
+    data_by_tree_id = {}
+    for share in water_share:
+        tree_id = share.tree.id
+        if share.unit:
+            unit = share.unit
+            key = f"{tree_id}_{unit}"
+            if key not in data_by_tree_id:
+                data_by_tree_id[key] = {
+                    'tree_id': tree_id,
+                    'unit': unit,
+                    'shares': [],
+                }
+        else:
+            key = f"{tree_id}_None"
+            if key not in data_by_tree_id:
+                data_by_tree_id[key] = {
+                    'tree_id': tree_id,
+                    'shares': [],
+                }
+        data_by_tree_id[key]['shares'].append(share.number)
+
+    # Convert the dictionary values to a list to match the desired output format
+    data = list(data_by_tree_id.values())
+
+    return Response(data)
+
+    # user = models.User.objects.get(id = request.user.id)
+    # trees = models.Tree.objects.filter(farm_id=user.farm)
+    # water_share = models.WaterShare.objects.filter(tree__in = trees).order_by('-id')
+    # serializer = serializers.WaterShareSerializer(water_share, many = True)
+    # data = serializer.data
+
+    # for result in data:
+    #     water_share_results = list(models.WaterShare.objects.filter(tree__id = tree.id).values_list('number', flat=True))
+    #     print(result)
+
+    # list_of_water_share_results = []
+
+    # for tree in trees:
+    #     water_share_results = list(models.WaterShare.objects.filter(tree__id = tree.id).values_list('number', flat=True))
+    #     water_share_results = list(map(int, water_share_results))
+    #     list_of_water_share_results.append(water_share_results)
 
 
-    list_of_water_share_results = []
-
-    for tree in trees:
-        water_share_results = list(models.WaterShare.objects.filter(tree__id = tree.id).values_list('number', flat=True))
-        water_share_results = list(map(int, water_share_results))
-        list_of_water_share_results.append(water_share_results)
-
-
-    return Response(list_of_water_share_results)
+    # return Response(list_of_water_share_results)
 
 
 @api_view(['GET'])
