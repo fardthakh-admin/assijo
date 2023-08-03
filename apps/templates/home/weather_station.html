@@ -92,17 +92,22 @@
                   <div class="row">
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Temperature</h5>
-
-              <span class="h2 font-weight-bold mb-0">
-                {{  weather.weather_station.last.temperature }}
-              </span>
-                    </div>
+                      <span class="h2 font-weight-bold mb-0">
+                        
+                      </span>
+                    </div>                    
                     <div class="col-auto">
-                      <div class="icon icon-shape bg-gradient-danger text-white rounded-circle shadow">
+                      
+                      <div class="icon icon-shape bg-gradient-danger text-white rounded-circle shadow">                      
                         <i class="fa fa-thermometer-three-quarters"></i>
                       </div>
                     </div>
                   </div>
+
+                  <span id="temperature-card">
+                    loading...
+                  </span>
+
                   <p class="mt-3 mb-0 text-sm">
                     <span class="text-success mr-2"><i class="fa fa-arrow-up"></i></span>
                     <span class="text-nowrap">last read</span>
@@ -122,7 +127,7 @@
                       <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Humidity</h5>
 
                     <span class="h2 font-weight-bold mb-0">
-                        {{  weather.weather_station.last.humidity }}
+                        
                     </span>
                     </div>
                     <div class="col-auto">
@@ -131,6 +136,12 @@
                       </div>
                     </div>
                   </div>
+
+                  <span id="humidity-card">
+                    loading...
+                  </span>
+
+                  
                   <p class="mt-3 mb-0 text-sm">
                     <span class="text-danger mr-2"><i class="fa fa-arrow-down"></i></span>
                     <span class="text-nowrap">last read</span>
@@ -151,7 +162,7 @@
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Rainfall</h5>
                         <span class="h2 font-weight-bold mb-0">
-                        {{  weather.weather_station.last.rainfall }}
+                        
                     </span>
                     </div>
                     <div class="col-auto">
@@ -160,6 +171,11 @@
                       </div>
                     </div>
                   </div>
+
+                  <span id="rainfall-card">
+                    loading...
+                  </span>
+
                   <p class="mt-3 mb-0 text-sm">
                     <span class="text-danger mr-2"><i class="fa fa-arrow-down"></i></span>
                     <span class="text-nowrap">last read</span>
@@ -178,7 +194,7 @@
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Wind Speed</h5>
                         <span class="h2 font-weight-bold mb-0">
-                        {{  weather.weather_station.last.wind_speed }}
+                        
                         </span>
 
                     </div>
@@ -189,6 +205,11 @@
                       </div>
                     </div>
                   </div>
+
+                  <span id="windspeed-card">
+                    loading...
+                  </span>
+
                   <p class="mt-3 mb-0 text-sm">
                     <span class="text-success mr-2"><i class="fa fa-arrow-up"></i></span>
                     <span class="text-nowrap">last read</span>
@@ -208,9 +229,10 @@
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Direction</h5>
 
-              <span class="h2 font-weight-bold mb-0">
-                {{  weather.weather_station.last.direction }}
-              </span>
+                      <span class="h2 font-weight-bold mb-0">
+                        
+                      </span>
+
                     </div>
                     <div class="col-auto">
                       <div class="icon icon-shape bg-gradient-warning text-white rounded-circle shadow">
@@ -218,6 +240,11 @@
                       </div>
                     </div>
                   </div>
+
+                  <span id="direction-card">
+                    loading...
+                  </span>
+
                   <p class="mt-3 mb-0 text-sm">
                     <span class="text-decoration-none mr-2"><i class="fa fa-arrow-left"></i></span>
                     <span class="text-nowrap"> last read</span>
@@ -237,7 +264,7 @@
                       <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">timestamp</h5>
 
                     <span class="h2 font-weight-bold mb-0">
-                        {{  weather.weather_station.last.timestamp }}
+                        
                     </span>
                     </div>
                     <div class="col-auto">
@@ -246,6 +273,11 @@
                       </div>
                     </div>
                   </div>
+
+                  <span id="timestamp-card">
+                    loading...
+                  </span>
+
                   <p class="mt-3 mb-0 text-sm">
                       <span class="text-success mr-2"><i class="fa fa-arrow-up"></i></span>
                     <span class="text-nowrap">last read</span>
@@ -266,7 +298,7 @@
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">visibility</h5>
                         <span class="h2 font-weight-bold mb-0">
-                        {{  weather.weather_station.last.visibility }}
+                        
                     </span>
                     </div>
                     <div class="col-auto">
@@ -275,6 +307,11 @@
                       </div>
                     </div>
                   </div>
+
+                  <span id="visibility-card">
+                    loading...
+                  </span>
+
                   <p class="mt-3 mb-0 text-sm">
                     <span class="text-danger mr-2"><i class="fa fa-arrow-down"></i></span>
                     <span class="text-nowrap">last read</span>
@@ -293,7 +330,7 @@
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">solar radiation</h5>
                         <span class="h2 font-weight-bold mb-0">
-                        {{  weather.weather_station.last.solar_radiation }}
+                        
                         </span>
 
                     </div>
@@ -304,6 +341,11 @@
                       </div>
                     </div>
                   </div>
+
+                  <span id="solar-radiation-card">
+                    loading...
+                  </span>
+
                   <p class="mt-3 mb-0 text-sm">
                     <span class="text-success mr-2"><i class="fa fa-arrow-up"></i></span>
                     <span class="text-nowrap">last read</span>
@@ -435,6 +477,7 @@
                                             <div class="image"><img src="" alt="image..." class="imgClass" id="img1"></div>
                                             <p class="minValue" id="day1Min">Loading...</p>
                                             <p class="maxValues" id="day1Max">Loading...</p>
+                                            <p class="rainFallValues" id="day1RainFall">Loading...</p>
                                         </div>
 
                                         <div class="icons">
@@ -442,6 +485,7 @@
                                             <div class="image"><img src="" alt="image..." class="imgClass" id="img2"></div>
                                             <p class="minValue" id="day2Min">Loading...</p>
                                             <p class="maxValues" id="day2Max">Loading...</p>
+                                            <p class="rainFallValues" id="day2RainFall">Loading...</p>
                                         </div>
 
                                         <div class="icons">
@@ -449,6 +493,7 @@
                                             <div class="image"><img src="" alt="image..." class="imgClass" id="img3"></div>
                                             <p class="minValue" id="day3Min">Loading...</p>
                                             <p class="maxValues" id="day3Max">Loading...</p>
+                                            <p class="rainFallValues" id="day3RainFall">Loading...</p>
                                         </div>
 
                                         <div class="icons">
@@ -456,6 +501,7 @@
                                             <div class="image"><img src="" alt="image..." class="imgClass" id="img4"></div>
                                             <p class="minValue" id="day4Min">Loading...</p>
                                             <p class="maxValues" id="day4Max">Loading...</p>
+                                            <p class="rainFallValues" id="day4RainFall">Loading...</p>
                                         </div>
 
                                         <div class="icons" style="margin-right: 50px">
@@ -463,6 +509,7 @@
                                             <div class="image"><img src="" alt="image..." class="imgClass" id="img5"></div>
                                             <p class="minValue" id="day5Min">Loading...</p>
                                             <p class="maxValues" id="day5Max">Loading...</p>
+                                            <p class="rainFallValues" id="day5RainFall">Loading...</p>
                                         </div>
                                     </div>
                                 </div>
@@ -696,6 +743,7 @@ var chart = echarts.init(document.getElementById("water-level-card"));
         fetch("http://api.openweathermap.org/data/2.5/forecast?lat={{ user.farm.latitude }}&lon={{ user.farm.longitude }}&appid=5639c29d6c931e776c6fdc6ca8edfd04")
         .then( response => response.json())
         .then(data => {
+          console.log(data.list)
             for (let i = 1; i <= 5 ; i++) {
                 document.getElementById("day"+i+"Min").innerHTML = "Min: " +Number(data.list[i].main.temp_min - 264.53).toFixed(1)+"°";
             }
@@ -705,9 +753,20 @@ var chart = echarts.init(document.getElementById("water-level-card"));
             for (let i = 1; i <= 5 ; i++) {
                 document.getElementById("img"+i).src = "https://openweathermap.org/img/wn/" + data.list[i].weather[0].icon+".png";
             }
+            for (let i = 1; i <= 5 ; i++) {
+                document.getElementById("day"+i+"RainFall").innerHTML = "RainFall : " + data.list[i].weather[0].main;
+            }
 
+            document.getElementById("temperature-card").innerText = Number(data.list[0].main.temp_min - 264.53).toFixed(1)+"°";
+            document.getElementById("humidity-card").innerText = data.list[0].main.humidity;
+            document.getElementById("rainfall-card").innerText = data.list[0].weather[0].description;
+            document.getElementById("windspeed-card").innerText = data.list[0].wind.speed;
+            document.getElementById("direction-card").innerText = data.list[0].wind.deg;
+            document.getElementById("timestamp-card").innerText = data.list[0].dt_txt;
+            document.getElementById("visibility-card").innerText = data.list[0].visibility;
+            document.getElementById("solar-radiation-card").innerText = "Loading..."//data.list[0].main.humidity;
         })
-        .catch( err=> alert("Something Went Wrong"))
+        .catch( err=> alert("Something Went Wrong --- Forecasting API error"))
 
         const date = new Date();
         const weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -727,29 +786,29 @@ var chart = echarts.init(document.getElementById("water-level-card"));
     <!--   END OF WEATHER FORECASTING API   -->
 
 <script>
-    {#let MymapOptions = {#}
-    {#    center:[{{user.farm.latitude}} , {{user.farm.longitude}}],#}
-    {#    zoom:10#}
-    {#}#}
-    {##}
-    {#let Mymap2 = new L.map('Mymap2' , MymapOptions);#}
-    {#Mymap2.scrollWheelZoom.disable()#}
-    {##}
-    {#let Mylayer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');#}
-    {#Mymap2.addLayer(Mylayer);#}
-    {##}
-    {#let marker = null;#}
-    {#Mymap2.on('click', (event)=> {#}
-    {##}
-    {#    if(marker !== null){#}
-    {#        Mymap2.removeLayer(marker);#}
-    {#    }#}
-    {##}
-    {#    marker = L.marker([event.latlng.lat , event.latlng.lng]).addTo(Mymap2);#}
-    {##}
-    {#    document.getElementById('latitude').value = event.latlng.lat;#}
-    {#    document.getElementById('longitude').value = event.latlng.lng;#}
-    {#})#}
+    // {#let MymapOptions = {#}
+    // {#    center:[{{user.farm.latitude}} , {{user.farm.longitude}}],#}
+    // {#    zoom:10#}
+    // {#}#}
+    // {##}
+    // {#let Mymap2 = new L.map('Mymap2' , MymapOptions);#}
+    // {#Mymap2.scrollWheelZoom.disable()#}
+    // {##}
+    // {#let Mylayer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');#}
+    // {#Mymap2.addLayer(Mylayer);#}
+    // {##}
+    // {#let marker = null;#}
+    // {#Mymap2.on('click', (event)=> {#}
+    // {##}
+    // {#    if(marker !== null){#}
+    // {#        Mymap2.removeLayer(marker);#}
+    // {#    }#}
+    // {##}
+    // {#    marker = L.marker([event.latlng.lat , event.latlng.lng]).addTo(Mymap2);#}
+    // {##}
+    // {#    document.getElementById('latitude').value = event.latlng.lat;#}
+    // {#    document.getElementById('longitude').value = event.latlng.lng;#}
+    // {#})#}
 
     function initAddMap(){
             let MymapOptions = {
