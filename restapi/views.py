@@ -96,26 +96,55 @@ def farm_timestamps(request):
 @api_view(['GET'])
 def farm_energy_levels(request):
     user = models.User.objects.get(id = request.user.id)
+
     waterpumps = models.WaterPump.objects.filter(farm_id=user.farm)
-    energy_levels = models.EnergyLevel.objects.filter(water_pump__in = waterpumps).order_by('-id')
-    serializer = serializers.EnergyLevelSerializer(energy_levels, many = True)
-    data = serializer.data
 
-    energy_level_result_list = []
-    
-    for result in data:
-        # energy_level = list(models.EnergyLevel.objects.filter(water_pump__id = result.id).values_list('number', flat=True))
-        energy_level_result_list.append(int(result["energy_result"]))
-
-
-    list_of_energy_level_results = []
-
+    # Create a list to store the data
+    data = []
     for pump in waterpumps:
-        pump_energy_level_results = list(models.EnergyLevel.objects.filter(water_pump__id = pump.id).values_list('energy_result', flat=True))
-        pump_energy_level_results = list(map(int, pump_energy_level_results))
-        list_of_energy_level_results.append(pump_energy_level_results)
+        # Get the WaterTank ID from the water tank
+        pump_id = pump.id
 
-    return Response(list_of_energy_level_results)
+        # Get the list of water level results for the current water tank
+        energy_level_result = list(models.Result.objects.filter(water_pump__id=pump_id).values_list('number', flat=True))
+        energy_level_result = list(map(int, energy_level_result))
+
+        # Get the unit for the current water tank from the first result (assuming same unit for all results)
+        results = models.Result.objects.filter(water_pump__id=pump.id)
+        unit = results[0].unit if results.exists() and results[0].unit else None
+
+        # Create a dictionary for the current water tank and append it to the data list
+        data.append({
+            'Water_pump_id': pump_id,
+            'unit': unit,
+            'energy_levels': energy_level_result,
+        })
+
+    return Response(data)
+
+
+    ### OLD CODE
+    # user = models.User.objects.get(id = request.user.id)
+    # waterpumps = models.WaterPump.objects.filter(farm_id=user.farm)
+    # energy_levels = models.EnergyLevel.objects.filter(water_pump__in = waterpumps).order_by('-id')
+    # serializer = serializers.EnergyLevelSerializer(energy_levels, many = True)
+    # data = serializer.data
+
+    # energy_level_result_list = []
+    
+    # for result in data:
+    #     # energy_level = list(models.EnergyLevel.objects.filter(water_pump__id = result.id).values_list('number', flat=True))
+    #     energy_level_result_list.append(int(result["energy_result"]))
+
+
+    # list_of_energy_level_results = []
+
+    # for pump in waterpumps:
+    #     pump_energy_level_results = list(models.EnergyLevel.objects.filter(water_pump__id = pump.id).values_list('energy_result', flat=True))
+    #     pump_energy_level_results = list(map(int, pump_energy_level_results))
+    #     list_of_energy_level_results.append(pump_energy_level_results)
+
+    # return Response(list_of_energy_level_results)
 
 
 @api_view(['GET'])
@@ -268,18 +297,44 @@ def farm_water_share(request):
 @api_view(['GET'])
 def farm_valveflow_results(request):
     user = models.User.objects.get(id = request.user.id)
-    valves = models.Valve.objects.filter(farm_id=user.farm)
-    results = models.Result.objects.filter(valve__in = valves).order_by('-id')
-    serializer = serializers.ResultSerializer(results, many = True)
 
-    list_of_valve_flow_results = []
+    Valves = models.Valve.objects.filter(farm_id=user.farm)
 
-    for valve in valves:
-        valve_flow_results = list(models.Result.objects.filter(valve__id = valve.id).values_list('number', flat=True))
-        valve_flow_results = list(map(int, valve_flow_results))
-        list_of_valve_flow_results.append(valve_flow_results)
+    # Create a list to store the data
+    data = []
+    for valve in Valves:
+        # Get the WaterTank ID from the water tank
+        valve_id = valve.id
+
+        # Get the list of water level results for the current water tank
+        valve_flow_result = list(models.Result.objects.filter(valve__id=valve.id).values_list('number', flat=True))
+        valve_flow_result = list(map(int, valve_flow_result))
+
+        # Get the unit for the current water tank from the first result (assuming same unit for all results)
+        results = models.Result.objects.filter(valve__id=valve.id)
+        unit = results[0].unit if results.exists() and results[0].unit else None
+
+        # Create a dictionary for the current water tank and append it to the data list
+        data.append({
+            'valve_id': valve_id,
+            'unit': unit,
+            'valve_flow_results': valve_flow_result,
+        })
+
+    return Response(data)
+    # user = models.User.objects.get(id = request.user.id)
+    # valves = models.Valve.objects.filter(farm_id=user.farm)
+    # results = models.Result.objects.filter(valve__in = valves).order_by('-id')
+    # serializer = serializers.ResultSerializer(results, many = True)
+
+    # list_of_valve_flow_results = []
+
+    # for valve in valves:
+    #     valve_flow_results = list(models.Result.objects.filter(valve__id = valve.id).values_list('number', flat=True))
+    #     valve_flow_results = list(map(int, valve_flow_results))
+    #     list_of_valve_flow_results.append(valve_flow_results)
     
-    return Response(list_of_valve_flow_results)
+    # return Response(list_of_valve_flow_results)
 
 
 @api_view(['GET'])

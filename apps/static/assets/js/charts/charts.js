@@ -526,17 +526,18 @@ function init_valve_flow($valve_flow_chart) {
         let list_of_results = [];
 
         //this function turns the array of arrays (data) into one single array
-        let flattenedArray = data.flat();
+        let flattenedArray = [];
         
         let i = 50;
         let j = 20;
         //place holder
         let itterator = 1
-        for(let array of data){
+        for(let object of data){
+            flattenedArray.push(object.valve_flow_results)
             list_of_results.push(
                 {
-                    label: `Valve ID ${itterator}`,
-                    data: array,
+                    label: `Valve ID ${object.valve_id} \n Unit : (${object.unit}) \n and Value is `,
+                    data: object.valve_flow_results,
                     borderColor: `rgba(200, ${i}, ${j})`,
                 },                
             )
@@ -553,7 +554,7 @@ function init_valve_flow($valve_flow_chart) {
             }
         }
 
-        
+        flattenedArray = flattenedArray.flat()
         const chart_share = new Chart(($valve_flow_chart), {
             type: 'line',
             data:  {
@@ -590,17 +591,18 @@ function init_energy_level(energy_level_chart) {
         let list_of_results = [];
 
         //this function turns the array of arrays (data) into one single array
-        let flattenedArray = data.flat();
+        let flattenedArray = [];
         
         let i = 50
         let j = 20
         //place holder
         let itterator = 1
-        for(let array of data){
+        for(let object of data){
+            flattenedArray.push(object.energy_levels)
             list_of_results.push(
                 {
-                    label: `Water Pump ID. ${itterator}`,
-                    data: array,
+                    label: `Water Pump ID. ${object.Water_pump_id} \n Unit : (${object.unit}) \n and Value is `,
+                    data: object.energy_levels,
                     borderColor: `rgba(200, ${i}, ${j})`,
                 },                
             )
@@ -617,6 +619,7 @@ function init_energy_level(energy_level_chart) {
             }
         }
 
+        flattenedArray = flattenedArray.flat()
         const chart_share = new Chart($(energy_level_chart[0]), {
             type: 'line',
             data:  {
