@@ -121,33 +121,89 @@ def farm_energy_levels(request):
 @api_view(['GET'])
 def farm_humidity_results(request):
     user = models.User.objects.get(id = request.user.id)
+
     sensors = models.Sensor.objects.filter(farm_id=user.farm)
-    results = models.Result.objects.filter(sensor__in = sensors).order_by('-id')
-    serializer = serializers.ResultSerializer(results, many = True)
-    
-    list_of_humidity_results = []
 
+    # Create a list to store the data
+    data = []
     for sensor in sensors:
-        humidity_result = list(models.Result.objects.filter(sensor__id = sensor.id).values_list('number', flat=True))
-        humidity_result = list(map(int, humidity_result))
-        list_of_humidity_results.append(humidity_result)
+        # Get the WaterTank ID from the water tank
+        sensor_id = sensor.id
 
-    return Response(list_of_humidity_results)
+        # Get the list of water level results for the current water tank
+        humidity_result = list(models.Result.objects.filter(sensor__id=sensor.id).values_list('number', flat=True))
+        humidity_result = list(map(int, humidity_result))
+
+        # Get the unit for the current water tank from the first result (assuming same unit for all results)
+        results = models.Result.objects.filter(sensor__id=sensor.id)
+        unit = results[0].unit if results.exists() and results[0].unit else None
+
+        # Create a dictionary for the current water tank and append it to the data list
+        data.append({
+            'sensor_id': sensor_id,
+            'unit': unit,
+            'humidity': humidity_result,
+        })
+
+    return Response(data)
+
+
+    ### OLD CODE
+    # user = models.User.objects.get(id = request.user.id)
+    # sensors = models.Sensor.objects.filter(farm_id=user.farm)
+    # results = models.Result.objects.filter(sensor__in = sensors).order_by('-id')
+    # serializer = serializers.ResultSerializer(results, many = True)
+    
+    # list_of_humidity_results = []
+
+    # for sensor in sensors:
+    #     humidity_result = list(models.Result.objects.filter(sensor__id = sensor.id).values_list('number', flat=True))
+    #     humidity_result = list(map(int, humidity_result))
+    #     list_of_humidity_results.append(humidity_result)
+
+    # return Response(list_of_humidity_results)
 
 
 @api_view(['GET'])
 def farm_water_level_results(request):
     user = models.User.objects.get(id = request.user.id)
-    water_tanks = models.WaterTank.objects.filter(farm_id = user.farm)
 
-    list_of_water_level_results = []
+    water_tanks = models.WaterTank.objects.filter(farm_id=user.farm)
 
+    # Create a list to store the data
+    data = []
     for tank in water_tanks:
-        water_level_result = list(models.Result.objects.filter(water_tank__id = tank.id).values_list('number', flat=True))
-        water_level_result = list(map(int, water_level_result))
-        list_of_water_level_results.append(water_level_result)
+        # Get the WaterTank ID from the water tank
+        watertank_id = tank.id
 
-    return Response(list_of_water_level_results)
+        # Get the list of water level results for the current water tank
+        water_level_result = list(models.Result.objects.filter(water_tank__id=tank.id).values_list('number', flat=True))
+        water_level_result = list(map(int, water_level_result))
+
+        # Get the unit for the current water tank from the first result (assuming same unit for all results)
+        results = models.Result.objects.filter(water_tank__id=tank.id)
+        unit = results[0].unit if results.exists() and results[0].unit else None
+
+        # Create a dictionary for the current water tank and append it to the data list
+        data.append({
+            'watertank_id': watertank_id,
+            'unit': unit,
+            'water_levels': water_level_result,
+        })
+
+    return Response(data)
+
+    ### OLD CODE
+    # water_tanks = models.WaterTank.objects.filter(farm_id = user.farm)
+
+    # list_of_water_level_results = []
+
+    # for tank in water_tanks:
+    #     water_level_result = list(models.Result.objects.filter(water_tank__id = tank.id).values_list('number', flat=True))
+    #     water_level_result = list(map(int, water_level_result))
+    #     list_of_water_level_results.append(water_level_result)
+
+    # return Response(list_of_water_level_results)
 
 
 @api_view(['GET'])

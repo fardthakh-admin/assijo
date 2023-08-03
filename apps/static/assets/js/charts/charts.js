@@ -325,17 +325,18 @@ function init( $chart ) {
         let list_of_results = [];
 
         //this function turns the array of arrays (data) into one single array
-        let flattenedArray = data.flat();
+        let flattenedArray = [];
         
         let i = 50;
         let j = 20;
         //place holder
         let itterator = 1
-        for(let array of data){
+        for(let object of data){
+            flattenedArray.push(object.humidity)
             list_of_results.push(
                 {
-                    label: `Water Tank ID ${itterator}`,
-                    data: array,
+                    label: `Sensor ID : ${object.sensor_id} \n Unit : (${object.unit}) \n and Value is `,
+                    data: object.humidity,
                     borderColor: `rgba(200, ${i}, ${j})`,
                 },                
             )
@@ -352,7 +353,7 @@ function init( $chart ) {
             }
         }
 
-        console.log(list_of_results)
+        flattenedArray = flattenedArray.flat();
         const chart_share = new Chart(($chart), {
             type: 'line',
             data:  {
@@ -386,21 +387,22 @@ const $water_tank_chart = $('#chart-watertank-dark');
 function init_water_tank($water_tank_chart) {
     fetch('/api/farm-water-level-results/')
     .then((resp) => resp.json())//get data and turn it into JSON
-    .then(function(data){
+    .then(function(response){
         let list_of_results = [];
 
         //this function turns the array of arrays (data) into one single array
-        let flattenedArray = data.flat();
+        let flattenedArray = []
         
         let i = 50;
         let j = 20;
         //place holder
         let itterator = 1
-        for(let array of data){
+        for(let object of response){
+            flattenedArray.push(object.water_levels)            
             list_of_results.push(
                 {
-                    label: `Water Tank ID ${itterator}`,
-                    data: array,
+                    label: `Water Tank ID : ${object.watertank_id} \n Unit : ${object.unit} \n and Value is`,
+                    data: object.water_levels,
                     borderColor: `rgba(200, ${i}, ${j})`,
                 },                
             )
@@ -417,7 +419,7 @@ function init_water_tank($water_tank_chart) {
             }
         }
 
-        console.log(list_of_results)
+        flattenedArray = flattenedArray.flat()
         const chart_share = new Chart(($water_tank_chart), {
             type: 'line',
             data:  {
@@ -456,24 +458,26 @@ function init_water_share($water_share_chart) {
         let list_of_results = [];
 
         //this function turns the array of arrays (data) into one single array
-        // let flattenedArray = response.shares.flat();
+        let flattenedArray = [];
         // console.log(flattenedArray)
         
         let i = 50;
         let j = 20;
-        //place holder
-        let itterator = 1
+
+        // //place holder
+        // let itterator = 1
         for(let object of response){
+            flattenedArray.push(object.shares)            
+
             list_of_results.push(
                 {
-                    label: `Tree ID ${object.tree_id} \n Unit :(${object.unit}) and Value is`,
+                    label: `Tree ID : ${object.tree_id} \n Unit : (${object.unit}) \n and Value is `,
                     data: object.shares,
                     borderColor: `rgba(200, ${i}, ${j})`,
                 },                
             )
             i += 50;
-            j += 10;
-            itterator += 1;
+            j += 10;            
 
             if(i >= 255){
                 i = 0;
@@ -484,7 +488,7 @@ function init_water_share($water_share_chart) {
             }
         }
 
-        console.log(list_of_results)
+        flattenedArray = flattenedArray.flat()
         const chart_share = new Chart(($water_share_chart), {
             type: 'line',
             data:  {
@@ -496,8 +500,8 @@ function init_water_share($water_share_chart) {
                 yAxes: [{
                     ticks: {
                     callback:(value)=>value,
-                    max: Math.max(100),
-                    min: Math.min(0),
+                    max: Math.max(...flattenedArray),
+                    min: Math.min(...flattenedArray),
                     stepSize: 1
                 }
             }]
