@@ -164,7 +164,7 @@ def farm_humidity_results(request):
         humidity_result = list(map(int, humidity_result))
 
         # Get the unit for the current water tank from the first result (assuming same unit for all results)
-        results = models.Result.objects.filter(sensor__id=sensor.id)
+        results = models.Sensor.objects.filter(id=sensor.id)
         unit = results[0].unit if results.exists() and results[0].unit else None
 
         # Create a dictionary for the current water tank and append it to the data list
@@ -322,6 +322,7 @@ def farm_valveflow_results(request):
         })
 
     return Response(data)
+
     # user = models.User.objects.get(id = request.user.id)
     # valves = models.Valve.objects.filter(farm_id=user.farm)
     # results = models.Result.objects.filter(valve__in = valves).order_by('-id')

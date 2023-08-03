@@ -49,6 +49,7 @@ class Sensor(models.Model):
     category = models.CharField(max_length=30)
     latitude = models.CharField(max_length=200, blank=True, null=True)
     longitude = models.CharField(max_length=200, blank=True, null=True)
+    unit = models.CharField(max_length=200, blank = True, null = True , default="Sensor Default Unit")
     # def __str__(self):
     #     return "%s %s" % (self.id, self.type)
 
