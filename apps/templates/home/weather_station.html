@@ -8,7 +8,7 @@
 {% block content %}
     <!-- Header -->
     <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js"></script>
-	<script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js"></script>
+	  <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js"></script>
     <link rel="stylesheet" href="static/assets/js/leaflet/leaflet.css" />
     <link rel="stylesheet" href="static/assets/css/leaflet-owm.css" />
     <link rel="stylesheet" href="static/assets/css/iconLayers.css" />
@@ -833,45 +833,45 @@ var chart = echarts.init(document.getElementById("water-level-card"));
 {##}
 {#    <!--  ATTEMPT TO PLACE A TAG ON THE MAP  -->#}
 {#    <script>#}
-{#        $(document).ready(function(){#}
-{#            var data = [];#}
-{#            $.ajax({#}
-{#                url: "{% url 'mydata_weatherstation'%}",#}
-{#                method: 'GET',#}
-{#                success: function (data_weather_station) {#}
-{#                    data_weather_station.forEach(function(item) {#}
-{#                        item.group = "weatherstation"; // Add group property to each item#}
-{#                    });#}
-{#                    data = data.concat(data_weather_station);#}
-{##}
-{#                }#}
-{#            });#}
-{#        });#}
-{#        function initMap(data) {#}
-{#        map = new OpenLayers.Map("map");#}
-{#        map.addLayer(new OpenLayers.Layer.OSM());#}
-{##}
-{#        var markers = new OpenLayers.Layer.Markers("Markers");#}
-{#        map.addLayer(markers);#}
-{##}
-{#        var markersArray = data;#}
-{#        for (var i = 0; i < markersArray.length; i++) {#}
-{#            var lonLat = new OpenLayers.LonLat(markersArray[i].longitude, markersArray[i].latitude)#}
-{#                .transform(#}
-{#                    new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984#}
-{#                    map.getProjectionObject() // to Spherical Mercator Projection#}
-{#                );#}
-{#            var icon = new OpenLayers.Icon("static/assets/img/icons/flag_icon.png", new OpenLayers.Size(50, 32));#}
-{#            markers.addMarker(new OpenLayers.Marker(lonLat, icon));#}
-{#        }#}
-{#        var lonLatcenter = new OpenLayers.LonLat({{ user.farm.longitude }}, {{ user.farm.latitude }})#}
-{#            .transform(#}
-{#                new OpenLayers.Projection("EPSG:4326"),#}
-{#                map.getProjectionObject()#}
-{#            );#}
-{#        var zoom = 10;#}
-{#        map.setCenter(lonLatcenter, zoom);#}
-{#    }#}
+// {#        $(document).ready(function(){#}
+// {#            var data = [];#}
+// {#            $.ajax({#}
+// {#                url: "{% url 'mydata_weatherstation'%}",#}
+// {#                method: 'GET',#}
+// {#                success: function (data_weather_station) {#}
+// {#                    data_weather_station.forEach(function(item) {#}
+// {#                        item.group = "weatherstation"; // Add group property to each item#}
+// {#                    });#}
+// {#                    data = data.concat(data_weather_station);#}
+// {##}
+// {#                }#}
+// {#            });#}
+// {#        });#}
+// {#        function initMap(data) {#}
+// {#        map = new OpenLayers.Map("map");#}
+// {#        map.addLayer(new OpenLayers.Layer.OSM());#}
+// {##}
+// {#        var markers = new OpenLayers.Layer.Markers("Markers");#}
+// {#        map.addLayer(markers);#}
+// {##}
+// {#        var markersArray = data;#}
+// {#        for (var i = 0; i < markersArray.length; i++) {#}
+// {#            var lonLat = new OpenLayers.LonLat(markersArray[i].longitude, markersArray[i].latitude)#}
+// {#                .transform(#}
+// {#                    new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984#}
+// {#                    map.getProjectionObject() // to Spherical Mercator Projection#}
+// {#                );#}
+// {#            var icon = new OpenLayers.Icon("static/assets/img/icons/flag_icon.png", new OpenLayers.Size(50, 32));#}
+// {#            markers.addMarker(new OpenLayers.Marker(lonLat, icon));#}
+// {#        }#}
+// {#        var lonLatcenter = new OpenLayers.LonLat({{ user.farm.longitude }}, {{ user.farm.latitude }})#}
+// {#            .transform(#}
+// {#                new OpenLayers.Projection("EPSG:4326"),#}
+// {#                map.getProjectionObject()#}
+// {#            );#}
+// {#        var zoom = 10;#}
+// {#        map.setCenter(lonLatcenter, zoom);#}
+// {#    }#}
 {#    </script>#}
 {##}
 

@@ -15,7 +15,7 @@ def api_over_view(request):
         'Water-Pumps': '/farm-water-pumps/',
         'Energy-Levels': '/farm-energy-levels/',
         'Sensor-Humidity-Results': '/farm-humidity-results/',
-        'Timestamps': '/farm_timestamps/',
+        'Timestamps': '/farm-timestamps/',
         'Water-Tanks': '/farm-water-level-results/',
         'Water-Share': 'farm-water-share/',
         'Valve-Flow-Results': '/farm-valveflow-results/',
