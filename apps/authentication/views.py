@@ -10,26 +10,26 @@ from .forms import LoginForm, SignUpForm
 from ..home.models import Title
 
 
-def login_view(request):
-    form = LoginForm(request.POST or None)
+# def login_view(request):
+#     form = LoginForm(request.POST or None)
 
-    msg = None
+#     msg = None
 
-    if request.method == "POST":
+#     if request.method == "POST":
 
-        if form.is_valid():
-            username = form.cleaned_data.get("username")
-            password = form.cleaned_data.get("password")
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect("/")
-            else:
-                msg = 'Invalid credentials'
-        else:
-            msg = 'Error validating the form'
-    titles = Title.objects.all()
-    return render(request, "accounts/login.html", {"form": form, "msg": msg,'titles':titles})
+#         if form.is_valid():
+#             username = form.cleaned_data.get("username")
+#             password = form.cleaned_data.get("password")
+#             user = authenticate(username=username, password=password)
+#             if user is not None:
+#                 login(request, user)
+#                 return redirect("/")
+#             else:
+#                 msg = 'Invalid credentials'
+#         else:
+#             msg = 'Error validating the form'
+#     titles = Title.objects.all()
+#     return render(request, "accounts/login.html", {"form": form, "msg": msg,'titles':titles})
 
 
 def register_user(request):

@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'apps.home.views.DisableCsrfCheck'
      ]
-
+ 
 ROOT_URLCONF = 'core.urls'
 LOGIN_REDIRECT_URL = "home"  # Route defined in home/urls.py
 LOGOUT_REDIRECT_URL = "home"  # Route defined in home/urls.py
@@ -87,7 +87,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'assijo',
         'USER': 'postgres',
-        'PASSWORD': 'Dawood2002#',
+        'PASSWORD': '1234',
         'HOST': 'localhost'
     }
 }

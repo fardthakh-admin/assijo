@@ -932,11 +932,11 @@ class UserOperation(APIView):
 
         if operation == 'add':
             if username and email and password:
-                varuser = User.objects.create(
+                varuser = User.objects.create_user(
                     username=username,
                     email=email,
                     password=password,
                     farm = user.farm,
                 )
-
+                varuser.save()
         return redirect('/users')
