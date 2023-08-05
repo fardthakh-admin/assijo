@@ -1,3 +1,4 @@
+import datetime
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from apps.home import models
@@ -16,6 +17,8 @@ def api_over_view(request):
         'Energy-Levels': '/farm-energy-levels/',
         'Sensor-Humidity-Results': '/farm-humidity-results/',
         'Timestamps': '/farm-timestamps/',
+        'Timestamp-Month': '/farm-timestamps-month/',
+        'Timestamp-Week': '/farm-timestamps-week/',
         'Water-Tanks': '/farm-water-level-results/',
         'Water-Share': 'farm-water-share/',
         'Valve-Flow-Results': '/farm-valveflow-results/',
@@ -85,7 +88,59 @@ def farm_timestamps(request):
 
     list_of_timestamps = []
 
-    results = models.Result.objects.filter(sensor__farm = user.farm).order_by('timestamp').values('number', 'timestamp')
+    start_date = request.GET.get('start_date') if request.GET.get('start_date') != '' else datetime.datetime.today() - datetime.timedelta(days=30)
+    end_date = request.GET.get('end_date') if request.GET.get('end_date') != '' else datetime.datetime.today()
+
+    print('START DATE AHEAD:')
+    print(start_date)
+    print()
+    print()
+    print('END DATE AHEAD:')
+    print(end_date)
+    print()
+    print()
+    print()
+    
+    if start_date is None:
+        start_date = datetime.datetime.today() - datetime.timedelta(days=30)
+    if end_date is None:
+        end_date = datetime.datetime.today()
+    
+    results = models.Result.objects.filter(sensor__farm = user.farm , timestamp__range = (start_date, end_date)).order_by('timestamp').values('number', 'timestamp')
+    for result in results:
+        list_of_timestamps.append(result['timestamp'].strftime('%Y-%m-%d'))
+
+    list_of_timestamps = np.unique(list_of_timestamps)
+    return Response(list_of_timestamps)
+
+
+@api_view(['GET'])
+def farm_timestamps_month(request):
+    user = models.User.objects.get(id = request.user.id)
+
+    list_of_timestamps = []
+
+    start_date = datetime.datetime.today() - datetime.timedelta(days=30)
+    end_date = datetime.datetime.today()
+    
+    results = models.Result.objects.filter(sensor__farm = user.farm , timestamp__range = (start_date, end_date)).order_by('timestamp').values('number', 'timestamp')
+    for result in results:
+        list_of_timestamps.append(result['timestamp'].strftime('%Y-%m-%d'))
+
+    list_of_timestamps = np.unique(list_of_timestamps)
+    return Response(list_of_timestamps)
+
+
+@api_view(['GET'])
+def farm_timestamps_week(request):
+    user = models.User.objects.get(id = request.user.id)
+
+    list_of_timestamps = []
+        
+    start_date = datetime.datetime.today() - datetime.timedelta(days=7)
+    end_date = datetime.datetime.today()
+    
+    results = models.Result.objects.filter(sensor__farm = user.farm , timestamp__range = (start_date, end_date)).order_by('timestamp').values('number', 'timestamp')
     for result in results:
         list_of_timestamps.append(result['timestamp'].strftime('%Y-%m-%d'))
 
@@ -106,7 +161,7 @@ def farm_energy_levels(request):
         pump_id = pump.id
 
         # Get the list of water level results for the current water tank
-        energy_level_result = list(models.Result.objects.filter(water_pump__id=pump_id).values_list('number', flat=True))
+        energy_level_result = list(models.EnergyLevel.objects.filter(water_pump__id=pump_id).values_list('energy_result', flat=True))
         energy_level_result = list(map(int, energy_level_result))
 
         # Get the unit for the current water tank from the first result (assuming same unit for all results)
@@ -244,7 +299,7 @@ def farm_water_share(request):
     trees = models.Tree.objects.filter(farm_id=user.farm)
 
     # Filter water shares for the trees and order by ID in descending order
-    water_share = models.WaterShare.objects.filter(tree__in=trees).order_by('-id')
+    water_share = models.WaterShare.objects.filter(tree__in=trees)
 
     # Create a dictionary to store the data grouped by tree ID and unit
     data_by_tree_id = {}
@@ -342,7 +397,7 @@ def farm_valveflow_results(request):
 def farm_string_results(request):
     user = models.User.objects.get(id = request.user.id)
     sensors = models.Sensor.objects.filter(farm_id=user.farm)
-    string_results = models.StringResult.objects.filter(sensors__in = sensors).order_by('-id')
+    string_results = models.StringResult.objects.filter(sensors__in = sensors)
     serializer = serializers.StringResultSerializer(string_results, many = True)
     return Response(serializer.data)
 

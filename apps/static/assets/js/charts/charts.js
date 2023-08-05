@@ -352,7 +352,7 @@ function init( $chart ) {
                 j = 0;
             }
         }
-
+        
         flattenedArray = flattenedArray.flat();
         const chart_share = new Chart(($chart), {
             type: 'line',
@@ -373,6 +373,27 @@ function init( $chart ) {
         }
     }
         });
+
+        let month_button = document.getElementById('humidity-chart-month');
+        month_button.addEventListener('click', () => {
+            fetch('/api/farm-timestamps-month/')
+            .then((resp) => resp.json())
+            .then((data) => {
+                chart_share.data.labels = data;
+                chart_share.update();
+            })
+            
+        })
+
+        let week_button = document.getElementById('humidity-chart-week');
+        week_button.addEventListener('click', () => {
+            fetch('/api/farm-timestamps-week/')
+            .then((resp) => resp.json())
+            .then((data) => {
+                chart_share.data.labels = data;
+                chart_share.update();
+            })
+        })
           
     })
     .catch(error => {
@@ -439,6 +460,27 @@ function init_water_tank($water_tank_chart) {
         }
     }
         });
+
+        let month_button = document.getElementById('watertank-chart-month');
+        month_button.addEventListener('click', () => {
+            fetch('/api/farm-timestamps-month/')
+            .then((resp) => resp.json())
+            .then((data) => {
+                chart_share.data.labels = data;
+                chart_share.update();
+            })
+            
+        })
+
+        let week_button = document.getElementById('watertank-chart-week');
+        week_button.addEventListener('click', () => {
+            fetch('/api/farm-timestamps-week/')
+            .then((resp) => resp.json())
+            .then((data) => {
+                chart_share.data.labels = data;
+                chart_share.update();
+            })
+        })
           
     })
     .catch(function(error){
@@ -509,6 +551,27 @@ function init_water_share($water_share_chart) {
     }
         });
           
+        let month_button = document.getElementById('watershare-chart-month');
+        month_button.addEventListener('click', () => {
+            fetch('/api/farm-timestamps-month/')
+            .then((resp) => resp.json())
+            .then((data) => {
+                chart_share.data.labels = data;
+                chart_share.update();
+            })
+            
+        })
+
+        let week_button = document.getElementById('watershare-chart-week');
+        week_button.addEventListener('click', () => {
+            fetch('/api/farm-timestamps-week/')
+            .then((resp) => resp.json())
+            .then((data) => {
+                chart_share.data.labels = data;
+                chart_share.update();
+            })
+        })
+
     })
     .catch(error => {
         console.error('Error:', error);
@@ -575,6 +638,27 @@ function init_valve_flow($valve_flow_chart) {
     }
         });
           
+        let month_button = document.getElementById('valve-chart-month');
+        month_button.addEventListener('click', () => {
+            fetch('/api/farm-timestamps-month/')
+            .then((resp) => resp.json())
+            .then((data) => {
+                chart_share.data.labels = data;
+                chart_share.update();
+            })
+            
+        })
+
+        let week_button = document.getElementById('valve-chart-week');
+        week_button.addEventListener('click', () => {
+            fetch('/api/farm-timestamps-week/')
+            .then((resp) => resp.json())
+            .then((data) => {
+                chart_share.data.labels = data;
+                chart_share.update();
+            })
+        })
+
     })
     .catch(error => {
         console.error('Error:', error);
@@ -638,7 +722,29 @@ function init_energy_level(energy_level_chart) {
             }]
         }
     }
-        });       
+        });
+
+        let month_button = document.getElementById('energylevel-chart-month');
+        month_button.addEventListener('click', () => {
+            fetch('/api/farm-timestamps-month/')
+            .then((resp) => resp.json())
+            .then((data) => {
+                chart_share.data.labels = data;
+                chart_share.update();
+            })
+            
+        })
+
+        let week_button = document.getElementById('energylevel-chart-week');
+        week_button.addEventListener('click', () => {
+            fetch('/api/farm-timestamps-week/')
+            .then((resp) => resp.json())
+            .then((data) => {
+                chart_share.data.labels = data;
+                chart_share.update();
+            })
+        })
+
     })
     .catch(error => {
         console.error('Error:', error);

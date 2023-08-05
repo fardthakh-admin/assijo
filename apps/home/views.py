@@ -914,21 +914,21 @@ class UserOperation(APIView):
         password = request.POST.get('password', None)
         operation = 'add'
         # operation = request.POST.get('operation', None)
-        user_id = request.POST.get('id', None)
+        # user_id = request.POST.get('id', None)
 
-        if operation == 'edit':
-            sensor = Sensor.objects.get(pk=sensor_id)
-            if location:
-                sensor.location = location
-            if category:
-                sensor.category = category
-            if type:
-                sensor.type = type
-            if latitude:
-                sensor.latitude = latitude
-            if longitude:
-                sensor.longitude = longitude
-            sensor.save()
+        # if operation == 'edit':
+        #     sensor = Sensor.objects.get(pk=sensor_id)
+        #     if location:
+        #         sensor.location = location
+        #     if category:
+        #         sensor.category = category
+        #     if type:
+        #         sensor.type = type
+        #     if latitude:
+        #         sensor.latitude = latitude
+        #     if longitude:
+        #         sensor.longitude = longitude
+        #     sensor.save()
 
         if operation == 'add':
             if username and email and password:

@@ -92,8 +92,8 @@ class EnergyLevel(models.Model):
     water_pump = models.ForeignKey(WaterPump, on_delete=models.SET_NULL, blank=True, null=True,
                                    related_name="water_pump")
 
-    # def __str__(self):
-    #     return "%s %s" % (self.energy_result, self.water_pump)
+    def __str__(self):
+        return "%s %s" % (self.energy_result, self.water_pump)
 
 
 class Result(models.Model):
