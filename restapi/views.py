@@ -86,20 +86,11 @@ def farm_timestamps(request):
     user = models.User.objects.get(id = request.user.id)
     sensors = models.Sensor.objects.filter(farm_id=user.farm)
 
+
     list_of_timestamps = []
 
-    start_date = request.GET.get('start_date') if request.GET.get('start_date') != '' else datetime.datetime.today() - datetime.timedelta(days=30)
-    end_date = request.GET.get('end_date') if request.GET.get('end_date') != '' else datetime.datetime.today()
-
-    print('START DATE AHEAD:')
-    print(start_date)
-    print()
-    print()
-    print('END DATE AHEAD:')
-    print(end_date)
-    print()
-    print()
-    print()
+    start_date = request.query_params.get('start_date')
+    end_date = request.query_params.get('end_date')
     
     if start_date is None:
         start_date = datetime.datetime.today() - datetime.timedelta(days=30)

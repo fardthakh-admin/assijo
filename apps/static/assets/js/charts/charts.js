@@ -316,7 +316,7 @@ fetch('/api/farm-timestamps/')
 });
 
 
-
+let sensor_chart;
 const $chart = $('#chart-sensor-dark');
 function init( $chart ) {
     fetch('/api/farm-humidity-results/')
@@ -368,11 +368,14 @@ function init( $chart ) {
                     max: Math.max(...flattenedArray),
                     min: Math.min(...flattenedArray),
                     stepSize: 1
-                }
-            }]
-        }
-    }
+                    }
+                }]
+            }
+            }
         });
+
+        // VARIABLE FOR OUTSIDE CHART USAGE
+        sensor_chart = chart_share;
 
         let month_button = document.getElementById('humidity-chart-month');
         month_button.addEventListener('click', () => {
@@ -403,7 +406,7 @@ function init( $chart ) {
 //  END HUMIDITY SENSOR RESULTS ************************** */
 
 
-  
+let watertank_chart;  
 const $water_tank_chart = $('#chart-watertank-dark');
 function init_water_tank($water_tank_chart) {
     fetch('/api/farm-water-level-results/')
@@ -455,11 +458,14 @@ function init_water_tank($water_tank_chart) {
                     max: Math.max(...flattenedArray),
                     min: Math.min(...flattenedArray),
                     stepSize: 1
-                }
-            }]
-        }
-    }
+                    }
+                }]
+            }
+            }
         });
+
+        // VARIABLE FOR OUTSIDE CHART USAGE
+        watertank_chart = chart_share;
 
         let month_button = document.getElementById('watertank-chart-month');
         month_button.addEventListener('click', () => {
@@ -492,6 +498,7 @@ function init_water_tank($water_tank_chart) {
 
 
 //WATER SHARE CHART
+let watershare_chart;
 const $water_share_chart = $('#chart-watershare-dark');
 function init_water_share($water_share_chart) {
     fetch('/api/farm-water-share/')
@@ -545,11 +552,14 @@ function init_water_share($water_share_chart) {
                     max: Math.max(...flattenedArray),
                     min: Math.min(...flattenedArray),
                     stepSize: 1
-                }
-            }]
-        }
-    }
+                    }
+                }]
+            }
+            }
         });
+
+        // VARIABLE FOR OUTSIDE CHART USAGE
+        watershare_chart = chart_share;
           
         let month_button = document.getElementById('watershare-chart-month');
         month_button.addEventListener('click', () => {
@@ -558,8 +568,7 @@ function init_water_share($water_share_chart) {
             .then((data) => {
                 chart_share.data.labels = data;
                 chart_share.update();
-            })
-            
+            })  
         })
 
         let week_button = document.getElementById('watershare-chart-week');
@@ -581,6 +590,7 @@ function init_water_share($water_share_chart) {
 
 
 // VALVE FLOW CHART
+let valveflow_chart;
 const $valve_flow_chart = $('#chart-valve-dark');
 function init_valve_flow($valve_flow_chart) {
     fetch('/api/farm-valveflow-results/')
@@ -632,11 +642,14 @@ function init_valve_flow($valve_flow_chart) {
                     max: Math.max(...flattenedArray),
                     min: Math.min(...flattenedArray),
                     stepSize: 1
-                }
-            }]
-        }
-    }
+                    }
+                }]
+            }
+            }
         });
+
+        // VARIABLE FOR OUTSIDE CHART USAGE
+        valveflow_chart = chart_share;
           
         let month_button = document.getElementById('valve-chart-month');
         month_button.addEventListener('click', () => {
@@ -668,6 +681,7 @@ function init_valve_flow($valve_flow_chart) {
 
 
 // ENERGY LEVEL CHART
+let energylevel_chart;
 function init_energy_level(energy_level_chart) {
     fetch('/api/farm-energy-levels/')
     .then((resp) => resp.json())//get data and turn it into JSON
@@ -718,11 +732,14 @@ function init_energy_level(energy_level_chart) {
                     max: Math.max(...flattenedArray),
                     min: Math.min(...flattenedArray),
                     stepSize: 1
-                }
-            }]
-        }
-    }
+                    }
+                }]
+            }
+            }
         });
+
+        // VARIABLE FOR OUTSIDE CHART USAGE
+        energylevel_chart = chart_share;
 
         let month_button = document.getElementById('energylevel-chart-month');
         month_button.addEventListener('click', () => {
@@ -789,6 +806,36 @@ $(document).ready(function(){
 // };
 
 
+// TIME FILTER SECTION
+let time_filter = document.getElementById('time-filter-button');
+time_filter.addEventListener('click', (event) =>{
+    event.preventDefault();
+
+    let start_date = document.getElementById('start-date').value;
+    let end_date = document.getElementById('end-date').value;   
+    
+    // API call
+    fetch(`/api/farm-timestamps/?start-date=${start_date}&end-date=${end_date}`)
+            .then(response => response.json())
+            .then((data) => {
+                //assignment section
+                sensor_chart.data.labels = data;
+                watertank_chart.data.labels = data;
+                watershare_chart.data.labels = data;
+                valveflow_chart.data.labels = data;
+                energylevel_chart.data.labels = data;
+
+                //chart updating section
+                sensor_chart.update();
+                watertank_chart.update();
+                watershare_chart.update();
+                valveflow_chart.update();
+                energylevel_chart.update();
+
+                console.log('success')
+            })
+            .catch(error => console.error('Error fetching data:', error));
+})
 
 
 

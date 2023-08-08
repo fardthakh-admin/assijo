@@ -16,6 +16,13 @@ class TitleSerializer(serializers.ModelSerializer):
         model = models.Title
         fields = '__all__'
 
+
+class TimestampSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Result
+        fields = ['timestamp']
+
+
 class SensorSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Sensor
