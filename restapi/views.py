@@ -1,6 +1,7 @@
 import datetime
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework import permissions
 from apps.home import models
 import numpy as np
 from . import serializers
@@ -89,8 +90,8 @@ def farm_timestamps(request):
 
     list_of_timestamps = []
 
-    start_date = request.query_params.get('start_date')
-    end_date = request.query_params.get('end_date')
+    start_date = request.query_params.get('start-date')
+    end_date = request.query_params.get('end-date')
     
     if start_date is None:
         start_date = datetime.datetime.today() - datetime.timedelta(days=30)
@@ -432,3 +433,95 @@ def farm_packet_results(request):
     packet_results = models.PacketResult.objects.filter(weather_station_id = weather_station.id).order_by('-id')
     serializer = serializers.PacketResultSerializer(packet_results, many = True)
     return Response(serializer.data)
+
+
+# DATA CREATION (POST APIs)
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def create_sensor_result(request, sensor_id):
+    try:
+        sensor = models.Sensor.objects.get(pk=sensor_id, user=request.user)
+    except models.Sensor.DoesNotExist:
+        return Response({"detail": "Sensor not found or does not belong to the user."}, status=404)
+
+
+    serializer = serializers.ResultSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(sensor=sensor)
+
+        return Response(serializer.data, status=201)
+    
+    return Response(serializer.errors, status=400)
+
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def create_watertank_result(request, watertank_id):
+    try:
+        watertank = models.WaterTank.objects.get(pk=watertank_id, user=request.user)
+    except models.WaterTank.DoesNotExist:
+        return Response({"detail": "Sensor not found or does not belong to the user."}, status=404)
+
+
+    serializer = serializers.ResultSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save( watertank = watertank )
+        
+        return Response(serializer.data, status=201)
+    
+    return Response(serializer.errors, status=400)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def create_tree_result(request, tree_id):
+    try:
+        tree = models.Tree.objects.get(pk=tree_id, user=request.user)
+    except models.Tree.DoesNotExist:
+        return Response({"detail": "Sensor not found or does not belong to the user."}, status=404)
+
+
+    serializer = serializers.ResultSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(tree=tree)
+        
+        return Response(serializer.data, status=201)
+    
+    return Response(serializer.errors, status=400)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def create_valve_result(request, valve_id):
+    try:
+        valve = models.Valve.objects.get(pk=valve_id, user=request.user)
+    except models.Valve.DoesNotExist:
+        return Response({"detail": "Sensor not found or does not belong to the user."}, status=404)
+
+
+    serializer = serializers.ResultSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(valve=valve)
+        
+        return Response(serializer.data, status=201)
+    
+    return Response(serializer.errors, status=400)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def create_waterpump_energylevel(request, waterpump_id):
+    try:
+        waterpump = models.WaterPump.objects.get(pk=waterpump_id, user=request.user)
+    except models.Sensor.DoesNotExist:
+        return Response({"detail": "Sensor not found or does not belong to the user."}, status=404)
+
+
+    serializer = serializers.EnergyLevelSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(waterpump=waterpump)
+        
+        return Response(serializer.data, status=201)
+    
+    return Response(serializer.errors, status=400)
