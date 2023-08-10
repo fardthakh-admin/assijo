@@ -440,10 +440,14 @@ def farm_packet_results(request):
 @permission_classes([permissions.IsAuthenticated])
 def create_sensor_result(request, sensor_id):
     try:
-        sensor = models.Sensor.objects.get(pk=sensor_id, user=request.user)
+        user = models.User.objects.get( id = request.user.id )
+        farm = models.Farm.objects.get( owner = user.id )
+        sensor = models.Sensor.objects.get(pk=sensor_id, farm=farm)
     except models.Sensor.DoesNotExist:
         return Response({"detail": "Sensor not found or does not belong to the user."}, status=404)
 
+    # request.data['unit'] = sensor.unit
+    my_data = request.data
 
     serializer = serializers.ResultSerializer(data=request.data)
     if serializer.is_valid():

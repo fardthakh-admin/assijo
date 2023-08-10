@@ -115,7 +115,10 @@ class Result(models.Model):
             return "sensor {}".format(str(self.sensor.pk))
         except:
             return 'no sensors'
-
+    def save(self, *args, **kwargs):
+        sensor = Sensor.objects.get(pk=self.sensor.id)
+        self.unit = sensor.unit
+        super().save(*args, **kwargs)  # Call the "real" save() method.
 
 class StringResult(models.Model):
     string_result = models.CharField(max_length=100)
