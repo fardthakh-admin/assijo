@@ -485,6 +485,7 @@ class SensorOperation(APIView):
         latitude = request.POST.get('latitude', None)
         longitude = request.POST.get('longitude', None)
         sensor_id = request.POST.get('id', None)
+        unit = request.POST.get('unit', None)
 
         if operation == 'edit':
             sensor = Sensor.objects.get(pk=sensor_id)
@@ -498,10 +499,12 @@ class SensorOperation(APIView):
                 sensor.latitude = latitude
             if longitude:
                 sensor.longitude = longitude
+            if unit:
+                sensor.unit = unit
             sensor.save()
 
         if operation == 'add':
-            if location and category and type and latitude and longitude:
+            if location and category and type and latitude and longitude and unit:
                 sensor = Sensor.objects.create(
                     location=location,
                     category=category,
@@ -509,6 +512,7 @@ class SensorOperation(APIView):
                     latitude=latitude,
                     longitude=longitude,
                     farm = user.farm,
+                    unit = unit
                 )
 
         # sensors = Sensor.objects.all()

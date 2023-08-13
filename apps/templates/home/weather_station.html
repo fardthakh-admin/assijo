@@ -384,12 +384,16 @@
                 <div class="col">
                   <h3 class="mb-0">Weather Station</h3>
                 </div>
-                  <div><button class="btn btn-sm btn-outline-secondary badge" type="button" style="border-radius: 50% ; font-size: 1.5rem ; float: right; ; background-color: #7765e3 ; height:36px; width: 36px;margin-top: 15px; ;color:white;" onclick="AddWeatherStation()" data-toggle="modal" data-target="#user-form-modal">+</button></div>
+                {% if request.user.id == user.farm.owner %}
+                  <div>
+                    <button class="btn btn-sm btn-outline-secondary badge" type="button" style="border-radius: 50% ; font-size: 1.5rem ; float: right; ; background-color: #7765e3 ; height:36px; width: 36px;margin-top: 15px; ;color:white;" onclick="AddWeatherStation()" data-toggle="modal" data-target="#user-form-modal">+</button>
+                  </div>
+                {% endif %}
 
               </div>
             </div>
 
-              <div class="table-responsive table-lg mt-3"  style="position:relative;: top:20px">
+              <div class="table-responsive table-lg mt-3"  style="position:relative; top:20px">
                 <table class="table align-items-center table-flush">
                 <thead class="thead-light">
                   <tr>
@@ -400,7 +404,9 @@
                     <th class="col">Farm Name</th>
                     <th class="sortable">Longitude</th>
                     <th class="sortable">Latitude</th>
+                    {% if request.user.id == user.farm.owner %}
                     <th class="sortable">Action</th>
+                    {% endif %}
                   </tr>
                 </thead>
                 <tbody>
@@ -428,15 +434,15 @@
                     </td>
                      <td class="text-center align-middle"> {{ weather_station.latitude }}</td>
                     <td class="text-center align-middle"> {{ weather_station.longitude }}</td>
+                    {% if request.user.id == user.farm.owner %}
                      <td class="text-center align-middle">
                         <div class="btn-group align-top">
                             <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="EditWeatherStation('{{ weather_station.id }}')" data-toggle="modal" data-target="#user-form-modal">Edit</button>
-                            {% if request.user.id == user.farm.owner %}
                             <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="DeleteWeatherStation('{{ weather_station.id }}')"> <i class="fa-solid fa-trash-can-arrow-up" ></i></button>
-                            {% endif %}
-                        </div>
-                      </td>
-                </tbody>
+                          </div>
+                        </td>
+                    {% endif %}
+                      </tbody>
               </table>
             </div>
           </div>

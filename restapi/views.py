@@ -463,7 +463,9 @@ def create_sensor_result(request, sensor_id):
 @permission_classes([permissions.IsAuthenticated])
 def create_watertank_result(request, watertank_id):
     try:
-        watertank = models.WaterTank.objects.get(pk=watertank_id, user=request.user)
+        user = models.User.objects.get( id = request.user.id )
+        farm = models.Farm.objects.get( owner = user.id )
+        watertank = models.WaterTank.objects.get(pk=watertank_id, farm = farm)
     except models.WaterTank.DoesNotExist:
         return Response({"detail": "Sensor not found or does not belong to the user."}, status=404)
 
@@ -481,7 +483,9 @@ def create_watertank_result(request, watertank_id):
 @permission_classes([permissions.IsAuthenticated])
 def create_tree_result(request, tree_id):
     try:
-        tree = models.Tree.objects.get(pk=tree_id, user=request.user)
+        user = models.User.objects.get( id = request.user.id )
+        farm = models.Farm.objects.get( owner = user.id )
+        tree = models.Tree.objects.get(pk=tree_id, farm=farm)
     except models.Tree.DoesNotExist:
         return Response({"detail": "Sensor not found or does not belong to the user."}, status=404)
 
@@ -499,7 +503,9 @@ def create_tree_result(request, tree_id):
 @permission_classes([permissions.IsAuthenticated])
 def create_valve_result(request, valve_id):
     try:
-        valve = models.Valve.objects.get(pk=valve_id, user=request.user)
+        user = models.User.objects.get( id = request.user.id )
+        farm = models.Farm.objects.get( owner = user.id )
+        valve = models.Valve.objects.get(pk=valve_id, farm = farm)
     except models.Valve.DoesNotExist:
         return Response({"detail": "Sensor not found or does not belong to the user."}, status=404)
 
@@ -517,7 +523,9 @@ def create_valve_result(request, valve_id):
 @permission_classes([permissions.IsAuthenticated])
 def create_waterpump_energylevel(request, waterpump_id):
     try:
-        waterpump = models.WaterPump.objects.get(pk=waterpump_id, user=request.user)
+        user = models.User.objects.get( id = request.user.id )
+        farm = models.Farm.objects.get( owner = user.id )
+        waterpump = models.WaterPump.objects.get(pk=waterpump_id, farm = farm)
     except models.Sensor.DoesNotExist:
         return Response({"detail": "Sensor not found or does not belong to the user."}, status=404)
 

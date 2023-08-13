@@ -22,7 +22,7 @@
         }
     #viewDiv{
         height: 350px;
-        {#font-size: 20px;#}
+        /* {#font-size: 20px;#} */
         font-weight: bolder;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         color: #2c2c2cfb;
@@ -59,10 +59,13 @@
                 <div class="col">
                   <h3 class="mb-0">Water Pump</h3>
                 </div>
+                {% if request.user.id == user.farm.owner %}
+                <div>
                     <button class="btn btn-sm btn-outline-secondary badge" type="button" style="border-radius: 50% ; font-size: 1.5rem ; float: right; ; background-color: #7765e3 ; height:36px; width: 36px;margin-top: 15px; ;color:white;" onclick="AddWaterPump()" data-toggle="modal" data-target="#user-form-modal">+</button>
-</div>
+                </div>
+                {% endif %}
             </div>
-  <div class="table-responsive table-lg mt-3"  style="position:relative;: top:20px">
+      <div class="table-responsive table-lg mt-3"  style="position:relative; top:20px">
                 <table class="table align-items-center table-flush">
                 <thead class="thead-light">
                   <tr>
@@ -74,7 +77,9 @@
                     <th scope="col">Farm Name</th>
                     <th class="sortable">latitude</th>
                     <th class="sortable">longitude</th>
+                    {% if request.user.id == user.farm.owner %}
                     <th class="sortable">Action</th>
+                    {% endif %}
                   </tr>
                 </thead>
                 <tbody>
@@ -106,24 +111,24 @@
                     </td>
                      <td class="text-center align-middle"> {{ water_pump.latitude }}</td>
                     <td class="text-center align-middle"> {{ water_pump.longitude }}</td>
+                    {% if request.user.id == user.farm.owner %}
                      <td class="text-center align-middle">
                         <div class="btn-group align-top">
                             <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="EditWaterPump('{{ water_pump.id }}')" data-toggle="modal" data-target="#user-form-modal">Edit</button>
-                            {% if request.user.id == user.farm.owner %}
                             <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="DeleteWaterPump('{{ water_pump.id }}')"> <i class="fa-solid fa-trash-can-arrow-up" ></i></button>
-                            {% endif %}
                             {% if water_pump.state == "on" %}
                             <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="Delete('{{ water_pump.id }}')">
-                                <i class="fa-solid fa-toggle-on"></i>
+                              <i class="fa-solid fa-toggle-on"></i>
                             </button>
                             {% else %}
                             <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="Delete('{{ water_pump.id }}')">
-                                <i class="fa-solid fa-toggle-off"></i>
+                              <i class="fa-solid fa-toggle-off"></i>
                             </button>
                             {% endif %}
-                        </div>
-                      </td>
-                      {% endfor %}
+                          </div>
+                        </td>
+                        {% endif %}
+                        {% endfor %}
                   </tbody>
                 </table>
               </div>

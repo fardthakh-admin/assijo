@@ -98,7 +98,6 @@ class EnergyLevel(models.Model):
 
 class Result(models.Model):
     number = models.IntegerField(default=0)
-    name = models.CharField(max_length=30)
     unit = models.CharField(max_length=30)
     timestamp = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE, blank=True, null=True, related_name="number_results")

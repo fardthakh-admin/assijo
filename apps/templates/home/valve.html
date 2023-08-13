@@ -22,7 +22,7 @@
         }
     #viewDiv{
         height: 350px;
-        {#font-size: 20px;#}
+        /* {#font-size: 20px;#} */
         font-weight: bolder;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         color: #2c2c2cfb;
@@ -59,9 +59,11 @@
                 <div class="col">
                   <h3 class="mb-0">Valves</h3>
                 </div>
-                  <div>  <button class="btn btn-sm btn-outline-secondary badge" type="button" style="border-radius: 50% ; font-size: 1.5rem ; float: right; ; background-color: #7765e3 ; height:36px; width: 36px;margin-top: 15px; ;color:white;" onclick="AddValve()" data-toggle="modal" data-target="#user-form-modal">+</button></di
-
-              </div>
+                  <div>
+                    {% if request.user.id == user.farm.owner %}
+                    <button class="btn btn-sm btn-outline-secondary badge" type="button" style="border-radius: 50% ; font-size: 1.5rem ; float: right; ; background-color: #7765e3 ; height:36px; width: 36px;margin-top: 15px; ;color:white;" onclick="AddValve()" data-toggle="modal" data-target="#user-form-modal">+</button>
+                    {% endif %}
+                  </div>
             </div>
 
               <div class="table-responsive table-lg mt-3"  style="position:relative;: top:20px">
@@ -78,7 +80,9 @@
                       <th class="sortable">latitude</th>
                       <th class="sortable">longitude</th>
 
+                      {% if request.user.id == user.farm.owner %}
                       <th>Actions</th>
+                      {% endif %}
                     </tr>
 
                 </thead>
@@ -92,27 +96,27 @@
                     <td class="text-center align-middle">{{ valve.farm }}</td>
                     <td class="text-center align-middle"> {{ valve.latitude }}</td>
                     <td class="text-center align-middle"> {{ valve.longitude }}</td>
+                    {% if user.id == user.farm.owner %}
                       <td class="text-center align-middle">
                         <div class="btn-group align-top">
                             <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="EditValve('{{ valve.id }}')" data-toggle="modal" data-target="#user-form-modal">
                                 Edit
                             </button>
-                            {% if user.id == user.farm.owner %}
                             <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="DeleteValve('{{ valve.id }}')">
                                 <i class="fa-solid fa-trash-can-arrow-up" ></i>
                             </button>
-                            {% endif %}
                             {% if valve.state == "on" %}
                             <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="Delete('{{ valve.id }}')">
-                                <i class="fa-solid fa-toggle-on"></i>
+                              <i class="fa-solid fa-toggle-on"></i>
                             </button>
                             {% else %}
                             <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="Delete('{{ valve.id }}')">
-                                <i class="fa-solid fa-toggle-off"></i>
+                              <i class="fa-solid fa-toggle-off"></i>
                             </button>
                             {% endif %}
-                        </div>
-                      </td>
+                          </div>
+                        </td>
+                        {% endif %}
                       {% endfor %}
 
                 </tbody>

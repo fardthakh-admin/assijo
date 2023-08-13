@@ -59,8 +59,9 @@
                 <div class="col">
                   <h3 class="mb-0">Sensors</h3>
                 </div>
-                    <button class="btn btn-sm btn-outline-secondary badge" type="button" style="border-radius: 50% ; font-size: 1.5rem ; float: right; ; background-color: #7765e3 ; height:36px; width: 36px;margin-top: 15px; ;color:white;" onclick="AddSensor()" data-toggle="modal" data-target="#user-form-modal">+</button>
-
+                {% if request.user.id == user.farm.owner %}
+                <button class="btn btn-sm btn-outline-secondary badge" type="button" style="border-radius: 50% ; font-size: 1.5rem ; float: right; ; background-color: #7765e3 ; height:36px; width: 36px;margin-top: 15px; ;color:white;" onclick="AddSensor()" data-toggle="modal" data-target="#user-form-modal">+</button>
+                {% endif %}
               </div>
             </div>
 
@@ -70,13 +71,15 @@
                   <tr>
                     <th scope="col">id</th>
                     <th scope="col">Type</th>
-                      <th class="sortable">category</th>
-
+                    <th class="sortable">category</th>
                     <th class="sortable">Location</th>
                     <th class="col">Farm Name</th>
                     <th class="sortable">latitude</th>
                     <th class="sortable">longitude</th>
+                    <th class="sortable">unit</th>
+                    {% if request.user.id == user.farm.owner %}
                     <th class="sortable">Action</th>
+                    {% endif %}
                   </tr>
                 </thead>
                 <tbody>
@@ -103,47 +106,47 @@
                     <td>
                        {{ sensor.farm }}
                     </td>
-                     <td class="text-center align-middle"> {{ sensor.latitude }}</td>
+                    <td class="text-center align-middle"> {{ sensor.latitude }}</td>
                     <td class="text-center align-middle"> {{ sensor.longitude }}</td>
-                     <td class="text-center align-middle">
+                    <td class="text-center align-middle"> {{ sensor.unit }}</td>
+                    {% if request.user.id == user.farm.owner %}
+                      <td class="text-center align-middle">
                         <div class="btn-group align-top">
                             <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="EditSensor('{{ sensor.id }}')" data-toggle="modal" data-target="#user-form-modal">Edit</button>
-                            {% if request.user.id == user.farm.owner %}
                             <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="DeleteSensor('{{ sensor.id }}')"> <i class="fa-solid fa-trash-can-arrow-up" ></i></button>
-                            {% endif %}
                         </div>
                       </td>
-                      {% endfor %}
-
+                    {% endif %}
+                  {% endfor %}
                 </tbody>
               </table>
             </div>
           </div>
         </div>
+      </tbody>
+    </table>
+  </div>
 
 
 
-                  </tbody>
-                </table>
-              </div>
+  
+  <div style="margin-top: 15px;">
 
-           <div style="margin-top: 15px;">
+   </div>
+ </div>
+</div>
+</div>
+</div>
+<div class="col-12 col-lg-3 mb-3">
+  <div class="card">
 
-            </div>
-          </div>
         </div>
-      </div>
-        </div>
-      <div class="col-12 col-lg-3 mb-3">
-        <div class="card">
-
-              </div>
-
-            </div>
-          </div>
-        </div>
+        
       </div>
     </div>
+  </div>
+</div>
+</div>
 
     <!-- User Form Modal -->
     <div class="modal fade" role="dialog" tabindex="-1" id="user-form-modal">
@@ -182,6 +185,12 @@
                         <div class="form-group">
                           <label>Type</label>
                           <input class="form-control" type="text" name="type" id="type" required>
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div class="form-group">
+                          <label>Unit</label>
+                          <input class="form-control" type="text" name="unit" id="unit" required>
                         </div>
                       </div>
                     </div>
