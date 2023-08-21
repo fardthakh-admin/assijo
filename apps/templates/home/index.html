@@ -157,10 +157,10 @@
                         <div class="row">
                           <div class="col">
                             <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Temperature</h5>
-      
-                    <span class="h2 font-weight-bold mb-0">
-                      {{  weather.weather_station.last.temperature }}
-                    </span>
+                            
+                            <span class="h2 font-weight-bold mb-0" id="temperature-card">
+                              Loading...
+                            </span>
                           </div>
                           <div class="col-auto">
                             <div class="icon icon-shape bg-gradient-danger text-white rounded-circle shadow">
@@ -185,10 +185,10 @@
                         <div class="row">
                           <div class="col">
                             <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Humidity</h5>
-      
-                          <span class="h2 font-weight-bold mb-0">
-                              {{  weather.weather_station.last.humidity }}
-                          </span>
+                            
+                            <span class="h2 font-weight-bold mb-0" id="humidity-card">
+                              Loading...
+                            </span>
                           </div>
                           <div class="col-auto">
                             <div class="icon icon-shape bg-gradient-primary text-white rounded-circle shadow">
@@ -214,10 +214,12 @@
       
                         <div class="row">
                           <div class="col">
-                            <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Rainfall</h5>
-                              <span class="h2 font-weight-bold mb-0">
-                              {{  weather.weather_station.last.rainfall }}
-                          </span>
+                            <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">
+                              Rainfall
+                            </h5>
+                            <span class="h2 font-weight-bold mb-0" id="rainfall-card">
+                              Loading...
+                            </span>
                           </div>
                           <div class="col-auto">
                             <div class="fa-solid icon icon-shape bg-gradient-cyan text-white rounded-circle shadow">
@@ -242,8 +244,8 @@
                         <div class="row">
                           <div class="col">
                             <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Wind Speed</h5>
-                              <span class="h2 font-weight-bold mb-0">
-                              {{  weather.weather_station.last.wind_speed }}
+                              <span class="h2 font-weight-bold mb-0" id="windspeed-card">
+                                Loading...
                               </span>
       
                           </div>
@@ -272,10 +274,10 @@
                         <div class="row">
                           <div class="col">
                             <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Direction</h5>
-      
-                    <span class="h2 font-weight-bold mb-0">
-                      {{  weather.weather_station.last.direction }}
-                    </span>
+                            <span class="h2 font-weight-bold mb-0" id="direction-card">
+                              Loading...
+                            </span>
+                            
                           </div>
                           <div class="col-auto">
                             <div class="icon icon-shape bg-gradient-warning text-white rounded-circle shadow">
@@ -301,8 +303,8 @@
                           <div class="col">
                             <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">timestamp</h5>
       
-                          <span class="h2 font-weight-bold mb-0">
-                              {{  weather.weather_station.last.timestamp }}
+                          <span class="h2 font-weight-bold mb-0" id="timestamp-card">
+                            Loading...
                           </span>
                           </div>
                           <div class="col-auto">
@@ -330,9 +332,9 @@
                         <div class="row">
                           <div class="col">
                             <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">visibility</h5>
-                              <span class="h2 font-weight-bold mb-0">
-                              {{  weather.weather_station.last.visibility }}
-                          </span>
+                            <span class="h2 font-weight-bold mb-0" id="visibility-card">
+                              Loading...
+                            </span>
                           </div>
                           <div class="col-auto">
                             <div class="fa-solid icon icon-shape bg-gradient-success text-white rounded-circle shadow">
@@ -357,8 +359,8 @@
                         <div class="row">
                           <div class="col">
                             <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">solar radiation</h5>
-                              <span class="h2 font-weight-bold mb-0">
-                              {{  weather.weather_station.last.solar_radiation }}
+                              <span class="h2 font-weight-bold mb-0" id="solar-radiation-card">
+                                Loading...
                               </span>
       
                           </div>
@@ -1033,6 +1035,38 @@
                         },}]}
                     chart.setOption(options);
     </script>
+
+<script>
+  fetch("http://api.openweathermap.org/data/2.5/forecast?lat={{ user.farm.latitude }}&lon={{ user.farm.longitude }}&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+        .then( response => response.json())
+        .then(data => {
+          console.log(data.list)            
+            document.getElementById("temperature-card").innerText = Number(data.list[0].main.temp_min).toFixed(1)+"°";
+            document.getElementById("humidity-card").innerText = data.list[0].main.humidity;
+            document.getElementById("rainfall-card").innerText = data.list[0].weather[0].description;
+            document.getElementById("windspeed-card").innerText = data.list[0].wind.speed;
+            document.getElementById("direction-card").innerText = data.list[0].wind.deg;
+            document.getElementById("timestamp-card").innerText = data.list[0].dt_txt;
+            document.getElementById("visibility-card").innerText = data.list[0].visibility;
+            document.getElementById("solar-radiation-card").innerText = "Loading..."//data.list[0].main.humidity;
+        })
+        .catch( err=> alert("Something Went Wrong --- Forecasting API error"))
+
+        const date = new Date();
+        const weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+        function checkDay(day){
+            if(day + date.getDay() > 6){
+                return day+ date.getDay()-7;
+            }else{
+                return day+date.getDay();
+            }
+        }
+
+        for( let i = 1; i <= 5;i++){
+            document.getElementById("day"+(i)).innerHTML = weekday[checkDay(i)];
+        }
+</script>
 
 <!--  ICONS ON MAP SCRIPT  -->
 <script>
