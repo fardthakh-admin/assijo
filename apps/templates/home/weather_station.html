@@ -464,7 +464,7 @@
                             </div>
 
                             <div class="table-responsive table-lg mt-3"  style="position:relative;: top:20px">
-{#                                <center>#}
+<!-- {#                                <center>#}
 {#                                    <h4 class="mb-0" id = 'Para1'>5-DAYS WEATHER FORECAST</h4>#}
 {#                                    <div class="row-cols-md-4">#}
 {#                                        <p id="cityInput">#}
@@ -474,48 +474,63 @@
 {#                                    </div>#}
 {#                                    <br>#}
 {#                                    <h3 class="mb-0" id="CityName">Amman</h3>#}
-{#                                </center>#}
+{#                                </center>#} -->
 
                                 <div id="weatherContainer">
                                     <div id="iconsContainer" class="row" style="display: flex; justify-content: space-between">
                                         <div class="icons" style="margin-left: 50px">
                                             <p class="weatherCard" id="day1"></p>
-                                            <div class="image"><img src="" alt="image..." class="imgClass" id="img1"></div>
                                             <p class="minValue" id="day1Min">Loading...</p>
                                             <p class="maxValues" id="day1Max">Loading...</p>
                                             <p class="rainFallValues" id="day1RainFall">Loading...</p>
+                                            <p class="rainFallValues" id="day1WindSpeed">Loading...</p>
+                                            <p class="rainFallValues" id="day1WindDirection">Loading...</p>
+                                            <p class="rainFallValues" id="day1Humidity">Loading...</p>
+                                            <p class="rainFallValues" id="day1Visibility">Loading...</p>
                                         </div>
 
                                         <div class="icons">
-                                            <p class="weatherCard" id="day2"></p>
-                                            <div class="image"><img src="" alt="image..." class="imgClass" id="img2"></div>
+                                            <p class="weatherCard" id="day2"></p>                                            
                                             <p class="minValue" id="day2Min">Loading...</p>
-                                            <p class="maxValues" id="day2Max">Loading...</p>
+                                            <p class="maxValues" id="day2Max">Loading...</p>                                          
                                             <p class="rainFallValues" id="day2RainFall">Loading...</p>
+                                            <p class="rainFallValues" id="day2WindSpeed">Loading...</p>
+                                            <p class="rainFallValues" id="day2WindDirection">Loading...</p>
+                                            <p class="rainFallValues" id="day2Humidity">Loading...</p>
+                                            <p class="rainFallValues" id="day2Visibility">Loading...</p>
                                         </div>
 
                                         <div class="icons">
-                                            <p class="weatherCard" id="day3"></p>
-                                            <div class="image"><img src="" alt="image..." class="imgClass" id="img3"></div>
+                                            <p class="weatherCard" id="day3"></p>                                            
                                             <p class="minValue" id="day3Min">Loading...</p>
-                                            <p class="maxValues" id="day3Max">Loading...</p>
+                                            <p class="maxValues" id="day3Max">Loading...</p>                                            
                                             <p class="rainFallValues" id="day3RainFall">Loading...</p>
+                                            <p class="rainFallValues" id="day3WindSpeed">Loading...</p>
+                                            <p class="rainFallValues" id="day3WindDirection">Loading...</p>
+                                            <p class="rainFallValues" id="day3Humidity">Loading...</p>
+                                            <p class="rainFallValues" id="day3Visibility">Loading...</p>
                                         </div>
 
                                         <div class="icons">
-                                            <p class="weatherCard" id="day4"></p>
-                                            <div class="image"><img src="" alt="image..." class="imgClass" id="img4"></div>
+                                            <p class="weatherCard" id="day4"></p>                                            
                                             <p class="minValue" id="day4Min">Loading...</p>
                                             <p class="maxValues" id="day4Max">Loading...</p>
                                             <p class="rainFallValues" id="day4RainFall">Loading...</p>
+                                            <p class="rainFallValues" id="day4WindSpeed">Loading...</p>
+                                            <p class="rainFallValues" id="day4WindDirection">Loading...</p>
+                                            <p class="rainFallValues" id="day4Humidity">Loading...</p>
+                                            <p class="rainFallValues" id="day4Visibility">Loading...</p>
                                         </div>
 
                                         <div class="icons" style="margin-right: 50px">
                                             <p class="weatherCard" id="day5"></p>
-                                            <div class="image"><img src="" alt="image..." class="imgClass" id="img5"></div>
                                             <p class="minValue" id="day5Min">Loading...</p>
                                             <p class="maxValues" id="day5Max">Loading...</p>
                                             <p class="rainFallValues" id="day5RainFall">Loading...</p>
+                                            <p class="rainFallValues" id="day5WindSpeed">Loading...</p>
+                                            <p class="rainFallValues" id="day5WindDirection">Loading...</p>
+                                            <p class="rainFallValues" id="day5Humidity">Loading...</p>
+                                            <p class="rainFallValues" id="day5Visibility">Loading...</p>
                                         </div>
                                     </div>
                                 </div>
@@ -608,7 +623,7 @@
         <script>
         jQuery('#user-form-modal').on('shown.bs.modal', function () {
             initAddMap();
-            {#  console.log("opened my modal")#}
+            // {#  console.log("opened my modal")#}
         })
         </script>
 
@@ -755,12 +770,21 @@ var chart = echarts.init(document.getElementById("water-level-card"));
             }
             for (let i = 1; i <= 5 ; i++) {
                 document.getElementById("day"+i+"Max").innerHTML = "Max: " +Number(data.list[i].main.temp_max).toFixed(1)+"°";
-            }
-            for (let i = 1; i <= 5 ; i++) {
-                document.getElementById("img"+i).src = "https://openweathermap.org/img/wn/" + data.list[i].weather[0].icon+".png";
-            }
+            }            
             for (let i = 1; i <= 5 ; i++) {
                 document.getElementById("day"+i+"RainFall").innerHTML = "RainFall : " + data.list[i].weather[0].main;
+            }
+            for (let i = 1; i <= 5 ; i++) {
+                document.getElementById("day"+i+"WindSpeed").innerHTML = "Wind Speed : " + data.list[i].wind.speed;
+            }
+            for (let i = 1; i <= 5 ; i++) {
+                document.getElementById("day"+i+"WindDirection").innerHTML = "Wind Direction : " + data.list[i].wind.deg;
+            }
+            for (let i = 1; i <= 5 ; i++) {
+                document.getElementById("day"+i+"Humidity").innerHTML = "Humidity : " + data.list[i].main.humidity;
+            }
+            for (let i = 1; i <= 5 ; i++) {
+                document.getElementById("day"+i+"Visibility").innerHTML = "Visibility : " + data.list[i].visibility;
             }
 
             document.getElementById("temperature-card").innerText = Number(data.list[0].main.temp_min).toFixed(1)+"°";
