@@ -746,15 +746,15 @@ var chart = echarts.init(document.getElementById("water-level-card"));
 
     <!--   WEATHER FORECAST API   -->
     <script>
-        fetch("http://api.openweathermap.org/data/2.5/forecast?lat={{ user.farm.latitude }}&lon={{ user.farm.longitude }}&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+        fetch("http://api.openweathermap.org/data/2.5/forecast?lat={{ user.farm.latitude }}&lon={{ user.farm.longitude }}&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
         .then( response => response.json())
         .then(data => {
           console.log(data.list)
             for (let i = 1; i <= 5 ; i++) {
-                document.getElementById("day"+i+"Min").innerHTML = "Min: " +Number(data.list[i].main.temp_min - 264.53).toFixed(1)+"°";
+                document.getElementById("day"+i+"Min").innerHTML = "Min: " +Number(data.list[i].main.temp_min).toFixed(1)+"°";
             }
             for (let i = 1; i <= 5 ; i++) {
-                document.getElementById("day"+i+"Max").innerHTML = "Max: " +Number(data.list[i].main.temp_max - 264.53).toFixed(1)+"°";
+                document.getElementById("day"+i+"Max").innerHTML = "Max: " +Number(data.list[i].main.temp_max).toFixed(1)+"°";
             }
             for (let i = 1; i <= 5 ; i++) {
                 document.getElementById("img"+i).src = "https://openweathermap.org/img/wn/" + data.list[i].weather[0].icon+".png";
@@ -763,7 +763,7 @@ var chart = echarts.init(document.getElementById("water-level-card"));
                 document.getElementById("day"+i+"RainFall").innerHTML = "RainFall : " + data.list[i].weather[0].main;
             }
 
-            document.getElementById("temperature-card").innerText = Number(data.list[0].main.temp_min - 264.53).toFixed(1)+"°";
+            document.getElementById("temperature-card").innerText = Number(data.list[0].main.temp_min).toFixed(1)+"°";
             document.getElementById("humidity-card").innerText = data.list[0].main.humidity;
             document.getElementById("rainfall-card").innerText = data.list[0].weather[0].description;
             document.getElementById("windspeed-card").innerText = data.list[0].wind.speed;
