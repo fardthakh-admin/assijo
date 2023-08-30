@@ -54,7 +54,17 @@
     .card {
         margin-bottom: 0px;
     }
+    .chart-canvas{ 
+      background-color: white;
 
+    }
+    .table-bordered{
+      margin-left: 25%;
+      background-color:#c3b5ec;
+      font-size:large;
+      text-align: center;
+      color: black;
+    }
     </style>
     <div class="row">
               <div class="col-xl-12">
@@ -480,9 +490,10 @@
                                     <div id="iconsContainer" class="row" style="display: flex; justify-content: space-between">
                                         <div class="icons" style="margin-left: 50px">
                                             <p class="weatherCard" id="day1"></p>
-                                            <p class="minValue" id="day1Min">Loading...</p>
-                                            <p class="maxValues" id="day1Max">Loading...</p>
-                                            <p class="rainFallValues" id="day1RainFall">Loading...</p>
+                                           
+                                            <p class="temp" id="day1temp">Loading...</p>
+                                            <p class="rainFallValues"id="day1pressure">Loading...</p>
+                                            <p class="rainFallValues"id="day1all">Loading...</p>
                                             <p class="rainFallValues" id="day1WindSpeed">Loading...</p>
                                             <p class="rainFallValues" id="day1WindDirection">Loading...</p>
                                             <p class="rainFallValues" id="day1Humidity">Loading...</p>
@@ -491,9 +502,10 @@
 
                                         <div class="icons">
                                             <p class="weatherCard" id="day2"></p>                                            
-                                            <p class="minValue" id="day2Min">Loading...</p>
-                                            <p class="maxValues" id="day2Max">Loading...</p>                                          
-                                            <p class="rainFallValues" id="day2RainFall">Loading...</p>
+                                          
+                                            <p class="tempValues" id="day2temp">Loading...</p>                                          
+                                            <p class="rainFallValues" id="day2pressure">Loading...</p>
+                                            <p class="rainFallValues"id="day2all">Loading...</p>
                                             <p class="rainFallValues" id="day2WindSpeed">Loading...</p>
                                             <p class="rainFallValues" id="day2WindDirection">Loading...</p>
                                             <p class="rainFallValues" id="day2Humidity">Loading...</p>
@@ -502,9 +514,10 @@
 
                                         <div class="icons">
                                             <p class="weatherCard" id="day3"></p>                                            
-                                            <p class="minValue" id="day3Min">Loading...</p>
-                                            <p class="maxValues" id="day3Max">Loading...</p>                                            
-                                            <p class="rainFallValues" id="day3RainFall">Loading...</p>
+                                          
+                                            <p class="tempValues" id="day3temp">Loading...</p>                                            
+                                            <p class="rainFallValues" id="day3pressure">Loading...</p>
+                                            <p class="rainFallValues"id="day3all">Loading...</p>
                                             <p class="rainFallValues" id="day3WindSpeed">Loading...</p>
                                             <p class="rainFallValues" id="day3WindDirection">Loading...</p>
                                             <p class="rainFallValues" id="day3Humidity">Loading...</p>
@@ -513,9 +526,10 @@
 
                                         <div class="icons">
                                             <p class="weatherCard" id="day4"></p>                                            
-                                            <p class="minValue" id="day4Min">Loading...</p>
-                                            <p class="maxValues" id="day4Max">Loading...</p>
-                                            <p class="rainFallValues" id="day4RainFall">Loading...</p>
+                                           
+                                            <p class="tempValues" id="day4temp">Loading...</p>
+                                            <p class="rainFallValues" id="day4pressure">Loading...</p>
+                                            <p class="rainFallValues"id="day4all">Loading...</p>
                                             <p class="rainFallValues" id="day4WindSpeed">Loading...</p>
                                             <p class="rainFallValues" id="day4WindDirection">Loading...</p>
                                             <p class="rainFallValues" id="day4Humidity">Loading...</p>
@@ -524,9 +538,10 @@
 
                                         <div class="icons" style="margin-right: 50px">
                                             <p class="weatherCard" id="day5"></p>
-                                            <p class="minValue" id="day5Min">Loading...</p>
-                                            <p class="maxValues" id="day5Max">Loading...</p>
-                                            <p class="rainFallValues" id="day5RainFall">Loading...</p>
+                                            
+                                            <p class="tempValues" id="day5temp">Loading...</p>
+                                            <p class="rainFallValues" id="day5pressure">Loading...</p>
+                                            <p class="rainFallValues"id="day5all">Loading...</p>
                                             <p class="rainFallValues" id="day5WindSpeed">Loading...</p>
                                             <p class="rainFallValues" id="day5WindDirection">Loading...</p>
                                             <p class="rainFallValues" id="day5Humidity">Loading...</p>
@@ -547,13 +562,311 @@
         </div>
       </div>
         </div>
-      <div class="col-12 col-lg-3 mb-3">
-        <div class="card">
-              </div>
-            </div>
-          </div>
+          <div class="chart-canvas">
+            <!-- Include the Chart.js library -->
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        
+            <!-- HTML element where the chart will be rendered -->
+            <canvas id="temperatureChart"></canvas>
+            <script>
+                // Fetch data from the OpenWeatherMap API
+                fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+                    .then(response => response.json())
+                    .then(data => {
+                        var labels = data.list.map(entry => entry.dt_txt); 
+                        var dataPoints = data.list.map(entry => entry.main.temp);
+                        var ctx = document.getElementById('temperatureChart').getContext('2d');
+        
+                        var chart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Temperature (°C)',
+                                    data: dataPoints,
+                                    borderColor: 'brown',
+                                    fill: false
+                                }]
+                            },
+                            options: {
+                                 
+                            }
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                    });
+            </script>
+            <div>
+             <canvas id="pressurechart"></canvas>
+            <script>
+              // Fetch data from the OpenWeatherMap API
+              fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+                  .then(response => response.json())
+                  .then(data => {
+                      var labels = data.list.map(entry => entry.dt_txt); 
+                      var dataPoints = data.list.map(entry => entry.main.pressure);
+                      var ctx = document.getElementById('pressurechart').getContext('2d');
+      
+                      var chart = new Chart(ctx, {
+                          type: 'line',
+                          data: {
+                              labels: labels,
+                              datasets: [{
+                                  label: 'pressure (°C)',
+                                  data: dataPoints,
+                                  borderColor: 'darkblue',
+                                  fill: false
+                              }]
+                          },
+                          options: {
+                               
+                          }
+                      });
+                  })
+                  .catch(error => {
+                      console.error('Error fetching data:', error);
+                  });
+          </script>
+           <div>
+            <canvas id="allchart"></canvas>
+           <script>
+             // Fetch data from the OpenWeatherMap API
+             fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+                 .then(response => response.json())
+                 .then(data => {
+                     var labels = data.list.map(entry => entry.dt_txt); 
+                     var dataPoints = data.list.map(entry => entry.clouds.all);
+                     var ctx = document.getElementById('allchart').getContext('2d');
+     
+                     var chart = new Chart(ctx, {
+                         type: 'line',
+                         data: {
+                             labels: labels,
+                             datasets: [{
+                                 label: 'clouds:all',
+                                 data: dataPoints,
+                                 borderColor: 'orange',
+                                 fill: false
+                             }]
+                         },
+                         options: {
+                              
+                         }
+                     });
+                 })
+                 .catch(error => {
+                     console.error('Error fetching data:', error);
+                 });
+         </script>
+          <div>
+            <canvas id="windspeedchart"></canvas>
+           <script>
+             // Fetch data from the OpenWeatherMap API
+             fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+                 .then(response => response.json())
+                 .then(data => {
+                     var labels = data.list.map(entry => entry.dt_txt); 
+                     var dataPoints = data.list.map(entry => entry.wind.speed);
+                     var ctx = document.getElementById('windspeedchart').getContext('2d');
+     
+                     var chart = new Chart(ctx, {
+                         type: 'line',
+                         data: {
+                             labels: labels,
+                             datasets: [{
+                                 label: 'windspeed ',
+                                 data: dataPoints,
+                                 borderColor: 'black',
+                                 fill: false
+                             }]
+                         },
+                         options: {
+                              
+                         }
+                     });
+                 })
+                 .catch(error => {
+                     console.error('Error fetching data:', error);
+                 });
+         </script>
+          <div>
+            <canvas id="winddirectionchart"></canvas>
+           <script>
+             // Fetch data from the OpenWeatherMap API
+             fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+                 .then(response => response.json())
+                 .then(data => {
+                     var labels = data.list.map(entry => entry.dt_txt); 
+                     var dataPoints = data.list.map(entry => entry.wind.deg);
+                     var ctx = document.getElementById('winddirectionchart').getContext('2d');
+     
+                     var chart = new Chart(ctx, {
+                         type: 'line',
+                         data: {
+                             labels: labels,
+                             datasets: [{
+                                 label: 'winddirection',
+                                 data: dataPoints,
+                                 borderColor: '#00ff0080',
+                                 fill: false
+                             }]
+                         },
+                         options: {
+                              
+                         }
+                     });
+                 })
+                 .catch(error => {
+                     console.error('Error fetching data:', error);
+                 });
+         </script>
+          <div>
+            <canvas id="Humiditychart"></canvas>
+           <script>
+             // Fetch data from the OpenWeatherMap API
+             fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+                 .then(response => response.json())
+                 .then(data => {
+                     var labels = data.list.map(entry => entry.dt_txt); 
+                     var dataPoints = data.list.map(entry => entry.main.humidity);
+                     var ctx = document.getElementById('Humiditychart').getContext('2d');
+     
+                     var chart = new Chart(ctx, {
+                         type: 'line',
+                         data: {
+                             labels: labels,
+                             datasets: [{
+                                 label: 'Humadity',
+                                 data: dataPoints,
+                                 borderColor: '#0000ff80',
+                                 fill: false
+                             }]
+                         },
+                         options: {
+                              
+                         }
+                     });
+                 })
+                 .catch(error => {
+                     console.error('Error fetching data:', error);
+                 });
+         </script>
+          <div>
+            <canvas id="Visibility chart"></canvas>
+           <script>
+             // Fetch data from the OpenWeatherMap API
+             fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+                 .then(response => response.json())
+                 .then(data => {
+                     var labels = data.list.map(entry => entry.dt_txt); 
+                     var dataPoints = data.list.map(entry => entry.visibility);
+                     var ctx = document.getElementById('Visibility chart').getContext('2d');
+     
+                     var chart = new Chart(ctx, {
+                         type: 'line',
+                         data: {
+                             labels: labels,
+                             datasets: [{
+                                 label: 'Visibility',
+                                 data: dataPoints,
+                                 borderColor: '#ff000080',
+                                 fill: false
+                             }]
+                         },
+                         options: {
+                              
+                         }
+                     });
+                 })
+                 .catch(error => {
+                     console.error('Error fetching data:', error);
+                 });
+         </script>
+       </div>
+         </div>
         </div>
+     </div>
+    </div>
+   </div> 
+  </div>
+ </div>
+ </div>
+</div>
+</div>  
+</br>
+<div class="table">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  <table class="table-bordered" >
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Temperature (°C)</th>
+        <th>Pressure</th>
+        <th>clouds:all</th>
+        <th>windSpeed</th>
+        <th>Wind Direction</th>
+        <th>Humidity</th>
+        <th>Visibility</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+    </tbody>
+  </table>
 
+  <script>
+     fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+     .then(response => response.json())
+     .then(data => {
+      console.log(data);
+     var tableBody = document.getElementById("tableBody");
+
+    if (Array.isArray(data.list)) {
+      // Iterate through the data and create table rows
+      data.list.forEach(function (item) {
+        var row = document.createElement("tr");
+
+        // Create table cells for each data point you want to display
+        var dateCell = document.createElement("td");
+        dateCell.textContent = item.dt_txt;
+        var tempCell = document.createElement("td");
+        tempCell.textContent = item.main.temp;
+        var pressureCell = document.createElement("td");
+        pressureCell.textContent = item.main.pressure;
+        var cloudsAllCell = document.createElement("td");
+        cloudsAllCell.textContent = item.clouds.all;
+        var WindSpeedCell = document.createElement("td");
+        WindSpeedCell.textContent = item.wind.speed;
+        var WindDirectionCell = document.createElement("td");
+        WindDirectionCell.textContent = item.wind.deg;
+        var HumidityCell = document.createElement("td");
+        HumidityCell.textContent = item.main.humidity;
+        var VisibilityCell = document.createElement("td");
+        VisibilityCell.textContent = item.visibility;
+
+        // Append cells to the row
+        row.appendChild(dateCell);
+        row.appendChild(tempCell);
+        row.appendChild(pressureCell);
+        row.appendChild(cloudsAllCell);
+        row.appendChild(WindSpeedCell);
+        row.appendChild(WindDirectionCell);
+        row.appendChild(HumidityCell);
+        row.appendChild(VisibilityCell);
+
+        // Append the row to the table body
+        tableBody.appendChild(row);
+      });
+    } else {
+      console.error("data.list is not an array.");
+    }
+  })
+  .catch(error => {
+    console.error("Error fetching data:", error);
+  });
+</script>
+
+</div>
 
     <!-- User Form Modal -->
     <div class="modal fade" role="dialog" tabindex="-1" id="user-form-modal">
@@ -766,14 +1079,15 @@ var chart = echarts.init(document.getElementById("water-level-card"));
         .then(data => {
           console.log(data.list)
             for (let i = 1; i <= 5 ; i++) {
-                document.getElementById("day"+i+"Min").innerHTML = "Min: " +Number(data.list[i].main.temp_min).toFixed(1)+"°";
-            }
-            for (let i = 1; i <= 5 ; i++) {
-                document.getElementById("day"+i+"Max").innerHTML = "Max: " +Number(data.list[i].main.temp_max).toFixed(1)+"°";
+                document.getElementById("day"+i+"temp").innerHTML = "temp: " +Number(data.list[i].main.temp).toFixed(1)+"°";
             }            
             for (let i = 1; i <= 5 ; i++) {
-                document.getElementById("day"+i+"RainFall").innerHTML = "RainFall : " + data.list[i].weather[0].main;
+                document.getElementById("day"+i+"pressure").innerHTML = "pressure : " + data.list[i].main.pressure;
             }
+            for (let i = 1; i <= 5 ; i++) {
+                document.getElementById("day"+i+"all").innerHTML = "all : " + data.list[i].clouds.all;
+            }
+
             for (let i = 1; i <= 5 ; i++) {
                 document.getElementById("day"+i+"WindSpeed").innerHTML = "Wind Speed : " + data.list[i].wind.speed;
             }
