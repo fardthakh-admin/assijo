@@ -1093,30 +1093,30 @@ var chart = echarts.init(document.getElementById("water-level-card"));
           // this loop effectively iterates through a sequence of values from 0 to 32 (in increments of 8),
           // which corresponds to the indices of timestamps you want to process within your data. It allows 
           //you to process data for every 8th timestamp within the range of 40 timestamps in your forecast data.
-            for (var i = 0; i < 40 ; i +=8) {
+            for (var i = 0; i < data.list.length ; i +=8) {
               //When i is 0, (0 / 8 + 1) evaluates to 1, indicating that it's the data for the first day.
-                document.getElementById("day"+(i / 8 + 1)+"temp").innerHTML = "temperature: " +Number(data.list[i].main.temp).toFixed(1)+"°C";
+                document.getElementById("day"+(i / 8 + 1)+"temp").innerHTML = "temperature: " +Number(data.list[i].main.temp).toFixed(1)+"°";
             }            
-            for (var i = 0; i < 40 ; i +=8) {
+            for (var i = 0; i < data.list.length ; i +=8) {
               //When i is 8, (8 / 8 + 1) evaluates to 2, indicating the second day.
                 document.getElementById("day"+(i / 8 + 1)+"pressure").innerHTML = "pressure : " + data.list[i].main.pressure;
             }
-            for (var i = 0; i < 40 ; i +=8) {
+            for (var i = 0; i < data.list.length ; i +=8) {
               //When i is 16, (16 / 8 + 1) evaluates to 3, indicating the third day.
                 document.getElementById("day"+(i / 8 + 1)+"all").innerHTML = "clouds : " + data.list[i].clouds.all;
             }
 
-            for (var i = 0; i < 40 ; i +=8) {
+            for (var i = 0; i < data.list.length ; i +=8) {
 
                 document.getElementById("day"+(i / 8 + 1)+"WindSpeed").innerHTML = "Wind Speed : " + data.list[i].wind.speed;
             }
-            for (var i = 0; i < 40 ; i +=8){
+            for (var i = 0; i < data.list.length ; i +=8){
                 document.getElementById("day"+(i / 8 + 1)+"WindDirection").innerHTML = "Wind Direction : " + data.list[i].wind.deg;
             }
-            for (var i = 0; i < 40 ; i +=8) {
+            for (var i = 0; i <  data.list.length ; i +=8) {
                 document.getElementById("day"+(i / 8 + 1)+"Humidity").innerHTML = "Humidity : " + data.list[i].main.humidity;
             }
-            for (var i = 0; i < 40 ; i +=8){
+            for (var i = 0; i <  data.list.length ; i +=8){
                 document.getElementById("day"+(i / 8 + 1)+"Visibility").innerHTML = "Visibility : " + data.list[i].visibility;
             }
 
