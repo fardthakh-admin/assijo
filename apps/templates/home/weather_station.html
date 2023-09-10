@@ -587,11 +587,12 @@
                                     data: dataPoints,
                                     borderColor: 'brown',
                                     fill: false,
+                                    tension:0,
                                    
                                 }]
                             },
                             options: {
-                                 tension: 0,
+                                 
                             }
                         });
                     })
@@ -618,11 +619,12 @@
                                   label: 'pressure (°C)',
                                   data: dataPoints,
                                   borderColor: 'darkblue',
-                                  fill: false
+                                  fill: false,
+                                  tension: 0,
                               }]
                           },
                           options: {
-                            tension: 0,
+                           
                           }
                       });
                   })
@@ -649,11 +651,12 @@
                                  label: 'clouds:all',
                                  data: dataPoints,
                                  borderColor: 'orange',
-                                 fill: false
+                                 fill: false,
+                                 tension: 0,
                              }]
                          },
                          options: {
-                          tension: 0,
+                          
                          }
                      });
                  })
@@ -680,11 +683,12 @@
                                  label: 'windspeed ',
                                  data: dataPoints,
                                  borderColor: 'black',
-                                 fill: false
+                                 fill: false,
+                                 tension: 0,
                              }]
                          },
                          options: {
-                          tension: 0,
+                          
                          }
                      });
                  })
@@ -711,11 +715,12 @@
                                  label: 'winddirection',
                                  data: dataPoints,
                                  borderColor: '#00ff0080',
-                                 fill: false
+                                 fill: false,
+                                 tension: 0,
                              }]
                          },
                          options: {
-                          tension: 0,
+                          
                               
                          }
                      });
@@ -743,11 +748,12 @@
                                  label: 'Humadity',
                                  data: dataPoints,
                                  borderColor: '#0000ff80',
-                                 fill: false
+                                 fill: false,
+                                 tension:0,
                              }]
                          },
                          options: {
-                          tension: 0,
+                     
                               
                          }
                      });
@@ -775,7 +781,8 @@
                                  label: 'Visibility',
                                  data: dataPoints,
                                  borderColor: '#ff000080',
-                                 fill: false
+                                 fill: false,
+                                 tension: 0,
                              }]
                          },
                          options: {
@@ -1083,17 +1090,24 @@ var chart = echarts.init(document.getElementById("water-level-card"));
         .then( response => response.json())
         .then(data => {
           console.log(data.list)
+          // this loop effectively iterates through a sequence of values from 0 to 32 (in increments of 8),
+          // which corresponds to the indices of timestamps you want to process within your data. It allows 
+          //you to process data for every 8th timestamp within the range of 40 timestamps in your forecast data.
             for (var i = 0; i < 40 ; i +=8) {
+              //When i is 0, (0 / 8 + 1) evaluates to 1, indicating that it's the data for the first day.
                 document.getElementById("day"+(i / 8 + 1)+"temp").innerHTML = "temperature: " +Number(data.list[i].main.temp).toFixed(1)+"°C";
             }            
             for (var i = 0; i < 40 ; i +=8) {
+              //When i is 8, (8 / 8 + 1) evaluates to 2, indicating the second day.
                 document.getElementById("day"+(i / 8 + 1)+"pressure").innerHTML = "pressure : " + data.list[i].main.pressure;
             }
             for (var i = 0; i < 40 ; i +=8) {
+              //When i is 16, (16 / 8 + 1) evaluates to 3, indicating the third day.
                 document.getElementById("day"+(i / 8 + 1)+"all").innerHTML = "clouds : " + data.list[i].clouds.all;
             }
 
             for (var i = 0; i < 40 ; i +=8) {
+
                 document.getElementById("day"+(i / 8 + 1)+"WindSpeed").innerHTML = "Wind Speed : " + data.list[i].wind.speed;
             }
             for (var i = 0; i < 40 ; i +=8){
@@ -1237,51 +1251,7 @@ var chart = echarts.init(document.getElementById("water-level-card"));
         operation.value = 'add'
 
     }
-{#</script>#}
-{##}
-{#    <!--  ATTEMPT TO PLACE A TAG ON THE MAP  -->#}
-{#    <script>#}
-// {#        $(document).ready(function(){#}
-// {#            var data = [];#}
-// {#            $.ajax({#}
-// {#                url: "{% url 'mydata_weatherstation'%}",#}
-// {#                method: 'GET',#}
-// {#                success: function (data_weather_station) {#}
-// {#                    data_weather_station.forEach(function(item) {#}
-// {#                        item.group = "weatherstation"; // Add group property to each item#}
-// {#                    });#}
-// {#                    data = data.concat(data_weather_station);#}
-// {##}
-// {#                }#}
-// {#            });#}
-// {#        });#}
-// {#        function initMap(data) {#}
-// {#        map = new OpenLayers.Map("map");#}
-// {#        map.addLayer(new OpenLayers.Layer.OSM());#}
-// {##}
-// {#        var markers = new OpenLayers.Layer.Markers("Markers");#}
-// {#        map.addLayer(markers);#}
-// {##}
-// {#        var markersArray = data;#}
-// {#        for (var i = 0; i < markersArray.length; i++) {#}
-// {#            var lonLat = new OpenLayers.LonLat(markersArray[i].longitude, markersArray[i].latitude)#}
-// {#                .transform(#}
-// {#                    new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984#}
-// {#                    map.getProjectionObject() // to Spherical Mercator Projection#}
-// {#                );#}
-// {#            var icon = new OpenLayers.Icon("static/assets/img/icons/flag_icon.png", new OpenLayers.Size(50, 32));#}
-// {#            markers.addMarker(new OpenLayers.Marker(lonLat, icon));#}
-// {#        }#}
-// {#        var lonLatcenter = new OpenLayers.LonLat({{ user.farm.longitude }}, {{ user.farm.latitude }})#}
-// {#            .transform(#}
-// {#                new OpenLayers.Projection("EPSG:4326"),#}
-// {#                map.getProjectionObject()#}
-// {#            );#}
-// {#        var zoom = 10;#}
-// {#        map.setCenter(lonLatcenter, zoom);#}
-// {#    }#}
-{#    </script>#}
-{##}
+
 
 <script src="/static/assets/vendor/clipboard/dist/clipboard.min.js"></script>
 
