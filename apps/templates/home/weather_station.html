@@ -66,6 +66,12 @@
       color: black;
       border-color: black;
     }
+    .btn-group{
+      align-items: center;
+      margin-left: 25%;
+
+      
+    }
     </style>
     <div class="row">
               <div class="col-xl-12">
@@ -652,7 +658,7 @@
                                  data: dataPoints,
                                  borderColor: 'orange',
                                  fill: false,
-                                 tension: 0,
+                                 tension: ,
                              }]
                          },
                          options: {
@@ -825,6 +831,7 @@
     <tbody id="tableBody">
     </tbody>
   </table>
+  
 
   <script>
      fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
@@ -880,6 +887,40 @@
 
 </div>
 
+<div class="btn-group">
+  <button onclick="download_csv_file()"> Download CSV </button>  
+</div>
+<script>
+function download_csv_file() {
+  var table = document.getElementById("tableBody");
+   // Create an empty array to store the table data
+  var csvFileData = [];
+   // Iterate through the rows in the table
+  for (var i = 0; i < table.rows.length; i++) {
+    var row = table.rows[i];
+    var rowData = [];
+    // Iterate through the cells in each row
+    for (var j = 0; j < row.cells.length; j++) {
+      rowData.push(row.cells[j].innerText);
+    }
+      // Add the row data to the CSV data array
+    csvFileData.push(rowData);
+  }
+   // Create the CSV string
+  var csv = csvFileData.map(function (row) {
+    return row.join(",");
+  }).join("\n");
+    // Create a data URI for the CSV content
+  var csvDataUri = "data:text/csv;charset=utf-8," + encodeURI(csv);
+ // Create a hidden link element for downloading
+  var hiddenElement = document.createElement("a");
+  hiddenElement.href = csvDataUri;
+  hiddenElement.target = "_blank";
+  hiddenElement.download = "data.csv";
+  hiddenElement.click();
+}
+
+</script>
     <!-- User Form Modal -->
     <div class="modal fade" role="dialog" tabindex="-1" id="user-form-modal">
       <div class="modal-dialog modal-lg" role="document">
@@ -1034,20 +1075,6 @@ var chart = echarts.init(document.getElementById("water-level-card"));
             attribution: '&copy; <a href="http://owm.io">VANE</a>'
         });
 
-        $(document).ready(function(){
-            var data = [];
-            $.ajax({
-                url: "{% url 'mydata_weatherstation'%}",
-                method: 'GET',
-                success: function (data_weather_station) {
-                    data_weather_station.forEach(function(item) {
-                        item.group = "weatherstation"; // Add group property to each item
-                    });
-                    data = data.concat(data_weather_station);
-                    initWeatherMap(data);
-                }
-            });
-        });
 
         var owm = new L.OWMLayer({key: 'b1b15e88fa797225412429c1c50c122a1'});
         map.addLayer(owm);
@@ -1079,8 +1106,30 @@ var chart = echarts.init(document.getElementById("water-level-card"));
         }
     }
 </script>
+<script>
+  var data = [];
+  var weather_stations = {{ weather_stations|safe }};
 
+  weather_stations.forEach(function(station) {
+      var latestPacketResult = station.packetresult_set[0];
 
+      if (latestPacketResult) {
+          var packetData = {
+              temperature: latestPacketResult.temperature,
+              humidity: latestPacketResult.humidity,
+              rainfall: latestPacketResult.rainfall,
+              wind_speed: latestPacketResult.wind_speed,
+              timestamp: latestPacketResult.timestamp,
+              direction: latestPacketResult.direction,
+              visibility: latestPacketResult.visibility,
+              solar_radiation: latestPacketResult.solar_radiation,
+          };
+          data.push(packetData);
+      }
+  });
+
+  initWeatherMap(data);
+</script>
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
 

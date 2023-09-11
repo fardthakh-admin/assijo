@@ -17,7 +17,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 import numpy as np
 import datetime
-
 from .models import Sensor, \
     Valve, \
     Tree, \
@@ -32,7 +31,23 @@ from .models import Sensor, \
     WaterShare, \
     EnergyLevel
 from . customuserform import CustomUserCreationForm
+from .models import PacketResult
 
+def weather_data(request):
+    latest_packet_result = PacketResult.objects.latest('timestamp')
+
+    context = {
+        'temperature': latest_packet_result.temperature,
+        'humidity': latest_packet_result.humidity,
+        'rainfall': latest_packet_result.rainfall,
+        'wind_speed': latest_packet_result.wind_speed,
+        'direction': latest_packet_result.direction,
+        'timestamp': latest_packet_result.timestamp,
+        'visibility': latest_packet_result.visibility,
+        'solar_radiation': latest_packet_result.solar_radiation,
+    }
+
+    return render(request, 'weather_station.html', context)
 
 @login_required(login_url="/login/")
 def index(request):
@@ -454,6 +469,18 @@ def mydata_Trees(request):
 
     return JsonResponse(result_list, safe=False)
 
+
+##def mydata_weatherstation(request):
+ 
+   ## weather_station_data = WeatherStationData.objects.all()  
+
+    ##context = {
+    ##    'weather_station_data': weather_station_data,
+   ## }
+
+   ## return render(request, 'weather_station.html', context)
+
+
 def mydata_weatherstation(request):
     user = User.objects.get( id = request.user.id )
     result_list = list(WeatherStation.objects \
@@ -472,6 +499,18 @@ def mydata_weatherstation(request):
                        )
 
     return JsonResponse(result_list, safe=False)
+
+
+def mydata_weatherstation(request):
+    
+    weather_data = WeatherData.objects.all()
+
+    context = {
+        'weather_data': weather_data,
+    }
+
+    return render(request, 'weather_station.html', context)
+
 
 
 class SensorOperation(APIView):
