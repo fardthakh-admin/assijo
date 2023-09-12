@@ -27,6 +27,9 @@ urlpatterns = [
     path('users', views.users_view, name='users'),
     path('offline_scenario', views.offline_scenario_view, name='offline_scenario'),
     path('weather_station', views.WeatherStationView.as_view(), name='weather_station'),
+  
+
+
 
     path('create_farm', views.create_farm, name = "create_farm" ),
     path('create_farm_borders', views.create_farm_borders, name = "create_farm_borders" ),

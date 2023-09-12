@@ -17,6 +17,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 import numpy as np
 import datetime
+from .models import PacketResult 
 from .models import Sensor, \
     Valve, \
     Tree, \
@@ -30,24 +31,10 @@ from .models import Sensor, \
     User, \
     WaterShare, \
     EnergyLevel
-from . customuserform import CustomUserCreationForm
-from .models import PacketResult
 
-def weather_data(request):
-    latest_packet_result = PacketResult.objects.latest('timestamp')
+ 
 
-    context = {
-        'temperature': latest_packet_result.temperature,
-        'humidity': latest_packet_result.humidity,
-        'rainfall': latest_packet_result.rainfall,
-        'wind_speed': latest_packet_result.wind_speed,
-        'direction': latest_packet_result.direction,
-        'timestamp': latest_packet_result.timestamp,
-        'visibility': latest_packet_result.visibility,
-        'solar_radiation': latest_packet_result.solar_radiation,
-    }
 
-    return render(request, 'weather_station.html', context)
 
 @login_required(login_url="/login/")
 def index(request):
@@ -501,15 +488,6 @@ def mydata_weatherstation(request):
     return JsonResponse(result_list, safe=False)
 
 
-def mydata_weatherstation(request):
-    
-    weather_data = WeatherData.objects.all()
-
-    context = {
-        'weather_data': weather_data,
-    }
-
-    return render(request, 'weather_station.html', context)
 
 
 
@@ -762,8 +740,10 @@ def weather_station_view(request):
     return render(request, 'home/weather_station.html', context={'weather_station': weather_station})
 
 
+
 class WeatherStationView(View):
     def get(self, request):
+        packetresult = PacketResult.objects.last()
         user = User.objects.get(id=request.user.id)
         weather_station = WeatherStation.objects.filter( farm_id = user.farm )
         if weather_station:
@@ -772,7 +752,7 @@ class WeatherStationView(View):
             weather_station = {}
 
 
-        return render(request, 'home/weather_station.html', context={'weather_station': weather_station })
+        return render(request, 'home/weather_station.html', context={'weather_station': weather_station,'packetresult': packetresult, })
 
     def post(self, request):
         user = User.objects.get( id = request.user.id )
