@@ -753,9 +753,7 @@ class WeatherStationView(View):
                 packetresult = None
 
             return render(request, 'home/weather_station.html', context={'weather_station': weather_station, 'packetresult': packetresult})
-        else:
-         
-            return HttpResponse("Authentication required to access this view.")
+       
 
     def post(self, request):
         user = User.objects.get( id = request.user.id )
@@ -968,7 +966,21 @@ class UserOperation(APIView):
         return redirect('/users')
 
 
-def home(request):
-    user = User.objects.get( id = request.user.id )
-    packetresult = PacketResult.objects.last()
-    return render(request, 'index.html', context={'packetresult': packetresult})
+
+## def index(request):
+   
+   ## user = User.objects.get(id=request.user.id)
+   ## packetresult = PacketResult.objects.last()
+    ##return render(request, 'home\index.html', context={'packetresult': packetresult})
+
+ 
+def index(request):
+    if request.user.is_authenticated:
+        user = request.user
+        farm = user.farm
+
+        
+        packetresult = PacketResult.objects.filter(weather_station__farm=farm).last()
+
+        return render(request, 'home/index.html', context={'packetresult': packetresult})
+ 
