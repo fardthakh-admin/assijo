@@ -754,7 +754,7 @@ class WeatherStationView(View):
 
             return render(request, 'home/weather_station.html', context={'weather_station': weather_station, 'packetresult': packetresult})
         else:
-            # Handle the case where the user is not authenticated, e.g., redirect to a login page or show an error message.
+         
             return HttpResponse("Authentication required to access this view.")
 
     def post(self, request):
