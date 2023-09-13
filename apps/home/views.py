@@ -35,7 +35,6 @@ from .models import Sensor, \
  
 
 
-
 @login_required(login_url="/login/")
 def index(request):
     user = User.objects.get(id=request.user.id)
@@ -740,19 +739,23 @@ def weather_station_view(request):
     return render(request, 'home/weather_station.html', context={'weather_station': weather_station})
 
 
+from django.shortcuts import get_object_or_404
 
 class WeatherStationView(View):
     def get(self, request):
-        packetresult = PacketResult.objects.last()
-        user = User.objects.get(id=request.user.id)
-        weather_station = WeatherStation.objects.filter( farm_id = user.farm )
-        if weather_station:
-            weather_station = WeatherStation.objects.get( farm_id = user.farm )
+        if request.user.is_authenticated:
+            user = request.user
+            weather_station = WeatherStation.objects.filter(farm=user.farm).first()
+
+            if weather_station:
+                packetresult = PacketResult.objects.filter(weather_station=weather_station).last()
+            else:
+                packetresult = None
+
+            return render(request, 'home/weather_station.html', context={'weather_station': weather_station, 'packetresult': packetresult})
         else:
-            weather_station = {}
-
-
-        return render(request, 'home/weather_station.html', context={'weather_station': weather_station,'packetresult': packetresult, })
+            # Handle the case where the user is not authenticated, e.g., redirect to a login page or show an error message.
+            return HttpResponse("Authentication required to access this view.")
 
     def post(self, request):
         user = User.objects.get( id = request.user.id )
@@ -963,3 +966,9 @@ class UserOperation(APIView):
                 )
                 varuser.save()
         return redirect('/users')
+
+
+def home(request):
+    user = User.objects.get( id = request.user.id )
+    packetresult = PacketResult.objects.last()
+    return render(request, 'index.html', context={'packetresult': packetresult})
