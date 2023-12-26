@@ -45,6 +45,7 @@ def index(request):
     waterlevel = WaterTank.objects.filter(farm_id=user.farm)
     trees = Tree.objects.filter(farm_id=user.farm)
 
+ 
     #edit this query to get all sensors of type humidity
     start_date = request.GET.get('start_date') if request.GET.get('start_date') != '' else datetime.datetime.today() - datetime.timedelta(days=30)
     end_date = request.GET.get('end_date') if request.GET.get('end_date') != '' else datetime.datetime.today()

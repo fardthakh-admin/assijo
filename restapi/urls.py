@@ -30,6 +30,7 @@ urlpatterns = [
 
     # POST urls
     path('farm-create-sensor-result/<int:sensor_id>/',views.create_sensor_result , name = 'farm-create-sensor-result'),
+    path('farm-create-packet-result/',views.create_packet_result , name = 'farm-create-packet-result'),
     path('farm-create-watertank-result/<int:watertank_id>/',views.create_watertank_result , name = 'farm-create-watertank-result'),
     path('farm-create-tree-result/<int:tree_id>/',views.create_tree_result , name = 'farm-create-tree-result'),
     path('farm-create-valve-result/<int:valve_id>/',views.create_valve_result , name = 'farm-create-valve-result'),

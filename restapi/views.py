@@ -99,6 +99,20 @@ def farm_timestamps(request):
         end_date = datetime.datetime.today()
     
     results = models.Result.objects.filter(sensor__farm = user.farm , timestamp__range = (start_date, end_date)).order_by('timestamp').values('number', 'timestamp')
+    
+    return Response(results)
+
+
+@api_view(['GET'])
+def farm_timestamps_days(request):
+    user = models.User.objects.get(id = request.user.id)
+
+    list_of_timestamps = []
+        
+    start_date = datetime.datetime.today() - datetime.timedelta(days=7)
+    end_date = datetime.datetime.today()
+    
+    results = models.Result.objects.filter(sensor__farm = user.farm , timestamp__range = (start_date, end_date)).order_by('timestamp').values('number', 'timestamp')
     for result in results:
         list_of_timestamps.append(result['timestamp'].strftime('%Y-%m-%d'))
 
@@ -209,6 +223,11 @@ def farm_humidity_results(request):
         # Get the list of water level results for the current water tank
         humidity_result = list(models.Result.objects.filter(sensor__id=sensor.id).values_list('number', flat=True))
         humidity_result = list(map(int, humidity_result))
+        normalized_list = []
+
+        for reading in humidity_result:
+            reading_normal = (1 - ((reading - 1700)/(2600 - 1700)) )* 100 
+            normalized_list.append(reading_normal)
 
         # Get the unit for the current water tank from the first result (assuming same unit for all results)
         results = models.Sensor.objects.filter(id=sensor.id)
@@ -218,7 +237,7 @@ def farm_humidity_results(request):
         data.append({
             'sensor_id': sensor_id,
             'unit': unit,
-            'humidity': humidity_result,
+            'humidity': normalized_list,
         })
 
     return Response(data)
@@ -429,7 +448,8 @@ def farm_weather_station(request):
 @api_view(['GET'])
 def farm_packet_results(request):
     user = models.User.objects.get(id = request.user.id)
-    weather_station = models.WeatherStation.objects.get(farm_id = user.farm).order_by('-id')
+    farm_id = user.farm
+    weather_station = models.WeatherStation.objects.get(farm_id = farm_id)
     packet_results = models.PacketResult.objects.filter(weather_station_id = weather_station.id).order_by('-id')
     serializer = serializers.PacketResultSerializer(packet_results, many = True)
     return Response(serializer.data)
@@ -452,6 +472,30 @@ def create_sensor_result(request, sensor_id):
     serializer = serializers.ResultSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save(sensor=sensor)
+
+        return Response(serializer.data, status=201)
+    
+    return Response(serializer.errors, status=400)
+
+
+# DATA CREATION (POST APIs)
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def create_packet_result(request):
+    try:
+        user = models.User.objects.get( id = request.user.id )
+        farm = models.Farm.objects.get( owner = user.id )
+        weather_station = models.WeatherStation.objects.filter(farm_id = user.farm)
+
+    except models.WeatherStation.DoesNotExist:
+        return Response({"detail": "Station not found or does not belong to the user."}, status=404)
+
+    # request.data['unit'] = sensor.unit
+    my_data = request.data
+
+    serializer = serializers.save(data=request.data)
+    if serializer.is_valid():
+        serializer.save(weather_station=weather_station)
 
         return Response(serializer.data, status=201)
     

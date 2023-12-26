@@ -192,15 +192,32 @@ class WeatherStation(models.Model):
     takes the result as a foreign key from the packet result
     """
     farm = models.OneToOneField(Farm, null=True, on_delete=models.SET_NULL)
-    packet = models.CharField(max_length=100)
+    packet = models.CharField(max_length=100, blank=True, null=True)
     location = models.CharField(max_length=100)
     latitude = models.CharField(max_length=200, blank=True, null=True)
     longitude = models.CharField(max_length=200, blank=True, null=True)
 
+    BattV_MinUnit	      = models.CharField(max_length=100, blank=True, null=True)
+    BattV_AvgUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    PTemp_C_AvgUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    BP_mmHg_AvgUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    Rain_mm_TotUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    AirTC_AvgUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    AirTC_MaxUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    AirTC_TMxUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    AirTC_MinUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    AirTC_TMnUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    RHUnit	              = models.CharField(max_length=30, blank=True, null=True)
+    SlrkW_AvgUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    SlrMJ_TotUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    Visibility_m_AvgUnit  = models.CharField(max_length=30, blank=True, null=True)
+    wind_speed_AVGUnit	  = models.CharField(max_length=30, blank=True, null=True)
+    
+  
 # def __str__(self):
 #   return "%s %s" % (self.packet, self.location)
 
-
+#here
 class PacketResult(models.Model):
     temperature = models.CharField(max_length=100)
     humidity = models.CharField(max_length=30)
@@ -210,5 +227,13 @@ class PacketResult(models.Model):
     direction = models.CharField(max_length=30)
     visibility = models.CharField(max_length=30)
     solar_radiation = models.CharField(max_length=30)
+    
+    
+    
     weather_station = models.ForeignKey(WeatherStation, on_delete=models.SET_NULL, blank=True, null=True,
-                                        related_name="weather_station")
+                                       related_name="weather_station")
+
+    # def save(self, *args, **kwargs):
+    #     # weather_station = WeatherStation.objects.get(pk=self.weather_station.id)
+    #     # self.unit = sensor.unit
+    #     super().save(*args, **kwargs)

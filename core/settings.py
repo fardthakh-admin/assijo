@@ -18,7 +18,7 @@ SECRET_KEY = config('SECRET_KEY', default='S#perS3crEt_1122')
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 # load production server from .env
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", config('SERVER', default='localhost'), ]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", config('SERVER', default='localhost'), '10.239.181.28']
 
 # Application definition
 
