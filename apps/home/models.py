@@ -219,21 +219,67 @@ class WeatherStation(models.Model):
 
 #here
 class PacketResult(models.Model):
-    temperature = models.CharField(max_length=100)
-    humidity = models.CharField(max_length=30)
-    rainfall = models.CharField(max_length=30)
-    wind_speed = models.CharField(max_length=30)
-    timestamp = models.CharField(max_length=30)
-    direction = models.CharField(max_length=30)
-    visibility = models.CharField(max_length=30)
-    solar_radiation = models.CharField(max_length=30)
+    temperature = models.CharField(max_length=100, blank=True, null=True)
+    humidity = models.CharField(max_length=30, blank=True, null=True)
+    rainfall = models.CharField(max_length=30, blank=True, null=True)
+    wind_speed = models.CharField(max_length=30, blank=True, null=True)
+    timestamp = models.CharField(max_length=30, blank=True, null=True)
+    direction = models.CharField(max_length=30, blank=True, null=True)
+    visibility = models.CharField(max_length=30, blank=True, null=True)
+    solar_radiation = models.CharField(max_length=30, blank=True, null=True)
     
+    BattV_Min	      = models.CharField(max_length=100, blank=True, null=True)
+    BattV_Avg	      = models.CharField(max_length=30, blank=True, null=True)
+    PTemp_C_Avg	      = models.CharField(max_length=30, blank=True, null=True)
+    BP_mmHg_Avg	      = models.CharField(max_length=30, blank=True, null=True)
+    Rain_mm_Tot	      = models.CharField(max_length=30, blank=True, null=True)
+    AirTC_Avg	      = models.CharField(max_length=30, blank=True, null=True)
+    AirTC_Max	      = models.CharField(max_length=30, blank=True, null=True)
+    AirTC_TMx	      = models.CharField(max_length=30, blank=True, null=True)
+    AirTC_Min	      = models.CharField(max_length=30, blank=True, null=True)
+    AirTC_TMn	      = models.CharField(max_length=30, blank=True, null=True)
+    RH	              = models.CharField(max_length=30, blank=True, null=True)
+    SlrkW_Avg	      = models.CharField(max_length=30, blank=True, null=True)
+    SlrMJ_Tot	      = models.CharField(max_length=30, blank=True, null=True)
+    Visibility_m_Avg  = models.CharField(max_length=30, blank=True, null=True)
+    wind_speed_AVG	  = models.CharField(max_length=30, blank=True, null=True)
+    
+    BattV_MinUnit	      = models.CharField(max_length=100, blank=True, null=True)
+    BattV_AvgUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    PTemp_C_AvgUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    BP_mmHg_AvgUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    Rain_mm_TotUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    AirTC_AvgUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    AirTC_MaxUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    AirTC_TMxUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    AirTC_MinUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    AirTC_TMnUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    RHUnit	              = models.CharField(max_length=30, blank=True, null=True)
+    SlrkW_AvgUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    SlrMJ_TotUnit	      = models.CharField(max_length=30, blank=True, null=True)
+    Visibility_m_AvgUnit  = models.CharField(max_length=30, blank=True, null=True)
+    wind_speed_AVGUnit	  = models.CharField(max_length=30, blank=True, null=True)
     
     
     weather_station = models.ForeignKey(WeatherStation, on_delete=models.SET_NULL, blank=True, null=True,
                                        related_name="weather_station")
 
-    # def save(self, *args, **kwargs):
-    #     # weather_station = WeatherStation.objects.get(pk=self.weather_station.id)
-    #     # self.unit = sensor.unit
-    #     super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        weather_station = WeatherStation.objects.get(pk=self.weather_station.id)
+        # self.unit = sensor.unit
+        self.BattV_MinUnit	      = weather_station.BattV_MinUnit
+        self.BattV_AvgUnit	      = weather_station.BattV_AvgUnit
+        self.PTemp_C_AvgUnit	  = weather_station.PTemp_C_AvgUnit  
+        self.BP_mmHg_AvgUnit	  = weather_station.BP_mmHg_AvgUnit  
+        self.Rain_mm_TotUnit	  = weather_station.Rain_mm_TotUnit  
+        self.AirTC_AvgUnit	      = weather_station.AirTC_AvgUnit	   
+        self.AirTC_MaxUnit	      = weather_station.AirTC_MaxUnit	   
+        self.AirTC_TMxUnit	      = weather_station.AirTC_TMxUnit	   
+        self.AirTC_MinUnit	      = weather_station.AirTC_MinUnit	   
+        self.AirTC_TMnUnit	      = weather_station.AirTC_TMnUnit	   
+        self.RHUnit	              = weather_station.RHUnit	           
+        self.SlrkW_AvgUnit	      = weather_station.SlrkW_AvgUnit	     
+        self.SlrMJ_TotUnit	      = weather_station.SlrMJ_TotUnit	     
+        self.Visibility_m_AvgUnit = weather_station.Visibility_m_AvgUnit
+        self.wind_speed_AVGUnit	  = weather_station.wind_speed_AVGUnit	 
+        super().save(*args, **kwargs)

@@ -485,18 +485,19 @@ def create_packet_result(request):
     try:
         user = models.User.objects.get( id = request.user.id )
         farm = models.Farm.objects.get( owner = user.id )
-        weather_station = models.WeatherStation.objects.filter(farm_id = user.farm)
+        weather_station = models.WeatherStation.objects.get(farm_id = user.farm)
 
     except models.WeatherStation.DoesNotExist:
         return Response({"detail": "Station not found or does not belong to the user."}, status=404)
 
     # request.data['unit'] = sensor.unit
     my_data = request.data
-
-    serializer = serializers.save(data=request.data)
+    
+    serializer = serializers.PacketResultSerializer(data=request.data)
+    print("serializer.is_valid():: ", serializer.is_valid())
     if serializer.is_valid():
         serializer.save(weather_station=weather_station)
-
+        # print("there")
         return Response(serializer.data, status=201)
     
     return Response(serializer.errors, status=400)
