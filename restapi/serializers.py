@@ -32,7 +32,7 @@ class ValveSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Valve
         fields = '__all__'
-
+    
 class WaterTankSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.WaterTank

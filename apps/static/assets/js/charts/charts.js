@@ -300,7 +300,9 @@ var Charts = (function() {
 //  END OF CHARTS SHAPE AND COLOR DEFENITION
 
 
-
+function stringfy(elem) {
+    return elem.timestamp.split('T')[0]
+}
 
 
 //TIMESTAMPS
@@ -309,7 +311,7 @@ fetch('/api/farm-timestamps/')
 .then((resp) => resp.json())//get data and turn it into JSON
 .then(function(data){
     console.log(data);
-    times = data;
+    times = data.map(stringfy);
 })
 .catch(error => {
     console.error('Error:', error);

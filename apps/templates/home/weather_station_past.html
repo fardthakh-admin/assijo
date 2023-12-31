@@ -480,87 +480,59 @@ Current Weather Data
                             <div class="card-header border-0">
                                 <div class="row align-items-center">
                                     <div class="col">
-                                        <h3 class="mb-0">Weather Forecasting Station</h3>
+                                        <h3 class="mb-0">Weather Station Last readings</h3>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="table-responsive table-lg mt-3"  style="position:relative;: top:20px">
-<!-- {#                                <center>#}
-{#                                    <h4 class="mb-0" id = 'Para1'>5-DAYS WEATHER FORECAST</h4>#}
-{#                                    <div class="row-cols-md-4">#}
-{#                                        <p id="cityInput">#}
-{#                                            City: <input type="text" id="cityInput" class="form-control">#}
-{#                                            <button class="btn btn-primary" style="margin-top: 10px">Submit</button>#}
-{#                                        </p>#}
-{#                                    </div>#}
-{#                                    <br>#}
-{#                                    <h3 class="mb-0" id="CityName">Amman</h3>#}
-{#                                </center>#} -->
+                              <div class="table-responsive table-lg mt-3"  style="position:relative; top:20px">
+                                <table class="table align-items-center table-flush">
+                                <thead class="thead-light">
+                                  <tr>
+                                    <th scope="col">BattV_Min</th>	     
+                                    <th scope="col">BattV_Avg	     </th>
+                                    <th scope="col">PTemp_C_Avg	     </th>
+                                    <th scope="col">BP_mmHg_Avg	     </th>
+                                    <th scope="col">Rain_mm_Tot	     </th>
+                                    <th scope="col">AirTC_Avg	     </th>
+                                    <th scope="col">AirTC_Max	     </th>
+                                    <th scope="col">AirTC_TMx	     </th>
+                                    <th scope="col">AirTC_Min	     </th>
+                                    <th scope="col">AirTC_TMn	     </th>
+                                    <th scope="col">RH	             </th>
+                                    <th scope="col">SlrkW_Avg	     </th>
+                                    <th scope="col">SlrMJ_Tot	     </th>
+                                    <th scope="col">Visibility_m_Avg </th>
+                                    <th scope="col">wind_speed_AVG	 </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for packet in packetresults %}
+                                     
+                                     <tr id="packet-{{ packet.id }}" >
+                                      <td scope="col">{{packet.BattV_Min       }} </td>	     
+                                      <td scope="col">{{packet.BattV_Avg	     }}  </td>
+                                      <td scope="col">{{packet.PTemp_C_Avg	   }}  </td>
+                                      <td scope="col">{{packet.BP_mmHg_Avg	   }}  </td>
+                                      <td scope="col">{{packet.Rain_mm_Tot	   }}  </td>
+                                      <td scope="col">{{packet.AirTC_Avg	     }}  </td>
+                                      <td scope="col">{{packet.AirTC_Max	     }}  </td>
+                                      <td scope="col">{{packet.AirTC_TMx	     }}  </td>
+                                      <td scope="col">{{packet.AirTC_Min	     }}  </td>
+                                      <td scope="col">{{packet.AirTC_TMn	     }}  </td>
+                                      <td scope="col">{{packet.RH	             }}</td>
+                                      <td scope="col">{{packet.SlrkW_Avg	     }}  </td>
+                                      <td scope="col">{{packet.SlrMJ_Tot	     }}  </td>
+                                      <td scope="col">{{packet.Visibility_m_Avg}} </td>
+                                      <td scope="col">{{packet.wind_speed_AVG	 }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                      </tbody>
+                              </table>
+                            </div>
 
-                                <div id="weatherContainer">
-                                    <div id="iconsContainer" class="row" style="display: flex; justify-content: space-between">
-                                        <div class="icons" style="margin-left: 50px">
-                                            <p class="weatherCard" id="day1"></p>
-                                           
-                                            <p class="temp" id="day1temp">Loading...</p>
-                                            <p class="rainFallValues"id="day1pressure">Loading...</p>
-                                            <p class="rainFallValues"id="day1all">Loading...</p>
-                                            <p class="rainFallValues" id="day1WindSpeed">Loading...</p>
-                                            <p class="rainFallValues" id="day1WindDirection">Loading...</p>
-                                            <p class="rainFallValues" id="day1Humidity">Loading...</p>
-                                            <p class="rainFallValues" id="day1Visibility">Loading...</p>
-                                        </div>
-
-                                        <div class="icons">
-                                            <p class="weatherCard" id="day2"></p>                                            
-                                          
-                                            <p class="tempValues" id="day2temp">Loading...</p>                                          
-                                            <p class="rainFallValues" id="day2pressure">Loading...</p>
-                                            <p class="rainFallValues"id="day2all">Loading...</p>
-                                            <p class="rainFallValues" id="day2WindSpeed">Loading...</p>
-                                            <p class="rainFallValues" id="day2WindDirection">Loading...</p>
-                                            <p class="rainFallValues" id="day2Humidity">Loading...</p>
-                                            <p class="rainFallValues" id="day2Visibility">Loading...</p>
-                                        </div>
-
-                                        <div class="icons">
-                                            <p class="weatherCard" id="day3"></p>                                            
-                                          
-                                            <p class="tempValues" id="day3temp">Loading...</p>                                            
-                                            <p class="rainFallValues" id="day3pressure">Loading...</p>
-                                            <p class="rainFallValues"id="day3all">Loading...</p>
-                                            <p class="rainFallValues" id="day3WindSpeed">Loading...</p>
-                                            <p class="rainFallValues" id="day3WindDirection">Loading...</p>
-                                            <p class="rainFallValues" id="day3Humidity">Loading...</p>
-                                            <p class="rainFallValues" id="day3Visibility">Loading...</p>
-                                        </div>
-
-                                        <div class="icons">
-                                            <p class="weatherCard" id="day4"></p>                                            
-                                           
-                                            <p class="tempValues" id="day4temp">Loading...</p>
-                                            <p class="rainFallValues" id="day4pressure">Loading...</p>
-                                            <p class="rainFallValues"id="day4all">Loading...</p>
-                                            <p class="rainFallValues" id="day4WindSpeed">Loading...</p>
-                                            <p class="rainFallValues" id="day4WindDirection">Loading...</p>
-                                            <p class="rainFallValues" id="day4Humidity">Loading...</p>
-                                            <p class="rainFallValues" id="day4Visibility">Loading...</p>
-                                        </div>
-
-                                        <div class="icons" style="margin-right: 50px">
-                                            <p class="weatherCard" id="day5"></p>
-                                            
-                                            <p class="tempValues" id="day5temp">Loading...</p>
-                                            <p class="rainFallValues" id="day5pressure">Loading...</p>
-                                            <p class="rainFallValues"id="day5all">Loading...</p>
-                                            <p class="rainFallValues" id="day5WindSpeed">Loading...</p>
-                                            <p class="rainFallValues" id="day5WindDirection">Loading...</p>
-                                            <p class="rainFallValues" id="day5Humidity">Loading...</p>
-                                            <p class="rainFallValues" id="day5Visibility">Loading...</p>
-                                        </div>
-                                    </div>
-                                </div>
+                                
                             </div>
                       </div>
                     </div>

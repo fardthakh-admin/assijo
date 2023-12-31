@@ -222,12 +222,12 @@ def farm_humidity_results(request):
 
         # Get the list of water level results for the current water tank
         humidity_result = list(models.Result.objects.filter(sensor__id=sensor.id).values_list('number', flat=True))
-        humidity_result = list(map(int, humidity_result))
+        # humidity_result = list(map(int, humidity_result))
         normalized_list = []
 
         for reading in humidity_result:
             reading_normal = (1 - ((reading - 1700)/(2600 - 1700)) )* 100 
-            normalized_list.append(reading_normal)
+            normalized_list.append(round(reading_normal, 2))
 
         # Get the unit for the current water tank from the first result (assuming same unit for all results)
         results = models.Sensor.objects.filter(id=sensor.id)
@@ -450,9 +450,33 @@ def farm_packet_results(request):
     user = models.User.objects.get(id = request.user.id)
     farm_id = user.farm
     weather_station = models.WeatherStation.objects.get(farm_id = farm_id)
-    packet_results = models.PacketResult.objects.filter(weather_station_id = weather_station.id).order_by('-id')
+    packet_results = models.PacketResult.objects.filter(weather_station_id = weather_station.id)
     serializer = serializers.PacketResultSerializer(packet_results, many = True)
     return Response(serializer.data)
+
+
+# DATA CREATION (POST APIs)
+@api_view(['PUT'])
+@permission_classes([permissions.IsAuthenticated])
+def set_valve_state(request, valve_id, valve_state):
+    try:
+        valve = models.Valve.objects.get(pk=valve_id)
+        # serializer = serializers.ValveSerializer(valve)
+         # request.data['unit'] = sensor.unit
+        # valve_state = valve_state_param
+        serializer = serializers.ValveSerializer(valve, data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save(id=valve_id, state=valve_state)
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+    except models.Valve.DoesNotExist:
+        return Response({"detail": "Valve not found or does not belong to the user."}, status=404)
+
+    
+    
+
+
 
 
 # DATA CREATION (POST APIs)

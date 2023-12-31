@@ -106,11 +106,11 @@
                                 <i class="fa-solid fa-trash-can-arrow-up" ></i>
                             </button>
                             {% if valve.state == "on" %}
-                            <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="Delete('{{ valve.id }}')">
+                            <button id="{{ valve.id }}" class="btn btn-sm btn-outline-secondary badge" type="button" onclick="deactivateValve('{{ valve.id }}', this)">
                               <i class="fa-solid fa-toggle-on"></i>
                             </button>
                             {% else %}
-                            <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="Delete('{{ valve.id }}')">
+                            <button id="{{ valve.id }}" class="btn btn-sm btn-outline-secondary badge" type="button" onclick="deactivateValve('{{ valve.id }}', this)">
                               <i class="fa-solid fa-toggle-off"></i>
                             </button>
                             {% endif %}
@@ -367,6 +367,33 @@
     </script>
 
     <script>
+      
+      function deactivateValve(id, e) {
+        console.log(id)
+        // if (confirm('Are you sure you want to delete this item?')) {
+            let formdata = new FormData();
+            let state = $(e).children()[0].classList[1] == "fa-toggle-on" ? true : false;
+            let valveID = e.id;
+
+            formdata.append("id", valveID);
+            formdata.append("state", String(state));
+
+            let requestOptions = {
+                method: 'PUT',
+                body: formdata,
+                redirect: 'follow'
+            };
+
+            fetch("/api/set/valve/"+ valveID+"/"+String(state)+"/", requestOptions)
+                .then(response => response.text())
+                .then(result => console.log(result))
+                .then($(e).children()[0].attributes.class.value == "fa-solid fa-toggle-on" ? $(e).children()[0].attributes.class.value = "fa-solid fa-toggle-off" : $(e).children()[0].attributes.class.value = "fa-solid fa-toggle-on")
+                .catch(error => console.log('error', error));
+        // }
+    }
+
+
+
 function DeleteValve(id) {
     console.log(id)
     if (confirm('Are you sure you want to delete this item?')) {

@@ -21,6 +21,13 @@ from django.contrib.auth.models import Group
 # class ResultInline(admin.ModelAdmin):
 #     model = Result
 
+# Register your models here.
+class ResultAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in Result._meta.get_fields()]
+    # fields = [field.name for field in Result._meta.get_fields()]
+    
+    list_filter = ['unit', 'sensor']
+    model = Result
 
 # Register your models here.
 class ResultInline(admin.StackedInline):
@@ -79,7 +86,7 @@ class TitleStationAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Sensor, SensorAdmin)
-admin.site.register(Result)
+admin.site.register(Result, ResultAdmin)
 admin.site.register(Valve, ValveInAdmin)
 admin.site.register(WaterTank, WaterTankAdmin)
 admin.site.register(WaterPump, WaterPumpAdmin)

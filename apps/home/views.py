@@ -774,6 +774,42 @@ class WeatherStationView(View):
         return HttpResponse(new_weather_station)
 
 
+
+class WeatherStationPastView(View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            user = request.user
+            weather_station = WeatherStation.objects.filter(farm=user.farm).first()
+
+            if weather_station:
+                packetresult = PacketResult.objects.filter(weather_station=weather_station).last()
+                packetresults = PacketResult.objects.filter(weather_station=weather_station)
+
+            else:
+                packetresult = None
+                packetresults = None
+
+            return render(request, 'home/weather_station_past.html', context={'weather_station': weather_station, 'packetresult': packetresult, 'packetresults': packetresults})
+       
+
+    def post(self, request):
+        user = User.objects.get( id = request.user.id )
+        location = request.POST.get('location')
+        packet = request.POST.get('packet')
+        latitude = request.POST.get('latitude', None)
+        longitude = request.POST.get('longitude', None)
+        new_weather_station = WeatherStation.objects.create(
+            location=location,
+            packet=packet,
+            latitude=latitude,
+            longitude=longitude,
+            farm=user.farm,
+        )
+        WeatherStation.save()
+
+        return HttpResponse(new_weather_station)
+
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.deprecation import MiddlewareMixin

@@ -27,6 +27,7 @@ urlpatterns = [
     path('users', views.users_view, name='users'),
     path('offline_scenario', views.offline_scenario_view, name='offline_scenario'),
     path('weather_station', views.WeatherStationView.as_view(), name='weather_station'),
+    path('weather_station_past', views.WeatherStationPastView.as_view(), name='weather_station_past'),
   
 
 

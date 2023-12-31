@@ -56,14 +56,19 @@ class Sensor(models.Model):
 
 class Valve(models.Model):
     farm = models.ForeignKey(Farm, on_delete=models.SET_NULL, null=True)
-    location = models.CharField(max_length=40)
-    type = models.CharField(max_length=30)
-    state = models.CharField(max_length=30)
+    location = models.CharField(max_length=40, blank=True, null=True)
+    type = models.CharField(max_length=30, blank=True, null=True)
+    state = models.CharField(max_length=30, blank=True, null=True)
     latitude = models.CharField(max_length=200, blank=True, null=True)
     longitude = models.CharField(max_length=200, blank=True, null=True)
 
     def __int__(self):
          return self.id
+    
+    # def save(self, *args, **kwargs):
+    #     # valve = self
+    #     # valve.state = self.state
+    #     super().save(*args, **kwargs)  # Call the "real" save() method.
 
 
 class WaterTank(models.Model):
@@ -111,7 +116,7 @@ class Result(models.Model):
 
     def __str__(self):
         try:
-            return "sensor {}".format(str(self.sensor.pk))
+            return "sensor #{id}: {number}{unit}".format(id = str(self.sensor.pk),number = str(self.number), unit = str(self.unit)  )
         except:
             return 'no sensors'
     def save(self, *args, **kwargs):
