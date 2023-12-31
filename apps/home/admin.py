@@ -21,7 +21,15 @@ from django.contrib.auth.models import Group
 # class ResultInline(admin.ModelAdmin):
 #     model = Result
 
+
 # Register your models here.
+class PacketResultAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in PacketResult._meta.get_fields()]
+    # fields = [field.name for field in Result._meta.get_fields()]
+    
+    list_filter = ['weather_station']
+    model = PacketResult
+
 class ResultAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Result._meta.get_fields()]
     # fields = [field.name for field in Result._meta.get_fields()]
@@ -74,6 +82,7 @@ class ValveInAdmin(admin.ModelAdmin):
 
 class PacketResultInline(admin.StackedInline):
     model = PacketResult
+    
 
 
 class WeatherStationAdmin(admin.ModelAdmin):
@@ -87,6 +96,7 @@ class TitleStationAdmin(admin.ModelAdmin):
 
 admin.site.register(Sensor, SensorAdmin)
 admin.site.register(Result, ResultAdmin)
+admin.site.register(PacketResult, PacketResultAdmin)
 admin.site.register(Valve, ValveInAdmin)
 admin.site.register(WaterTank, WaterTankAdmin)
 admin.site.register(WaterPump, WaterPumpAdmin)
@@ -97,7 +107,7 @@ admin.site.register(Gateway)
 admin.site.register(Tree, TreeAdmin)
 admin.site.register(WaterShare)
 admin.site.register(WeatherStation, WeatherStationAdmin)
-admin.site.register(PacketResult)
+# admin.site.register(PacketResult)
 admin.site.register(Title)
 admin.site.register(User)
 admin.site.register(Farm)
