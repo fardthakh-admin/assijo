@@ -50,8 +50,10 @@ class Sensor(models.Model):
     latitude = models.CharField(max_length=200, blank=True, null=True)
     longitude = models.CharField(max_length=200, blank=True, null=True)
     unit = models.CharField(max_length=200, blank = True, null = True , default="Sensor Default Unit")
-    # def __str__(self):
-    #     return "%s %s" % (self.id, self.type)
+    name = models.CharField(max_length=200, blank=True, null=True)
+
+    def __str__(self):
+        return "%s %s" % (self.name, self.id)
 
 
 class Valve(models.Model):

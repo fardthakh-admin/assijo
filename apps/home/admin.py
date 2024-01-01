@@ -61,8 +61,8 @@ class StringResultInline(admin.StackedInline):
 
 
 class SensorAdmin(admin.ModelAdmin):
-    list_display = ('location', 'type', 'category', 'latitude', 'longitude')
-    inlines = [ResultInline, StringResultInline]
+    list_display = ('name', 'location', 'type', 'category', 'latitude', 'longitude')
+    # inlines = [ResultInline, StringResultInline]
 
 
 class WaterPumpAdmin(admin.ModelAdmin):
