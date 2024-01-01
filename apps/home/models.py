@@ -113,6 +113,7 @@ class Result(models.Model):
                                    related_name="waterpump")
     energy_level = models.ForeignKey(EnergyLevel, on_delete=models.SET_NULL, blank=True, null=True,
                                      related_name="energylevel")
+    type = models.CharField(max_length=30, blank=True, null=True,)
 
     def __str__(self):
         try:
@@ -121,7 +122,11 @@ class Result(models.Model):
             return 'no sensors'
     def save(self, *args, **kwargs):
         sensor = Sensor.objects.get(pk=self.sensor.id)
-        self.unit = sensor.unit
+        if sensor.type != "multiple":
+            # for(request.query_params):
+                
+        # else:
+            self.unit = sensor.unit
         super().save(*args, **kwargs)  # Call the "real" save() method.
 
 class StringResult(models.Model):
