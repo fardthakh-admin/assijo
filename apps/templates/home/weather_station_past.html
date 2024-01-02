@@ -23,6 +23,14 @@
         text-align: center;
         pointer-events: none;
     }
+    .weather-tables td, .weather-tables th{
+      column-width: auto;
+      padding: 5px !important;
+    }
+    table.table.align-items-center.table-flush.weather-tables {
+      padding: 25px;
+      display: inline-block;
+  }
 .main-content{
 
     overflow-x: hidden;
@@ -73,8 +81,8 @@
       
     }
     </style>
-    <div class="row">
-              <div class="col-xl-12">
+    <div class="">
+              <div class="col-12">
                   <div class="card">
                       <div class="align-items-center">
                         <div id="viewDiv">
@@ -377,29 +385,20 @@ Current Weather Data
           </div>
         </div>
       </div>
-    </div>
     
-    <!-- Page content -->
-       <div class="header bg-gradient-primary">
-      <div class="container-fluid">
-        <div class="header-body">
-        <div style="align-items: center">
+    
+        
         <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-<div class="container">
-<div class="row flex-lg-nowrap">
-  <div class="col-12 col-lg-auto mb-3" style="width: 200px;">
-    <div>
-      <div class="e-navlist e-navlist--active-bg">
-      </div>
-    </div>
-  </div>
+
+<div class=" ">
+  
             <div>
               
                 <!--   WEATHER STATION DATA   -->
                 <div class="col">
                  
         <div div class="e-tabs px-3" style="margin-top: 75px; margin-bottom: 75px;">
-          <div class="card" style="position:relative; left:-155px">
+          <div class="card" style="position:relative;">
             <div class="card-header border-0">
               <div class="row align-items-center">
                 <div class="col">
@@ -415,7 +414,7 @@ Current Weather Data
             </div>
 
               <div class="table-responsive table-lg mt-3"  style="position:relative; top:20px">
-                <table class="table align-items-center table-flush">
+                <table class="table align-items-center table-flush weather-tables">
                 <thead class="thead-light">
                   <tr>
                     <th scope="col">id</th>
@@ -468,15 +467,14 @@ Current Weather Data
             </div>
           </div>
         </div>
-                  </tbody>
-                </table>
+                 
               </div>
 
                 <!--   WEATHER FORECASTING STATION   -->
-                <div class="col">
+                <div class="col" style="padding-bottom:20px;">
                   
                     <div div class="e-tabs px-3" style="margin-top: 75px; margin-bottom: 75px;">
-                        <div class="card" style="position:relative; left:-155px">
+                        <div class="card" style="padding-bottom: 20px;">
                             <div class="card-header border-0">
                                 <div class="row align-items-center">
                                     <div class="col">
@@ -485,9 +483,9 @@ Current Weather Data
                                 </div>
                             </div>
 
-                            <div class="table-responsive table-lg mt-3"  style="position:relative;: top:20px">
+                            <div class="table-responsive table-lg mt-3"  style="position:relative; top:20px">
                               <div class="table-responsive table-lg mt-3"  style="position:relative; top:20px">
-                                <table class="table align-items-center table-flush">
+                                <table class="table align-items-center table-flush weather-tables">
                                 <thead class="thead-light">
                                   <tr>
                                     <th scope="col">BattV_Min</th>	     
@@ -544,8 +542,8 @@ Current Weather Data
             </div>
           </div>
         </div>
-      </div>
-        </div>
+      
+        
         <div class="row align-items-center py-4">
           <div class="col-lg-6 col-7">
     
@@ -794,8 +792,8 @@ Current Weather Data
     </div>
    </div> 
   </div>
- </div>
- </div>
+ 
+ 
 </div>
 </div>  
 </br>
