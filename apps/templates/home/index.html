@@ -158,20 +158,25 @@
                         <div class="row">
                           <div class="col">
                             <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Temperature</h5>
-                            
-                            <span class="h2 font-weight-bold mb-0" id="temperature-card">
-                              {{  packetresult.temperature }}
+                            <span class="h2 font-weight-bold mb-0">
+                              
                             </span>
-                          </div>
+                          </div>                    
                           <div class="col-auto">
-                            <div class="icon icon-shape bg-gradient-danger text-white rounded-circle shadow">
+                            
+                            <div class="icon icon-shape bg-gradient-danger text-white rounded-circle shadow">                      
                               <i class="fa fa-thermometer-three-quarters"></i>
                             </div>
                           </div>
                         </div>
+      
+                        <span id="temperature-card">
+                          {{  packetresult.AirTC_Avg }}{{  packetresult.AirTC_AvgUnit }}
+                        </span>
+      
                         <p class="mt-3 mb-0 text-sm">
                           <span class="text-success mr-2"><i class="fa fa-arrow-up"></i></span>
-                          <span class="text-nowrap">last read</span>
+                          <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
                         </p>
                       </div>
                     </div>
@@ -186,10 +191,9 @@
                         <div class="row">
                           <div class="col">
                             <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Humidity</h5>
-                            
-                            <span class="h2 font-weight-bold mb-0" id="humidity-card">
-                              {{ packetresult.humidity }}
-                            </span>
+                          <span class="h2 font-weight-bold mb-0">
+                              
+                          </span>
                           </div>
                           <div class="col-auto">
                             <div class="icon icon-shape bg-gradient-primary text-white rounded-circle shadow">
@@ -197,9 +201,15 @@
                             </div>
                           </div>
                         </div>
+      
+                        <span id="humidity-card">
+                          {{ packetresult.RH }}{{ packetresult.RHUnit }}
+                        </span>
+      
+                        
                         <p class="mt-3 mb-0 text-sm">
                           <span class="text-danger mr-2"><i class="fa fa-arrow-down"></i></span>
-                          <span class="text-nowrap">last read</span>
+                          <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
                         </p>
                       </div>
                     </div>
@@ -215,12 +225,11 @@
       
                         <div class="row">
                           <div class="col">
-                            <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">
-                              Rainfall
-                            </h5>
-                            <span class="h2 font-weight-bold mb-0" id="rainfall-card">
-                              {{packetresult.rainfall }}
-                            </span>
+                            <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Rainfall</h5>
+                           
+                              <span class="h2 font-weight-bold mb-0">
+                              
+                          </span>
                           </div>
                           <div class="col-auto">
                             <div class="fa-solid icon icon-shape bg-gradient-cyan text-white rounded-circle shadow">
@@ -228,9 +237,14 @@
                             </div>
                           </div>
                         </div>
+      
+                        <span id="rainfall-card">
+                          {{packetresult.Rain_mm_Tot }}{{packetresult.Rain_mm_TotUnit }}
+                        </span>
+      
                         <p class="mt-3 mb-0 text-sm">
                           <span class="text-danger mr-2"><i class="fa fa-arrow-down"></i></span>
-                          <span class="text-nowrap">last read</span>
+                          <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
                         </p>
                       </div>
                     </div>
@@ -245,8 +259,9 @@
                         <div class="row">
                           <div class="col">
                             <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Wind Speed</h5>
-                              <span class="h2 font-weight-bold mb-0" id="windspeed-card">
-                                {{ packetresult.wind_speed }}
+                          
+                              <span class="h2 font-weight-bold mb-0">
+                              
                               </span>
       
                           </div>
@@ -257,9 +272,14 @@
                             </div>
                           </div>
                         </div>
+      
+                        <span id="windspeed-card">
+                          {{ packetresult.wind_speed_AVG }}{{ packetresult.wind_speed_AVGUnit }}
+                        </span>
+      
                         <p class="mt-3 mb-0 text-sm">
                           <span class="text-success mr-2"><i class="fa fa-arrow-up"></i></span>
-                          <span class="text-nowrap">last read</span>
+                          <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
                         </p>
                       </div>
                     </div>
@@ -274,11 +294,12 @@
                       <div class="card-body" >
                         <div class="row">
                           <div class="col">
-                            <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Direction</h5>
-                            <span class="h2 font-weight-bold mb-0" id="direction-card">
-                              {{packetresult.direction }}
+                            <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">BP_mmHg_Avg</h5>
+                          
+                            <span class="h2 font-weight-bold mb-0">
+                              
                             </span>
-                            
+      
                           </div>
                           <div class="col-auto">
                             <div class="icon icon-shape bg-gradient-warning text-white rounded-circle shadow">
@@ -286,9 +307,14 @@
                             </div>
                           </div>
                         </div>
+      
+                        <span id="direction-card">
+                          {{packetresult.BP_mmHg_Avg }}{{packetresult.BP_mmHg_AvgUnit }}
+                        </span>
+      
                         <p class="mt-3 mb-0 text-sm">
                           <span class="text-decoration-none mr-2"><i class="fa fa-arrow-left"></i></span>
-                          <span class="text-nowrap"> last read</span>
+                          <span class="text-nowrap"> last read:{{ packetresult.timestamp }}</span>
                         </p>
                       </div>
                     </div>
@@ -303,9 +329,9 @@
                         <div class="row">
                           <div class="col">
                             <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">timestamp</h5>
-      
-                          <span class="h2 font-weight-bold mb-0" id="timestamp-card">
-                            {{ packetresult.timestamp }}
+                            
+                          <span class="h2 font-weight-bold mb-0">
+                              
                           </span>
                           </div>
                           <div class="col-auto">
@@ -314,9 +340,14 @@
                             </div>
                           </div>
                         </div>
+      
+                        <span id="timestamp-card">
+                          {{ packetresult.timestamp }}
+                        </span>
+      
                         <p class="mt-3 mb-0 text-sm">
                             <span class="text-success mr-2"><i class="fa fa-arrow-up"></i></span>
-                          <span class="text-nowrap">last read</span>
+                          <span class="text-nowrap">last read: {{ packetresult.timestamp }}</span>
                         </p>
                       </div>
                     </div>
@@ -329,13 +360,13 @@
                     <div class="card card-stats">
                       <!-- Card body -->
                       <div class="card-body " >
-      
                         <div class="row">
                           <div class="col">
                             <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">visibility</h5>
-                            <span class="h2 font-weight-bold mb-0" id="visibility-card">
-                              {{packetresult.visibility}}
-                            </span>
+                            
+                              <span class="h2 font-weight-bold mb-0">
+                              
+                          </span>
                           </div>
                           <div class="col-auto">
                             <div class="fa-solid icon icon-shape bg-gradient-success text-white rounded-circle shadow">
@@ -343,9 +374,14 @@
                             </div>
                           </div>
                         </div>
+      
+                        <span id="visibility-card">
+                          {{packetresult.Visibility_m_Avg}}{{packetresult.Visibility_m_AvgUnit}}
+                        </span>
+      
                         <p class="mt-3 mb-0 text-sm">
                           <span class="text-danger mr-2"><i class="fa fa-arrow-down"></i></span>
-                          <span class="text-nowrap">last read</span>
+                          <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
                         </p>
                       </div>
                     </div>
@@ -360,8 +396,9 @@
                         <div class="row">
                           <div class="col">
                             <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">solar radiation</h5>
-                              <span class="h2 font-weight-bold mb-0" id="solar-radiation-card">
-                                {{packetresult.solar_radiation}}
+                          
+                              <span class="h2 font-weight-bold mb-0">
+                              
                               </span>
       
                           </div>
@@ -372,9 +409,14 @@
                             </div>
                           </div>
                         </div>
+      
+                        <span id="solar-radiation-card">
+                          {{packetresult.SlrkW_Avg}}{{packetresult.SlrkW_AvgUnit}}
+                        </span>
+      
                         <p class="mt-3 mb-0 text-sm">
                           <span class="text-success mr-2"><i class="fa fa-arrow-up"></i></span>
-                          <span class="text-nowrap">last read</span>
+                          <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
                         </p>
                       </div>
                     </div>

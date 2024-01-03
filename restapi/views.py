@@ -102,6 +102,26 @@ def farm_timestamps(request):
     
     return Response(results)
 
+@api_view(['GET'])
+def farm_timestamps_by_type(request, type):
+    user = models.User.objects.get(id = request.user.id)
+    sensor = models.Sensor.objects.filter(farm_id=user.farm, type=type)
+
+
+    list_of_timestamps = []
+
+    start_date = request.query_params.get('start-date')
+    end_date = request.query_params.get('end-date')
+    
+    if start_date is None:
+        start_date = datetime.datetime.today() - datetime.timedelta(days=30)
+    if end_date is None:
+        end_date = datetime.datetime.today()
+    
+    results = models.Result.objects.filter(sensor__id__in=sensor , timestamp__range = (start_date, end_date)).order_by('timestamp').values('number', 'timestamp')
+    
+    return Response(results)
+
 
 @api_view(['GET'])
 def farm_timestamps_days(request):
@@ -243,6 +263,35 @@ def farm_humidity_results(request):
     return Response(data)
 
 
+@api_view(['GET'])
+def farm_general_results(request, type):
+    user = models.User.objects.get(id = request.user.id)
+
+    sensors = models.Sensor.objects.filter(farm_id=user.farm, type=type)
+
+    # Create a list to store the data
+    data = []
+    for sensor in sensors:
+        # Get the WaterTank ID from the water tank
+        sensor_id = sensor.id
+
+        # Get the list of water level results for the current water tank
+        humidity_result = list(models.Result.objects.filter(sensor__id=sensor.id, type=type).values_list('number', flat=True))
+        # humidity_result = list(map(int, humidity_result))
+        
+
+        # Get the unit for the current water tank from the first result (assuming same unit for all results)
+        results = models.Sensor.objects.filter(id=sensor.id)
+        unit = results[0].unit if results.exists() and results[0].unit else None
+
+        # Create a dictionary for the current water tank and append it to the data list
+        data.append({
+            'sensor_id': sensor_id,
+            'unit': unit,
+            'number': humidity_result,
+        })
+
+    return Response(data)
     ### OLD CODE
     # user = models.User.objects.get(id = request.user.id)
     # sensors = models.Sensor.objects.filter(farm_id=user.farm)

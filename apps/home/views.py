@@ -1016,6 +1016,6 @@ def index(request):
         user = request.user
         farm = user.farm
         packetresult = PacketResult.objects.filter(weather_station__farm=farm).last()
-
-        return render(request, 'home/index.html', context={'packetresult': packetresult})
+        sensors = Sensor.objects.filter(farm=farm)
+        return render(request, 'home/index.html', context={'packetresult': packetresult, 'sensors':sensors})
  

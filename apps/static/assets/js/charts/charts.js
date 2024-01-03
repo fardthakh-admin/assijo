@@ -318,6 +318,7 @@ fetch('/api/farm-timestamps/')
 });
 
 
+
 let sensor_chart;
 const $chart = $('#chart-sensor-dark');
 function init( $chart ) {
@@ -411,60 +412,75 @@ function init( $chart ) {
 let watertank_chart;  
 const $water_tank_chart = $('#chart-watertank-dark');
 function init_water_tank($water_tank_chart) {
-    fetch('/api/farm-water-level-results/')
+    fetch('/api/farm-general-results/capacity')
     .then((resp) => resp.json())//get data and turn it into JSON
     .then(function(response){
         let list_of_results = [];
 
-        //this function turns the array of arrays (data) into one single array
-        let flattenedArray = []
         
-        let i = 50;
-        let j = 20;
-        //place holder
-        let itterator = 1
-        for(let object of response){
-            flattenedArray.push(object.water_levels)            
-            list_of_results.push(
-                {
-                    label: `Water Tank ID : ${object.watertank_id} \n Unit : ${object.unit} \n and Value is`,
-                    data: object.water_levels,
-                    borderColor: `rgba(200, ${i}, ${j})`,
-                },                
-            )
-            i += 50;
-            j += 10;
-            itterator += 1;
 
-            if(i >= 255){
-                i = 0;
-            }
 
-            if(j >= 255){
-                j = 0;
-            }
-        }
+        
+        //TIMESTAMPS
+        let timesWater = []
+        fetch('/api/farm-timestamps/capacity')
+        .then((resp) => resp.json())//get data and turn it into JSON
+        .then(function(data){
+            //this function turns the array of arrays (data) into one single array
+            let flattenedArray = []
+            
+            let i = 50;
+            let j = 20;
+            //place holder
+            let itterator = 1
+            for(let object of response){
+                flattenedArray.push(object.number)            
+                list_of_results.push(
+                    {
+                        label: `Water Tank ID : ${object.unit} \n Unit : ${object.unit} \n and Value is`,
+                        data: object.number,
+                        borderColor: `rgba(200, ${i}, ${j})`,
+                    },                
+                )
+                i += 50;
+                j += 10;
+                itterator += 1;
 
-        flattenedArray = flattenedArray.flat()
-        const chart_share = new Chart(($water_tank_chart), {
-            type: 'line',
-            data:  {
-                labels: times,
-                datasets: list_of_results
-            },
-            options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                    callback:(value)=>value,
-                    max: Math.max(...flattenedArray),
-                    min: Math.min(...flattenedArray),
-                    stepSize: 1
-                    }
-                }]
+                if(i >= 255){
+                    i = 0;
+                }
+
+                if(j >= 255){
+                    j = 0;
+                }
             }
-            }
+            console.log(data);
+            timesWater = data.map(stringfy);
+            flattenedArray = flattenedArray.flat()
+            const chart_share = new Chart(($water_tank_chart), {
+                type: 'line',
+                data:  {
+                    labels: timesWater,
+                    datasets: list_of_results
+                },
+                options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                        callback:(value)=>value,
+                        max: Math.max(...flattenedArray),
+                        min: Math.min(...flattenedArray),
+                        stepSize: 1
+                        }
+                    }]
+                }
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
         });
+        
 
         // VARIABLE FOR OUTSIDE CHART USAGE
         watertank_chart = chart_share;
