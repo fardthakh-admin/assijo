@@ -1004,11 +1004,6 @@ class UserOperation(APIView):
 
 
 
-## def index(request):
-   
-   ## user = User.objects.get(id=request.user.id)
-   ## packetresult = PacketResult.objects.last()
-    ##return render(request, 'home\index.html', context={'packetresult': packetresult})
 
  
 def index(request):
