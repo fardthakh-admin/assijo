@@ -1018,6 +1018,5 @@ def index(request):
         sensors = Sensor.objects.filter(farm=farm)
         return render(request, 'home/index.html', context={'packetresult': packetresult, 'sensors': sensors})
     else:
-        # Redirect to the login page
-        login_url = reverse('login')  # Replace 'login' with the name of your login URL
+        login_url = reverse('login')  
         return redirect(login_url)
