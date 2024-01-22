@@ -1005,12 +1005,12 @@ class UserOperation(APIView):
 
 
 
- 
 def index(request):
     if request.user.is_authenticated:
         user = request.user
         farm = user.farm
         packetresult = PacketResult.objects.filter(weather_station__farm=farm).last()
         sensors = Sensor.objects.filter(farm=farm)
-        return render(request, 'home/index.html', context={'packetresult': packetresult, 'sensors':sensors})
- 
+        return render(request, 'home/index.html', context={'packetresult': packetresult, 'sensors': sensors})
+    else:
+        return HttpResponse("Please log in to access this page.")

@@ -6,6 +6,9 @@ Copyright (c) 2019 - present AppSeed.us
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import Group
+from django.contrib.auth.models import  Permission
+
 
 
 # Create your models here.
@@ -33,6 +36,8 @@ class Farm(models.Model):
 
 class User(AbstractUser):
     farm = models.ForeignKey(Farm, on_delete=models.SET_NULL, null=True)
+    groups = models.ManyToManyField(Group, related_name='user_groups')
+    user_permissions = models.ManyToManyField(Permission, related_name='user_permissions')
     def __str__(self):
         return self.username
 
@@ -295,3 +300,12 @@ class PacketResult(models.Model):
         self.Visibility_m_AvgUnit = weather_station.Visibility_m_AvgUnit
         self.wind_speed_AVGUnit	  = weather_station.wind_speed_AVGUnit	 
         super().save(*args, **kwargs)
+
+
+class HomeUser(AbstractUser):
+    farm = models.ForeignKey(Farm, on_delete=models.SET_NULL, null=True)
+    groups = models.ManyToManyField(Group, related_name='homeuser_groups')
+    user_permissions = models.ManyToManyField(Permission, related_name='homeuser_permissions')
+
+    def __str__(self):
+        return self.username
