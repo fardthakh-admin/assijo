@@ -36,8 +36,7 @@ INSTALLED_APPS = [
     'numpy',
 ]
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
+AUTH_USER_MODEL = 'home.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

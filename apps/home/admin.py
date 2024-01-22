@@ -16,9 +16,8 @@ from .models import Title
 from .models import User
 from .models import Farm
 from django.contrib.auth.models import Group
-from django.contrib.admin.models import LogEntry
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 # class ResultInline(admin.ModelAdmin):
 #     model = Result
 
@@ -112,4 +111,3 @@ admin.site.register(WeatherStation, WeatherStationAdmin)
 admin.site.register(Title)
 admin.site.register(User)
 admin.site.register(Farm)
-admin.site.register(LogEntry)
