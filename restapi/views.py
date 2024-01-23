@@ -6,6 +6,7 @@ from apps.home import models
 import numpy as np
 from . import serializers
 
+
 @api_view(['GET'])
 def api_over_view(request):
     api_urls = {

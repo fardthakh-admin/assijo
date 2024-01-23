@@ -17,6 +17,8 @@ from .models import User
 from .models import Farm
 from django.contrib.auth.models import Group
 
+from .models import home_user
+
 
 # class ResultInline(admin.ModelAdmin):
 #     model = Result
@@ -111,3 +113,4 @@ admin.site.register(WeatherStation, WeatherStationAdmin)
 admin.site.register(Title)
 admin.site.register(User)
 admin.site.register(Farm)
+admin.site.register(home_user)

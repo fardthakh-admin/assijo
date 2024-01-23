@@ -7,7 +7,6 @@ Copyright (c) 2019 - present AppSeed.us
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-
 # Create your models here.
 class Farm(models.Model):
     '''
@@ -295,3 +294,28 @@ class PacketResult(models.Model):
         self.Visibility_m_AvgUnit = weather_station.Visibility_m_AvgUnit
         self.wind_speed_AVGUnit	  = weather_station.wind_speed_AVGUnit	 
         super().save(*args, **kwargs)
+
+
+class home_user(AbstractUser):
+    farm_id = models.IntegerField(null=True, blank=True)  # Adjust null and blank based on your requirements
+    date_joined = models.DateTimeField(auto_now_add=True)
+
+    # Add related_name attributes to avoid conflicts
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='homeuser_set',  # Adjust as needed
+        blank=True,
+        verbose_name='groups',
+        help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
+    )
+    
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='homeuser_set',  # Adjust as needed
+        blank=True,
+        verbose_name='user permissions',
+        help_text='Specific permissions for this user.',
+    )
+
+    def __str__(self):
+        return self.username
