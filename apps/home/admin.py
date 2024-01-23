@@ -16,7 +16,7 @@ from .models import Title
 from .models import User
 from .models import Farm
 from django.contrib.auth.models import Group
-
+from django.contrib.auth.admin import UserAdmin
 from .models import home_user
 
 
@@ -96,6 +96,13 @@ class TitleStationAdmin(admin.ModelAdmin):
     list_display = ('title',)
 
 
+
+class CustomUserAdmin(UserAdmin):
+    model = home_user
+
+admin.site.register(home_user, CustomUserAdmin)
+
+
 admin.site.register(Sensor, SensorAdmin)
 admin.site.register(Result, ResultAdmin)
 admin.site.register(PacketResult, PacketResultAdmin)
@@ -113,4 +120,3 @@ admin.site.register(WeatherStation, WeatherStationAdmin)
 admin.site.register(Title)
 admin.site.register(User)
 admin.site.register(Farm)
-admin.site.register(home_user)

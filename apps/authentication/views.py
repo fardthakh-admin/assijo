@@ -10,6 +10,8 @@ from .forms import LoginForm, SignUpForm
 from ..home.models import Title
 
 
+# ...
+
 def register_user(request):
     msg = None
     success = False
@@ -20,12 +22,15 @@ def register_user(request):
             form.save()
             username = form.cleaned_data.get("username")
             raw_password = form.cleaned_data.get("password1")
-            user = authenticate(username=username, password=raw_password)
 
-            msg = 'User created - please <a href="/login">login</a>.'
-            success = True
+            user = authenticate(request, username=username, password=raw_password)
 
-            # return redirect("/login/")
+            if user is not None:
+                login(request, user)
+                msg = 'User created and logged in successfully.'
+                success = True
+            else:
+                msg = 'User creation successful, but login failed.'
 
         else:
             msg = 'Form is not valid'
@@ -33,5 +38,7 @@ def register_user(request):
         form = SignUpForm()
 
     return render(request, "accounts/register.html", {"form": form, "msg": msg, "success": success})
+
+# ...
 
 
