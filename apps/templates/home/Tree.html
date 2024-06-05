@@ -1,0 +1,438 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Icons {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    <script src="https://openlayers.org/api/OpenLayers.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://js.arcgis.com/4.9/esri/css/main.css"/>
+    <script src="https://js.arcgis.com/4.9/"></script>
+    <style>
+.main-content{
+    overflow-x: hidden;
+}
+{##}
+    #map {
+            width: 100%;
+            height: 500px;
+            border-radius: 10px;
+        }
+    #viewDiv{
+        height: 350px;
+        /* {#font-size: 20px;#} */
+        font-weight: bolder;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #2c2c2cfb;
+        background-color: rgb(255, 255, 255);
+        text-align: center;
+    }
+    </style>
+
+    <!-- Header -->
+   <div id="viewDiv">
+    Trees Map
+    </div>
+    <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+    <div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
+      <div class="container-fluid">
+        <div class="header-body">
+        <div style="align-items: center">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<div class="container">
+<div class="row flex-lg-nowrap">
+  <div class="col-12 col-lg-auto mb-3" style="width: 200px;">
+    <div>
+      <div class="e-navlist e-navlist--active-bg">
+
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div div class="e-tabs  px-3">
+          <div class="card" style="position:relative; left:-155px">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">Trees</h3>
+                </div>
+                <div>  
+                  {% if request.user.id == user.farm.owner %}
+                    <button class="btn btn-sm btn-outline-secondary badge" type="button" style="border-radius: 50% ; font-size: 1.5rem ; float: right; ; background-color: #7765e3 ; height:36px; width: 36px;margin-top: 15px; ;color:white;" onclick="AddTree()" data-toggle="modal" data-target="#user-form-modal">+</button>                
+                  {% endif %}
+                </div>
+            </div>
+
+              <div class="table-responsive table-lg mt-3"  style="position:relative;: top:20px">
+                <table class="table align-items-center table-flush">
+                <thead class="thead-light">
+                  <tr>
+                   <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">state</th>
+                    <th scope="col">time</th>
+                      <th scope="col">WATER SHARE</th>
+                      <th class="sortable">Location</th>
+                      <th class="col">Farm Name</th>
+                      <th class="sortable">latitude</th>
+                      <th class="sortable">longitude</th>
+                      {% if request.user.id == user.farm.owner %}
+                      <th class="sortable">Action</th>
+                      {% endif %}
+                  </tr>
+                </thead>
+                <tbody>
+                {% for item in list %}
+                     <tr id="tree-{{ item.id }}" data-location="{{ item.location }}" data-state="{{ item.state }}" data-type="{{item.type}}" data-time="{{item.time}}"  data-latitude="{{item.latitude}}" data-longitude="{{item.longitude}}" >
+
+
+                    <th scope="row">
+                        {{item.id}}
+                    </th>
+                    <td>
+                        {{ item.type}}
+                    </td>
+                     <td>
+                     {{ item.state}}
+                     </td>
+
+                    <td>
+                          {{ item.time }}
+                    </td>
+                    <td >
+                     {% if not item.item.water_share.all %}   -   {% endif %}
+                        {% for item in item.item.water_share.all %}
+                             {{ item.number }}
+                        {% endfor %}
+                    </td>
+                     <td>
+                       {{ item.location }}
+                    </td>
+                     <td>
+                       {{ item.farm }}
+                    </td>
+                    <td class="text-center align-middle"> {{ item.latitude }}</td>
+                    <td class="text-center align-middle"> {{ item.longitude }}</td>
+                    {% if request.user.id == user.farm.owner %}
+                     <td class="text-center align-middle">
+                        <div class="btn-group align-top">
+                            <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="EditTree('{{ item.id }}')" data-toggle="modal" data-target="#user-form-modal">Edit</button>
+                            <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="DeleteTree('{{ item.id }}')"> <i class="fa-solid fa-trash-can-arrow-up" ></i></button>
+                        </div>
+                      </td>
+                      {% endif %}
+                {% endfor %}
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+                  </tbody>
+                </table>
+              </div>
+
+           <div style="margin-top: 15px;">
+
+            </div>
+          </div>
+        </div>
+      </div>
+        </div>
+      <div class="col-12 col-lg-3 mb-3">
+        <div class="card">
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Form Modal -->
+    <div class="modal fade" role="dialog" tabindex="-1" id="user-form-modal">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Create User</h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="py-1">
+                <form class="form"  method="POST" action="{% url 'tree-operation' %}">
+              {% csrf_token %}
+                <input class="form-control" type="hidden" name="operation" id="operation" required>
+                <input class="form-control" type="hidden" name="id" id="tree-form-id" >
+                <div class="row">
+                  <div class="col">
+                    <div class="row">
+                      <div class="col">
+                        <div class="form-group">
+                            <label>Location</label>
+                          <input class="form-control" type="text" name="location" id="location"required >
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div class="form-group">
+                          <label>State</label>
+                          <input class="form-control" type="text" name="state" id="state"required >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <div class="form-group">
+                          <label>Type</label>
+                          <input class="form-control" type="text" name="type" id="type" required>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col mb-3">
+                        <div class="form-group">
+                          <label>Time</label>
+                          <input class="form-control" type="text" name="time" id="time" required>
+                            </div>
+                      </div>
+                    </div>
+                     {#Long and lat and map#}
+                    <div class="row">
+                      <div class="col">
+                        <div class="form-group">
+                          <label>latitude</label>
+                          <input class="form-control" type="text" name="latitude" id="latitude"required >
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div class="form-group">
+                          <label>longitude</label>
+                          <input class="form-control" type="text" name="longitude" id="longitude"required >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col mb-3">
+                        <div class="form-group">
+                        <div class="wrap">
+                        <div id="map" style=""></div>
+                        </div>
+                        </div>
+                      </div>
+                    </div>
+                {#Long and lat and map#}
+                  </div>
+                </div>
+
+                    <div>
+                    <button class="btn btn-primary" type="submit">Save</button>
+                    </div>
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+    <script>
+        jQuery('#user-form-modal').on('shown.bs.modal', function () {
+            initAddMap();
+            /* {#  console.log("opened my modal")#} */
+        })
+    </script>
+
+    </div>      <!-- Card stats -->
+
+      {% include "includes/footer.html" %}
+
+    </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+
+<script>
+    /* {#let MymapOptions = {#}
+    {#    center:[{{user.farm.latitude}} , {{user.farm.longitude}}],#}
+    {#    zoom:10#}
+    {#}#}
+    {##}
+    {#let Mymap = new L.map('map' , MymapOptions);#}
+    {#Mymap.scrollWheelZoom.disable();#}
+    {##}
+    {#let Mylayer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');#}
+    {#Mymap.addLayer(Mylayer);#}
+    {##}
+    {##}
+    {#let marker = null;#}
+    {#Mymap.on('click', (event)=> {#}
+    {##}
+    {#    if(marker !== null){#}
+    {#        Mymap.removeLayer(marker);#}
+    {#    }#}
+    {##}
+    {#    marker = L.marker([event.latlng.lat , event.latlng.lng]).addTo(Mymap);#}
+    {##}
+    {#    document.getElementById('latitude').value = event.latlng.lat;#}
+    {#    document.getElementById('longitude').value = event.latlng.lng;#}
+    {##}
+    {#})#} */
+</script>
+<script>
+    $(document).ready(function(){
+        $.ajax({
+            url: "{% url 'mydata_Trees'%}",
+            method: 'GET',
+            success: function (data) {
+                console.log(data);
+                initMap(data);
+            }
+      });
+    });
+    function initMap(data) {
+        map = new OpenLayers.Map("viewDiv");
+
+        var Navigation = new OpenLayers.Control.Navigation({
+            'zoomWheelEnabled': false,
+            'defaultDblClick': function ( event ) {
+            return;
+            }
+        });
+
+        map.addControl(Navigation);
+
+        var NavigationControls = map.getControlsByClass('OpenLayers.Control.Navigation')
+          , i;
+
+        for ( i = 0; i < NavigationControls.length; i++ ) {
+            NavigationControls[i].disableZoomWheel();
+        }
+
+        map.addLayer(new OpenLayers.Layer.OSM());
+
+        var markers = new OpenLayers.Layer.Markers("Markers");
+        map.addLayer(markers);
+
+        var markersArray = data;
+        for (var i = 0; i < markersArray.length; i++) {
+            var lonLat = new OpenLayers.LonLat(markersArray[i].longitude, markersArray[i].latitude)
+                .transform(
+                    new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+                    map.getProjectionObject() // to Spherical Mercator Projection
+                );
+            var icon = new OpenLayers.Icon("static/assets/img/icons/tree.png", new OpenLayers.Size(32, 32));
+            markers.addMarker(new OpenLayers.Marker(lonLat, icon));
+        }
+        var lonLatcenter = new OpenLayers.LonLat({{user.farm.longitude}}, {{user.farm.latitude}})
+            .transform(
+                new OpenLayers.Projection("EPSG:4326"),
+                map.getProjectionObject()
+            );
+        var zoom = 10;
+        map.setCenter(lonLatcenter, zoom);
+    }
+
+    function initAddMap(){
+        let MymapOptions = {
+            center:[{{user.farm.latitude}} , {{user.farm.longitude}}],
+            zoom:10
+        }
+
+        let Mymap = new L.map('map' , MymapOptions);
+        Mymap.scrollWheelZoom.disable()
+
+        let Mylayer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+        Mymap.addLayer(Mylayer);
+
+
+        let marker = null;
+        Mymap.on('click', (event)=> {
+
+            if(marker !== null){
+                Mymap.removeLayer(marker);
+            }
+
+            marker = L.marker([event.latlng.lat , event.latlng.lng]).addTo(Mymap);
+
+            document.getElementById('latitude').value = event.latlng.lat;
+            document.getElementById('longitude').value = event.latlng.lng;
+
+        })
+    }
+    </script>
+
+    <script>
+    function DeleteTree(id) {
+        if (confirm('Are you sure you want to delete this item?')) {
+            let formdata = new FormData();
+            formdata.append("id", id);
+
+            let requestOptions = {
+                method: 'DELETE',
+                body: formdata,
+                redirect: 'follow'
+            };
+
+            fetch("/api/delete/tree/", requestOptions)
+                .then(response => response.text())
+                .then(result => console.log(result))
+                .then(result => location.reload())
+                .catch(error => console.log('error', error));
+        }
+    }
+function EditTree(id){
+    let location_input = document.getElementById('location')
+    let type_input = document.getElementById('type')
+    let state_input = document.getElementById('state')
+    let time_input = document.getElementById('time')
+    let tree_id_input = document.getElementById('tree-form-id')
+    let operation = document.getElementById('operation')
+    let latitude = document.getElementById('latitude')
+    let longitude = document.getElementById('longitude')
+    let tree = document.getElementById(`tree-${id}`)
+
+    location_input.value = tree.dataset.location
+    type_input.value = tree.dataset.type
+    state_input.value = tree.dataset.state
+    time_input.value = tree.dataset.time
+    latitude.value = tree.dataset.latitude
+    longitude.value = tree.dataset.longitude
+    tree_id_input.value = id
+    operation.value = 'edit'
+
+}
+function AddTree(){
+    let location_input = document.getElementById('location')
+    let type_input = document.getElementById('type')
+    let state_input = document.getElementById('state')
+    let time_input = document.getElementById('time')
+    let latitude = document.getElementById('latitude')
+    let longitude = document.getElementById('longitude')
+    let operation = document.getElementById('operation')
+
+    location_input.value = ''
+    type_input.value = ''
+    state_input.value = ''
+    time_input.value = ''
+    latitude.value = ''
+    longitude.value = ''
+    operation.value = 'add'
+
+}
+    </script>
+
+<script src="/static/assets/vendor/clipboard/dist/clipboard.min.js"></script>
+
+{% endblock javascripts %}

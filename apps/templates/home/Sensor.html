@@ -1,0 +1,420 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Icons {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    <script src="https://openlayers.org/api/OpenLayers.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://js.arcgis.com/4.9/esri/css/main.css"/>
+    <script src="https://js.arcgis.com/4.9/"></script>
+    <style>
+.main-content{
+    overflow-x: hidden;
+}
+{##}
+    #map {
+            width: 100%;
+            height: 500px;
+            border-radius: 10px;
+        }
+    #viewDiv{
+        height: 350px;
+        font-size: 20px;
+        font-weight: bolder;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #2c2c2cfb;
+        background-color: rgb(255, 255, 255);
+        text-align: center;
+    }
+    </style>
+
+    <!-- Header -->
+   <div id="viewDiv">
+    Sensors Map
+    </div>
+    <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+    <div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
+      <div class="container-fluid">
+        <div class="header-body">
+        <div style="align-items: center">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<div class="container">
+<div class="row flex-lg-nowrap">
+  <div class="col-12 col-lg-auto mb-3" style="width: 200px;">
+    <div >
+      <div class="e-navlist e-navlist--active-bg">
+
+      </div>
+    </div>
+  </div>
+
+ <div class="col">
+        <div div class="e-tabs  px-3">
+          <div class="card" style="position:relative; left:-155px">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">Sensors</h3>
+                </div>
+                {% if request.user.id == user.farm.owner %}
+                <button class="btn btn-sm btn-outline-secondary badge" type="button" style="border-radius: 50% ; font-size: 1.5rem ; float: right; ; background-color: #7765e3 ; height:36px; width: 36px;margin-top: 15px; ;color:white;" onclick="AddSensor()" data-toggle="modal" data-target="#user-form-modal">+</button>
+                {% endif %}
+              </div>
+            </div>
+
+              <div class="table-responsive table-lg mt-3"  style="position:relative;: top:20px">
+                <table class="table align-items-center table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Type</th>
+                    <th class="sortable">category</th>
+                    <th class="sortable">Location</th>
+                    <th class="col">Farm Name</th>
+                    <th class="sortable">latitude</th>
+                    <th class="sortable">longitude</th>
+                    <th class="sortable">unit</th>
+                    {% if request.user.id == user.farm.owner %}
+                    <th class="sortable">Action</th>
+                    {% endif %}
+                  </tr>
+                </thead>
+                <tbody>
+                 {% for sensor in sensors %}
+                     <tr id="sensor-{{ sensor.id }}"
+                         data-location="{{ sensor.location }}"
+                         data-category="{{ sensor.category }}"
+                         data-latitude="{{sensor.latitude}}"
+                         data-longitude="{{sensor.longitude}}"
+                         data-type="{{sensor.type}}">
+
+                    <th scope="row">
+                        {{sensor.id}}
+                    </th>
+                    <td>
+                        {{ sensor.type}}
+                    </td>
+                    <td>
+                        {{ sensor.category}}
+                    </td>
+                    <td>
+                       {{ sensor.location }}
+                    </td>
+                    <td>
+                       {{ sensor.farm }}
+                    </td>
+                    <td class="text-center align-middle"> {{ sensor.latitude }}</td>
+                    <td class="text-center align-middle"> {{ sensor.longitude }}</td>
+                    <td class="text-center align-middle"> {{ sensor.unit }}</td>
+                    {% if request.user.id == user.farm.owner %}
+                      <td class="text-center align-middle">
+                        <div class="btn-group align-top">
+                            <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="EditSensor('{{ sensor.id }}')" data-toggle="modal" data-target="#user-form-modal">Edit</button>
+                            <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="DeleteSensor('{{ sensor.id }}')"> <i class="fa-solid fa-trash-can-arrow-up" ></i></button>
+                        </div>
+                      </td>
+                    {% endif %}
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </tbody>
+    </table>
+  </div>
+
+
+
+  
+  <div style="margin-top: 15px;">
+
+   </div>
+ </div>
+</div>
+</div>
+</div>
+<div class="col-12 col-lg-3 mb-3">
+  <div class="card">
+
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+    <!-- User Form Modal -->
+    <div class="modal fade" role="dialog" tabindex="-1" id="user-form-modal">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add Sensor</h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="py-1">
+              <form class="form"  method="POST" action="{% url 'sensor-operation' %}">
+              {% csrf_token %}
+              <input class="form-control" type="hidden" name="operation" id="operation" required>
+              <input class="form-control" type="hidden" name="id" id="sensor-form-id" >
+                <div class="row">
+                  <div class="col">
+                    <div class="row">
+                      <div class="col">
+                        <div class="form-group">
+                          <label>Location</label>
+                          <input class="form-control" type="text" name="location" id="location"required >
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div class="form-group">
+                          <label>Category</label>
+                          <input class="form-control" type="text" name="category" id="category"required >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <div class="form-group">
+                          <label>Type</label>
+                          <input class="form-control" type="text" name="type" id="type" required>
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div class="form-group">
+                          <label>Unit</label>
+                          <input class="form-control" type="text" name="unit" id="unit" required>
+                        </div>
+                      </div>
+                    </div>
+                    {#Long and lat and map#}
+                    <div class="row">
+                      <div class="col">
+                        <div class="form-group">
+                          <label>latitude</label>
+                          <input class="form-control" type="text" name="latitude" id="latitude"required >
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div class="form-group">
+                          <label>longitude</label>
+                          <input class="form-control" type="text" name="longitude" id="longitude"required >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col mb-3">
+                        <div class="form-group">
+                        <div class="wrap">
+                        <div id="map" style="width: 100%; height: 500px;"></div>
+                        </div>
+                        </div>
+                      </div>
+                    </div>
+                {#Long and lat and map#}
+                  </div>
+                </div>
+                  <div>
+                    <button class="btn btn-primary" type="submit">Save</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <script>
+        jQuery('#user-form-modal').on('shown.bs.modal', function () {
+            initAddMap();
+            {#  console.log("opened my modal")#}
+        })
+    </script>
+
+          <!-- Card stats -->
+
+      {% include "includes/footer.html" %}
+
+    </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+
+<script>
+{#let MymapOptions = {#}
+{#    center:[{{ user.farm.latitude }} , {{ user.farm.longitude }}],#}
+{#    zoom:10,#}
+{#}#}
+{##}
+{#let Mymap = new L.map('map' , MymapOptions);#}
+{#Mymap.scrollWheelZoom.disable()#}
+{##}
+{#let Mylayer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');#}
+{#Mymap.addLayer(Mylayer);#}
+{##}
+{##}
+{#let marker = null;#}
+{#Mymap.on('click', (event)=> {#}
+{##}
+{#    if(marker !== null){#}
+{#        Mymap.removeLayer(marker);#}
+{#    }#}
+{#    marker = L.marker([event.latlng.lat , event.latlng.lng]).addTo(Mymap);#}
+{##}
+{#    document.getElementById('latitude').value = event.latlng.lat;#}
+{#    document.getElementById('longitude').value = event.latlng.lng;#}
+{##}
+{#})#}
+</script>
+
+
+<script>
+$(document).ready(function(){
+    $.ajax({
+        url: "{% url 'mydata_sensor' %}",
+        method: 'GET',
+        success: function (data) {
+            console.log(data);
+            initMap(data);
+        }
+  });
+});
+function initMap(data) {
+    map = new OpenLayers.Map("viewDiv");
+
+    var Navigation = new OpenLayers.Control.Navigation({
+            'zoomWheelEnabled': false,
+            'defaultDblClick': function ( event ) {
+            return;
+            }
+        });
+
+        map.addControl(Navigation);
+
+        var NavigationControls = map.getControlsByClass('OpenLayers.Control.Navigation')
+          , i;
+
+        for ( i = 0; i < NavigationControls.length; i++ ) {
+            NavigationControls[i].disableZoomWheel();
+        }
+
+    map.addLayer(new OpenLayers.Layer.OSM());
+    let markers = new OpenLayers.Layer.Markers("Markers");
+    map.addLayer(markers);
+    let markersArray = data;
+    for (let i = 0; i < markersArray.length; i++) {
+        let lonLat = new OpenLayers.LonLat(markersArray[i].longitude, markersArray[i].latitude)
+            .transform(
+                new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+                map.getProjectionObject() // to Spherical Mercator Projection
+            );
+        let icon = new OpenLayers.Icon("static/assets/img/icons/sensor-icon.png", new OpenLayers.Size(32, 32));
+        markers.addMarker(new OpenLayers.Marker(lonLat, icon));
+    }
+    let lonLatcenter = new OpenLayers.LonLat({{user.farm.longitude}}, {{user.farm.latitude}})
+        .transform(
+            new OpenLayers.Projection("EPSG:4326"),
+            map.getProjectionObject()
+        );
+    let zoom = 10;
+    map.setCenter(lonLatcenter, zoom);
+}
+
+function initAddMap(){
+        let MymapOptions = {
+            center:[{{user.farm.latitude}} , {{user.farm.longitude}}],
+            zoom:10
+        }
+
+        let Mymap = new L.map('map' , MymapOptions);
+        Mymap.scrollWheelZoom.disable()
+
+        let Mylayer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+        Mymap.addLayer(Mylayer);
+
+
+        let marker = null;
+        Mymap.on('click', (event)=> {
+
+            if(marker !== null){
+                Mymap.removeLayer(marker);
+            }
+
+            marker = L.marker([event.latlng.lat , event.latlng.lng]).addTo(Mymap);
+
+            document.getElementById('latitude').value = event.latlng.lat;
+            document.getElementById('longitude').value = event.latlng.lng;
+
+        })
+    }
+
+function DeleteSensor(id) {
+        if (confirm('Are you sure you want to delete this item?')) {
+            let formdata = new FormData();
+            formdata.append("id", id);
+
+            let requestOptions = {
+                method: 'DELETE',
+                body: formdata,
+                redirect: 'follow'
+            };
+
+            fetch("/api/delete/sensor/", requestOptions)
+      .then(response => response.text())
+      .then(result => console.log(result))
+      .then(result => location.reload())
+      .catch(error => console.log('error', error));
+        }
+    }
+
+function EditSensor(id){
+    let location_input = document.getElementById('location')
+    let type_input = document.getElementById('type')
+    let category_input = document.getElementById('category')
+    let sensor_id_input = document.getElementById('sensor-form-id')
+    let operation = document.getElementById('operation')
+    let latitude = document.getElementById('latitude')
+    let longitude = document.getElementById('longitude')
+    let sensor = document.getElementById(`sensor-${id}`)
+
+    location_input.value = sensor.dataset.location
+    type_input.value = sensor.dataset.type
+    category_input.value = sensor.dataset.category
+    latitude.value = sensor.dataset.latitude
+    longitude.value = sensor.dataset.longitude
+    sensor_id_input.value = id
+    operation.value = 'edit'
+
+}
+function AddSensor(){
+    let location_input = document.getElementById('location')
+    let type_input = document.getElementById('type')
+    let category_input = document.getElementById('category')
+    let latitude = document.getElementById('latitude')
+    let longitude = document.getElementById('longitude')
+    let operation = document.getElementById('operation')
+
+    location_input.value = ''
+    type_input.value = ''
+    category_input.value = ''
+    latitude.value = ''
+    longitude.value = ''
+    operation.value = 'add'
+
+}
+</script>
+<script src="/static/assets/vendor/clipboard/dist/clipboard.min.js"></script>
+
+{% endblock javascripts %}

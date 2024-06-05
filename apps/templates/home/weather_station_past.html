@@ -1,0 +1,1262 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block content %}
+    <!-- Header -->
+    <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js"></script>
+	  <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js"></script>
+    <link rel="stylesheet" href="static/assets/js/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="static/assets/css/leaflet-owm.css" />
+    <link rel="stylesheet" href="static/assets/css/iconLayers.css" />
+    <script src="https://openlayers.org/api/OpenLayers.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+    #viewDiv{
+        font-weight: bolder;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #2c2c2cfb;
+        background-color: rgb(255, 255, 255);
+        text-align: center;
+        pointer-events: none;
+    }
+    .weather-tables td, .weather-tables th{
+      column-width: auto;
+      padding: 5px !important;
+    }
+    table.table.align-items-center.table-flush.weather-tables {
+      padding: 25px;
+      display: inline-block;
+  }
+.main-content{
+
+    overflow-x: hidden;
+}
+    .leaflet-control-layers label {
+    display: table-cell;
+}
+    g[class^='raphael-group'][class$='-creditgroup'] {
+         display:none !important;
+    }
+    g[class$='creditgroup'] {
+         display:none !important;
+    }
+    #map {
+    width: 1268px;
+    height: 430px;
+    {#inset: 50% auto auto 50%;#}
+    transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    {#z-index: 100;#}
+    /* position: fixed; */
+    margin: auto;
+    {#overflow: visible;#}
+    z-index: 1;
+    text-align: center;
+        }
+    .bg-gradient-primary {
+    background: linear-gradient(87deg, #5e72e4 0, #825ee4 100%) !important;
+    }
+    .card {
+        margin-bottom: 0px;
+    }
+    .chart-canvas{ 
+      background-color: white;
+
+    }
+    .table-bordered{
+      margin-left: 25%;
+      background-color:white;
+      font-size:large;
+      text-align: center;
+      color: black;
+      border-color: black;
+    }
+    .btn-group{
+      align-items: center;
+      margin-left: 25%;
+
+      
+    }
+    </style>
+    <div class="">
+              <div class="col-12">
+                  <div class="card">
+                      <div class="align-items-center">
+                        <div id="viewDiv">
+                          Weather Map
+                        </div>
+                      </div>
+                    <div class="table-responsive">
+                      <!-- Projects table -->
+                        <div id="map"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+    <div class="header bg-gradient-primary">
+      <div class="container-fluid">
+        <div class="header-body">
+          <div class="row align-items-center py-4">
+            <div class="col-lg-6 col-7">
+
+              <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4 text-white">
+Current Weather Data 
+              </nav>
+            </div>
+
+          </div>
+
+          <div class="row">
+            <div class="col-xl-3 col-md-6" >
+              <div class="card card-stats">
+                <!-- Card body -->
+                <div class="card-body" >
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Temperature</h5>
+                      <span class="h2 font-weight-bold mb-0">
+                        
+                      </span>
+                    </div>                    
+                    <div class="col-auto">
+                      
+                      <div class="icon icon-shape bg-gradient-danger text-white rounded-circle shadow">                      
+                        <i class="fa fa-thermometer-three-quarters"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <span id="temperature-card">
+                    {{  packetresult.AirTC_Avg }}{{  packetresult.AirTC_AvgUnit }}
+                  </span>
+
+                  <p class="mt-3 mb-0 text-sm">
+                    <span class="text-success mr-2"><i class="fa fa-arrow-up"></i></span>
+                    <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+
+
+          <div class="col-xl-3 col-md-6" >
+              <div class="card card-stats">
+                <!-- Card body -->
+                <div class="card-body" >
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Humidity</h5>
+                    <span class="h2 font-weight-bold mb-0">
+                        
+                    </span>
+                    </div>
+                    <div class="col-auto">
+                      <div class="icon icon-shape bg-gradient-primary text-white rounded-circle shadow">
+                        <i class="fa-solid fa-water"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <span id="humidity-card">
+                    {{ packetresult.RH }}{{ packetresult.RHUnit }}
+                  </span>
+
+                  
+                  <p class="mt-3 mb-0 text-sm">
+                    <span class="text-danger mr-2"><i class="fa fa-arrow-down"></i></span>
+                    <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+
+
+
+          <div class="col-xl-3 col-md-6" >
+              <div class="card card-stats">
+                <!-- Card body -->
+                <div class="card-body " >
+
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Rainfall</h5>
+                     
+                        <span class="h2 font-weight-bold mb-0">
+                        
+                    </span>
+                    </div>
+                    <div class="col-auto">
+                      <div class="fa-solid icon icon-shape bg-gradient-cyan text-white rounded-circle shadow">
+                        <i class="fa-cloud-moon-rain"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <span id="rainfall-card">
+                    {{packetresult.Rain_mm_Tot }}{{packetresult.Rain_mm_TotUnit }}
+                  </span>
+
+                  <p class="mt-3 mb-0 text-sm">
+                    <span class="text-danger mr-2"><i class="fa fa-arrow-down"></i></span>
+                    <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+
+
+          <div class="col-xl-3 col-md-6" >
+              <div class="card card-stats">
+                <!-- Card body -->
+                <div class="card-body" >
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Wind Speed</h5>
+                    
+                        <span class="h2 font-weight-bold mb-0">
+                        
+                        </span>
+
+                    </div>
+                    <div class="col-auto">
+                      <div class=" icon-shape bg-gradient-indigo text-white rounded-circle shadow">
+                          <i class="fa-solid fa-wind"></i>
+
+                      </div>
+                    </div>
+                  </div>
+
+                  <span id="windspeed-card">
+                    {{ packetresult.wind_speed_AVG }}{{ packetresult.wind_speed_AVGUnit }}
+                  </span>
+
+                  <p class="mt-3 mb-0 text-sm">
+                    <span class="text-success mr-2"><i class="fa fa-arrow-up"></i></span>
+                    <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+          <div class="row" style="margin-top: 15px;">
+            <div class="col-xl-3 col-md-6" >
+              <div class="card card-stats">
+                <!-- Card body -->
+                <div class="card-body" >
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">BP_mmHg_Avg</h5>
+                    
+                      <span class="h2 font-weight-bold mb-0">
+                        
+                      </span>
+
+                    </div>
+                    <div class="col-auto">
+                      <div class="icon icon-shape bg-gradient-warning text-white rounded-circle shadow">
+                        <i class="fa fa-directions"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <span id="direction-card">
+                    {{packetresult.BP_mmHg_Avg }}{{packetresult.BP_mmHg_AvgUnit }}
+                  </span>
+
+                  <p class="mt-3 mb-0 text-sm">
+                    <span class="text-decoration-none mr-2"><i class="fa fa-arrow-left"></i></span>
+                    <span class="text-nowrap"> last read:{{ packetresult.timestamp }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+
+
+          <div class="col-xl-3 col-md-6" >
+              <div class="card card-stats">
+                <!-- Card body -->
+                <div class="card-body" >
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">timestamp</h5>
+                      
+                    <span class="h2 font-weight-bold mb-0">
+                        
+                    </span>
+                    </div>
+                    <div class="col-auto">
+                      <div class="icon icon-shape bg-gradient-pink text-white rounded-circle shadow">
+                        <i class="fa-solid fa-clock-o"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <span id="timestamp-card">
+                    {{ packetresult.timestamp }}
+                  </span>
+
+                  <p class="mt-3 mb-0 text-sm">
+                      <span class="text-success mr-2"><i class="fa fa-arrow-up"></i></span>
+                    <span class="text-nowrap">last read: {{ packetresult.timestamp }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+
+
+
+          <div class="col-xl-3 col-md-6" >
+              <div class="card card-stats">
+                <!-- Card body -->
+                <div class="card-body " >
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">visibility</h5>
+                      
+                        <span class="h2 font-weight-bold mb-0">
+                        
+                    </span>
+                    </div>
+                    <div class="col-auto">
+                      <div class="fa-solid icon icon-shape bg-gradient-success text-white rounded-circle shadow">
+                        <i class="fa-low-vision"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <span id="visibility-card">
+                    {{packetresult.Visibility_m_Avg}}{{packetresult.Visibility_m_AvgUnit}}
+                  </span>
+
+                  <p class="mt-3 mb-0 text-sm">
+                    <span class="text-danger mr-2"><i class="fa fa-arrow-down"></i></span>
+                    <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+
+
+          <div class="col-xl-3 col-md-6" >
+              <div class="card card-stats">
+                <!-- Card body -->
+                <div class="card-body" >
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">solar radiation</h5>
+                    
+                        <span class="h2 font-weight-bold mb-0">
+                        
+                        </span>
+
+                    </div>
+                    <div class="col-auto">
+                      <div class=" icon-shape bg-gradient-info text-white rounded-circle shadow">
+                          <i class="fa-solid fa-solar-panel"></i>
+
+                      </div>
+                    </div>
+                  </div>
+
+                  <span id="solar-radiation-card">
+                    {{packetresult.SlrkW_Avg}}{{packetresult.SlrkW_AvgUnit}}
+                  </span>
+
+                  <p class="mt-3 mb-0 text-sm">
+                    <span class="text-success mr-2"><i class="fa fa-arrow-up"></i></span>
+                    <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    
+    
+        
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+<div class=" ">
+  
+            <div>
+              
+                <!--   WEATHER STATION DATA   -->
+                <div class="col">
+                 
+        <div div class="e-tabs px-3" style="margin-top: 75px; margin-bottom: 75px;">
+          <div class="card" style="position:relative;">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">Weather Station</h3>
+                </div>
+                {% if request.user.id == user.farm.owner %}
+                  <div>
+                    <button class="btn btn-sm btn-outline-secondary badge" type="button" style="border-radius: 50% ; font-size: 1.5rem ; float: right; ; background-color: #7765e3 ; height:36px; width: 36px;margin-top: 15px; ;color:white;" onclick="AddWeatherStation()" data-toggle="modal" data-target="#user-form-modal">+</button>
+                  </div>
+                {% endif %}
+
+              </div>
+            </div>
+
+              <div class="table-responsive table-lg mt-3"  style="position:relative; top:20px">
+                <table class="table align-items-center table-flush weather-tables">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Number Result</th>
+                    <th scope="col">string result</th>
+                    <th class="col">Location</th>
+                    <th class="col">Farm Name</th>
+                    <th class="sortable">Longitude</th>
+                    <th class="sortable">Latitude</th>
+                    {% if request.user.id == user.farm.owner %}
+                    <th class="sortable">Action</th>
+                    {% endif %}
+                  </tr>
+                </thead>
+                <tbody>
+                     <tr id="WS-{{ weather_station.id }}" data-location="{{ weather_station.location }}" data-latitude="{{weather_station.latitude}}" data-longitude="{{weather_station.longitude}}">
+                    <th scope="row">
+                        {{weather_station.id}}
+                    </th>
+                    <td>
+                     {% if not item.number_results.all.count %}   -   {% endif %}
+                     {% for item in item.number_results.all %}
+                          {{ item.number }}
+                     {% endfor %}
+                    </td>
+                    <td>
+                     {% if not item.STRINGRESULT.all.count %}   -   {% endif %}
+                        {% for item in item.STRINGRESULT.all %}
+                             {{ item.string_result }}
+                        {% endfor %}
+                    </td>
+                     <td>
+                       {{ weather_station.location }}
+                    </td>
+                     <td>
+                       {{ weather_station.farm }}
+                    </td>
+                     <td class="text-center align-middle"> {{ weather_station.latitude }}</td>
+                    <td class="text-center align-middle"> {{ weather_station.longitude }}</td>
+                    {% if request.user.id == user.farm.owner %}
+                     <td class="text-center align-middle">
+                        <div class="btn-group align-top">
+                            <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="EditWeatherStation('{{ weather_station.id }}')" data-toggle="modal" data-target="#user-form-modal">Edit</button>
+                            <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="DeleteWeatherStation('{{ weather_station.id }}')"> <i class="fa-solid fa-trash-can-arrow-up" ></i></button>
+                          </div>
+                        </td>
+                    {% endif %}
+                      </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+                 
+              </div>
+
+                <!--   WEATHER FORECASTING STATION   -->
+                <div class="col" style="padding-bottom:20px;">
+                  
+                    <div div class="e-tabs px-3" style="margin-top: 75px; margin-bottom: 75px;">
+                        <div class="card" style="padding-bottom: 20px;">
+                            <div class="card-header border-0">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <h3 class="mb-0">Weather Station Last readings</h3>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive table-lg mt-3"  style="position:relative; top:20px">
+                              <div class="table-responsive table-lg mt-3"  style="position:relative; top:20px">
+                                <table class="table align-items-center table-flush weather-tables">
+                                <thead class="thead-light">
+                                  <tr>
+                                    <th scope="col">BattV_Min</th>	     
+                                    <th scope="col">BattV_Avg	     </th>
+                                    <th scope="col">PTemp_C_Avg	     </th>
+                                    <th scope="col">BP_mmHg_Avg	     </th>
+                                    <th scope="col">Rain_mm_Tot	     </th>
+                                    <th scope="col">AirTC_Avg	     </th>
+                                    <th scope="col">AirTC_Max	     </th>
+                                    <th scope="col">AirTC_TMx	     </th>
+                                    <th scope="col">AirTC_Min	     </th>
+                                    <th scope="col">AirTC_TMn	     </th>
+                                    <th scope="col">RH	             </th>
+                                    <th scope="col">SlrkW_Avg	     </th>
+                                    <th scope="col">SlrMJ_Tot	     </th>
+                                    <th scope="col">Visibility_m_Avg </th>
+                                    <th scope="col">wind_speed_AVG	 </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for packet in packetresults %}
+                                     
+                                     <tr id="packet-{{ packet.id }}" >
+                                      <td scope="col">{{packet.BattV_Min       }} </td>	     
+                                      <td scope="col">{{packet.BattV_Avg	     }}  </td>
+                                      <td scope="col">{{packet.PTemp_C_Avg	   }}  </td>
+                                      <td scope="col">{{packet.BP_mmHg_Avg	   }}  </td>
+                                      <td scope="col">{{packet.Rain_mm_Tot	   }}  </td>
+                                      <td scope="col">{{packet.AirTC_Avg	     }}  </td>
+                                      <td scope="col">{{packet.AirTC_Max	     }}  </td>
+                                      <td scope="col">{{packet.AirTC_TMx	     }}  </td>
+                                      <td scope="col">{{packet.AirTC_Min	     }}  </td>
+                                      <td scope="col">{{packet.AirTC_TMn	     }}  </td>
+                                      <td scope="col">{{packet.RH	             }}</td>
+                                      <td scope="col">{{packet.SlrkW_Avg	     }}  </td>
+                                      <td scope="col">{{packet.SlrMJ_Tot	     }}  </td>
+                                      <td scope="col">{{packet.Visibility_m_Avg}} </td>
+                                      <td scope="col">{{packet.wind_speed_AVG	 }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                      </tbody>
+                              </table>
+                            </div>
+
+                                
+                            </div>
+                      </div>
+                    </div>
+                          </div>
+            </div>
+
+           <div style="margin-top: 15px;">
+            
+            </div>
+          </div>
+        </div>
+      
+        
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+    
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4 text-white">
+    Predicted Weather Data Charts
+            </nav>
+          </div>
+    
+        </div>
+          <div class="chart-canvas">
+            <!-- Include the Chart.js library -->
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        
+            <!-- HTML element where the chart will be rendered -->
+            <canvas id="temperatureChart"></canvas>
+            <script>
+                // Fetch data from the OpenWeatherMap API
+                fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+                    .then(response => response.json())
+                    .then(data => {
+                        var labels = data.list.map(entry => entry.dt_txt); 
+                        var dataPoints = data.list.map(entry => entry.main.temp);
+                        var ctx = document.getElementById('temperatureChart').getContext('2d');
+        
+                        var chart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Temperature (°C)',
+                                    data: dataPoints,
+                                    borderColor: 'brown',
+                                    fill: false,
+                                    tension:0,
+                                   
+                                }]
+                            },
+                            options: {
+                                 
+                            }
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                    });
+            </script>
+            <div>
+             <canvas id="pressurechart"></canvas>
+            <script>
+              // Fetch data from the OpenWeatherMap API
+              fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+                  .then(response => response.json())
+                  .then(data => {
+                      var labels = data.list.map(entry => entry.dt_txt); 
+                      var dataPoints = data.list.map(entry => entry.main.pressure);
+                      var ctx = document.getElementById('pressurechart').getContext('2d');
+      
+                      var chart = new Chart(ctx, {
+                          type: 'line',
+                          data: {
+                              labels: labels,
+                              datasets: [{
+                                  label: 'pressure (°C)',
+                                  data: dataPoints,
+                                  borderColor: 'darkblue',
+                                  fill: false,
+                                  tension: 0,
+                              }]
+                          },
+                          options: {
+                           
+                          }
+                      });
+                  })
+                  .catch(error => {
+                      console.error('Error fetching data:', error);
+                  });
+          </script>
+           <div>
+            <canvas id="allchart"></canvas>
+           <script>
+             // Fetch data from the OpenWeatherMap API
+             fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+                 .then(response => response.json())
+                 .then(data => {
+                     var labels = data.list.map(entry => entry.dt_txt); 
+                     var dataPoints = data.list.map(entry => entry.clouds.all);
+                     var ctx = document.getElementById('allchart').getContext('2d');
+     
+                     var chart = new Chart(ctx, {
+                         type: 'line',
+                         data: {
+                             labels: labels,
+                             datasets: [{
+                                 label: 'clouds:all',
+                                 data: dataPoints,
+                                 borderColor: 'orange',
+                                 fill: false,
+                                 tension: 0,
+                             }]
+                         },
+                         options: {
+                          
+                         }
+                     });
+                 })
+                 .catch(error => {
+                     console.error('Error fetching data:', error);
+                 });
+         </script>
+          <div>
+            <canvas id="windspeedchart"></canvas>
+           <script>
+             // Fetch data from the OpenWeatherMap API
+             fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+                 .then(response => response.json())
+                 .then(data => {
+                     var labels = data.list.map(entry => entry.dt_txt); 
+                     var dataPoints = data.list.map(entry => entry.wind.speed);
+                     var ctx = document.getElementById('windspeedchart').getContext('2d');
+     
+                     var chart = new Chart(ctx, {
+                         type: 'line',
+                         data: {
+                             labels: labels,
+                             datasets: [{
+                                 label: 'windspeed ',
+                                 data: dataPoints,
+                                 borderColor: 'black',
+                                 fill: false,
+                                 tension: 0,
+                             }]
+                         },
+                         options: {
+                          
+                         }
+                     });
+                 })
+                 .catch(error => {
+                     console.error('Error fetching data:', error);
+                 });
+         </script>
+          <div>
+            <canvas id="winddirectionchart"></canvas>
+           <script>
+             // Fetch data from the OpenWeatherMap API
+             fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+                 .then(response => response.json())
+                 .then(data => {
+                     var labels = data.list.map(entry => entry.dt_txt); 
+                     var dataPoints = data.list.map(entry => entry.wind.deg);
+                     var ctx = document.getElementById('winddirectionchart').getContext('2d');
+     
+                     var chart = new Chart(ctx, {
+                         type: 'line',
+                         data: {
+                             labels: labels,
+                             datasets: [{
+                                 label: 'winddirection',
+                                 data: dataPoints,
+                                 borderColor: '#00ff0080',
+                                 fill: false,
+                                 tension: 0,
+                             }]
+                         },
+                         options: {
+                          
+                              
+                         }
+                     });
+                 })
+                 .catch(error => {
+                     console.error('Error fetching data:', error);
+                 });
+         </script>
+          <div>
+            <canvas id="Humiditychart"></canvas>
+           <script>
+             // Fetch data from the OpenWeatherMap API
+             fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+                 .then(response => response.json())
+                 .then(data => {
+                     var labels = data.list.map(entry => entry.dt_txt); 
+                     var dataPoints = data.list.map(entry => entry.main.humidity);
+                     var ctx = document.getElementById('Humiditychart').getContext('2d');
+     
+                     var chart = new Chart(ctx, {
+                         type: 'line',
+                         data: {
+                             labels: labels,
+                             datasets: [{
+                                 label: 'Humadity',
+                                 data: dataPoints,
+                                 borderColor: '#0000ff80',
+                                 fill: false,
+                                 tension:0,
+                             }]
+                         },
+                         options: {
+                     
+                              
+                         }
+                     });
+                 })
+                 .catch(error => {
+                     console.error('Error fetching data:', error);
+                 });
+         </script>
+          <div>
+            <canvas id="Visibility chart"></canvas>
+           <script>
+             // Fetch data from the OpenWeatherMap API
+             fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+                 .then(response => response.json())
+                 .then(data => {
+                     var labels = data.list.map(entry => entry.dt_txt); 
+                     var dataPoints = data.list.map(entry => entry.visibility);
+                     var ctx = document.getElementById('Visibility chart').getContext('2d');
+     
+                     var chart = new Chart(ctx, {
+                         type: 'line',
+                         data: {
+                             labels: labels,
+                             datasets: [{
+                                 label: 'Visibility',
+                                 data: dataPoints,
+                                 borderColor: '#ff000080',
+                                 fill: false,
+                                 tension: 0,
+                             }]
+                         },
+                         options: {
+                          
+                              
+                         }
+                     });
+                 })
+                 .catch(error => {
+                     console.error('Error fetching data:', error);
+                 });
+         </script>
+       </div>
+         </div>
+        </div>
+     </div>
+    </div>
+   </div> 
+  </div>
+ 
+ 
+</div>
+</div>  
+</br>
+<div class="row align-items-center py-4">
+  <div class="col-lg-6 col-7">
+
+    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4 text-white">
+Predicted Weather Data Table 
+    </nav>
+  </div>
+
+</div>
+<div class="table">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  <table class="table-bordered" >
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Temperature (°C)</th>
+        <th>Pressure</th>
+        <th>clouds:all</th>
+        <th>windSpeed</th>
+        <th>Wind Direction</th>
+        <th>Humidity</th>
+        <th>Visibility</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+    </tbody>
+  </table>
+  
+
+  <script>
+     fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+     .then(response => response.json())
+     .then(data => {
+      console.log(data);
+     var tableBody = document.getElementById("tableBody");
+
+    if (Array.isArray(data.list)) {
+      // Iterate through the data and create table rows
+      data.list.forEach(function (item) {
+        var row = document.createElement("tr");
+
+        // Create table cells for each data point you want to display
+        var dateCell = document.createElement("td");
+        dateCell.textContent = item.dt_txt;
+        var tempCell = document.createElement("td");
+        tempCell.textContent = item.main.temp;
+        var pressureCell = document.createElement("td");
+        pressureCell.textContent = item.main.pressure;
+        var cloudsAllCell = document.createElement("td");
+        cloudsAllCell.textContent = item.clouds.all;
+        var WindSpeedCell = document.createElement("td");
+        WindSpeedCell.textContent = item.wind.speed;
+        var WindDirectionCell = document.createElement("td");
+        WindDirectionCell.textContent = item.wind.deg;
+        var HumidityCell = document.createElement("td");
+        HumidityCell.textContent = item.main.humidity;
+        var VisibilityCell = document.createElement("td");
+        VisibilityCell.textContent = item.visibility;
+
+        // Append cells to the row
+        row.appendChild(dateCell);
+        row.appendChild(tempCell);
+        row.appendChild(pressureCell);
+        row.appendChild(cloudsAllCell);
+        row.appendChild(WindSpeedCell);
+        row.appendChild(WindDirectionCell);
+        row.appendChild(HumidityCell);
+        row.appendChild(VisibilityCell);
+
+        // Append the row to the table body
+        tableBody.appendChild(row);
+      });
+    } else {
+      console.error("data.list is not an array.");
+    }
+  })
+  .catch(error => {
+    console.error("Error fetching data:", error);
+  });
+</script>
+
+</div>
+
+<div class="btn-group">
+  <button onclick="download_csv_file()"> Download CSV </button>  
+</div>
+<script>
+function download_csv_file() {
+  var table = document.getElementById("tableBody");
+   // Create an empty array to store the table data
+  var csvFileData = [];
+ // Create an array of custom header names for each column
+  var customHeaders = ["DATE", "TEMPERATURE (°C)", "PRESSURE", "CLOUDS:ALL","WINDSPEED","WIND DIRECTION","HUMIDITY","	VISIBILITY"];
+
+  // Push the custom header row to the CSV data
+  csvFileData.push(customHeaders);
+   // Iterate through the rows in the table
+  for (var i =0 ; i < table.rows.length; i++) {
+    var row = table.rows[i];
+    var rowData = [];
+    // Iterate through the cells in each row
+    for (var j = 0; j < row.cells.length; j++) {
+      rowData.push(row.cells[j].innerText);
+    }
+      // Add the row data to the CSV data array
+    csvFileData.push(rowData);
+  }
+   // Create the CSV string
+  var csv = csvFileData.map(function (row) {
+    return row.join(",");
+  }).join("\n");
+    // Create a data URI for the CSV content
+  var csvDataUri = "data:text/csv;charset=utf-8," + encodeURI(csv);
+ // Create a hidden link element for downloading
+  var hiddenElement = document.createElement("a");
+  hiddenElement.href = csvDataUri;
+  hiddenElement.target = "_blank";
+  hiddenElement.download = "data.csv";
+  hiddenElement.click();
+}
+
+</script>
+    <!-- User Form Modal -->
+    <div class="modal fade" role="dialog" tabindex="-1" id="user-form-modal">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add Weather Station</h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="py-1">
+              <form class="form"  method="POST" action="{% url 'WeatherStation-operation' %}">
+              {% csrf_token %}
+              <input class="form-control" type="hidden" name="operation" id="operation" required>
+              <input class="form-control" type="hidden" name="id" id="WS-form-id" >
+                <div class="row">
+                  <div class="col">
+                    <div class="row">
+                      <div class="col">
+                        <div class="form-group">
+                          <label>Location</label>
+                          <input class="form-control" type="text" name="location" id="location"required >
+                        </div>
+                      </div>
+
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <div class="form-group">
+                          <label>latitude</label>
+                          <input class="form-control" type="text" name="latitude" id="latitude"required >
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div class="form-group">
+                          <label>longitude</label>
+                          <input class="form-control" type="text" name="longitude" id="longitude"required >
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col mb-3">
+                        <div class="form-group">
+                        <div class="wrap">
+                        <div id="Mymap2" style="width: 100%; height: 500px;"></div>
+                        </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                  <div>
+                    <button class="btn btn-primary" type="submit">Save</button>
+                  </div>
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+        <script>
+        jQuery('#user-form-modal').on('shown.bs.modal', function () {
+            initAddMap();
+            // {#  console.log("opened my modal")#}
+        })
+        </script>
+
+        <!-- Card stats -->
+        {% include "includes/footer.html" %}
+
+
+{% endblock content %}
+e
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+  <script src="/static/assets/js/echarts-liquid.min.js"></script>
+<script>
+var chart = echarts.init(document.getElementById("water-level-card"));
+ var options ={
+                series: [{
+                    type: 'liquidFill',
+                    data: [0.6],
+                    radius: '70%',
+                    outline: {
+                        show: false
+                    },}]}
+                chart.setOption(options);
+</script>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+    <script type="text/javascript" src="static/assets/js/leaflet/leaflet-src.js"></script>
+    <script type="text/javascript" src="static/assets/js/leaflet-owm.js"></script>
+    <script type="text/javascript" src="static/assets/js/iconLayer.js"></script>
+
+
+    <!-- LOWER LEFT ICON AND IMAGE ON MAP -->
+    <script>
+        let providers = {};
+
+        providers['OSM'] = {
+            title: 'OSM',
+            icon: 'static/assets/img/layers-osm.png',
+            layer: L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            })
+        };
+
+    </script>
+    <!--    END ICON SECTION   -->
+
+
+    <!-- MAP SECTION -->
+    <script>
+        var map = L.map('map').setView([{{user.farm.latitude}} , {{user.farm.longitude}}], 10);
+        map.scrollWheelZoom.disable()
+
+        //http://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=d9cfe451d5a775abaf178aec4951b4b0
+
+        var Temp = L.tileLayer('http://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=d22d9a6a3ff2aa523d5917bbccc89211', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="http://owm.io">VANE</a>',
+            id: 'temp'
+        }),
+
+        Precipitation = L.tileLayer('http://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=d22d9a6a3ff2aa523d5917bbccc89211', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="http://owm.io">VANE</a>'
+        }),
+
+        Wind = L.tileLayer('http://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=d22d9a6a3ff2aa523d5917bbccc89211', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="http://owm.io">VANE</a>'
+        }),
+
+        Pressure = L.tileLayer('http://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=d22d9a6a3ff2aa523d5917bbccc89211', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="http://owm.io">VANE</a>'
+        }),
+
+        Clouds = L.tileLayer('http://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=d22d9a6a3ff2aa523d5917bbccc89211', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="http://owm.io">VANE</a>'
+        });
+
+
+        var owm = new L.OWMLayer({key: 'b1b15e88fa797225412429c1c50c122a1'});
+        map.addLayer(owm);
+
+        Temp.addTo(map);
+
+        var overlays = {"Temperature": Temp, "Precipitation": Precipitation, "Clouds": Clouds, "Pressure": Pressure, "Wind": Wind};
+        L.control.layers(overlays, null, { collapsed:false }).addTo(map);
+
+        var layers = [];
+            for (var providerId in providers) {
+                layers.push(providers[providerId]);
+            }
+        L.control.iconLayers(layers).addTo(map);
+
+        function initWeathericon(data) {
+        var markers = new OpenLayers.Layer.Markers("Markers");
+        map.addLayer(markers);
+
+        var markersArray = data;
+        for (var i = 0; i < markersArray.length; i++) {
+            var lonLat = new OpenLayers.LonLat(markersArray[i].longitude, markersArray[i].latitude)
+                .transform(
+                    new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+                    map.getProjectionObject() // to Spherical Mercator Projection
+                );
+            var icon = new OpenLayers.Icon("static/assets/img/icons/flag_icon.png", new OpenLayers.Size(50, 32));
+            markers.addMarker(new OpenLayers.Marker(lonLat, icon));
+        }
+    }
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+
+    <!--   WEATHER FORECAST API   -->
+    <script>
+        fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+        .then( response => response.json())
+        .then(data => {
+          console.log(data.list)
+          // this loop effectively iterates through a sequence of values from 0 to 32 (in increments of 8),
+          // which corresponds to the indices of timestamps you want to process within your data. It allows 
+          //you to process data for every 8th timestamp within the range of 40 timestamps in your forecast data.
+            for (var i = 0; i < data.list.length ; i +=8) {
+              //When i is 0, (0 / 8 + 1) evaluates to 1, indicating that it's the data for the first day.
+                document.getElementById("day"+(i / 8 + 1)+"temp").innerHTML = "temperature: " +Number(data.list[i].main.temp).toFixed(1)+"°";
+            }            
+            for (var i = 0; i < data.list.length ; i +=8) {
+              //When i is 8, (8 / 8 + 1) evaluates to 2, indicating the second day.
+                document.getElementById("day"+(i / 8 + 1)+"pressure").innerHTML = "pressure : " + data.list[i].main.pressure;
+            }
+            for (var i = 0; i < data.list.length ; i +=8) {
+              //When i is 16, (16 / 8 + 1) evaluates to 3, indicating the third day.
+                document.getElementById("day"+(i / 8 + 1)+"all").innerHTML = "clouds : " + data.list[i].clouds.all;
+            }
+
+            for (var i = 0; i < data.list.length ; i +=8) {
+
+                document.getElementById("day"+(i / 8 + 1)+"WindSpeed").innerHTML = "Wind Speed : " + data.list[i].wind.speed;
+            }
+            for (var i = 0; i < data.list.length ; i +=8){
+                document.getElementById("day"+(i / 8 + 1)+"WindDirection").innerHTML = "Wind Direction : " + data.list[i].wind.deg;
+            }
+            for (var i = 0; i <  data.list.length ; i +=8) {
+                document.getElementById("day"+(i / 8 + 1)+"Humidity").innerHTML = "Humidity : " + data.list[i].main.humidity;
+            }
+            for (var i = 0; i <  data.list.length ; i +=8){
+                document.getElementById("day"+(i / 8 + 1)+"Visibility").innerHTML = "Visibility : " + data.list[i].visibility;
+            }
+         
+      })
+        const date = new Date();
+        const weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+        function checkDay(day){
+            if(day + date.getDay() > 6){
+                return day+ date.getDay()-7;
+            }else{
+                return day+date.getDay();
+            }
+        }
+
+        for( let i = 1; i <= 5;i++){
+            document.getElementById("day"+(i)).innerHTML = weekday[checkDay(i)];
+        }
+    </script>
+    <!--   END OF WEATHER FORECASTING API   -->
+
+
+<script>
+    function initAddMap(){
+            let MymapOptions = {
+            center:[{{user.farm.latitude}} , {{user.farm.longitude}}],
+            zoom:10
+        }
+
+        let Mymap2 = new L.map('Mymap2' , MymapOptions);
+        Mymap2.scrollWheelZoom.disable()
+
+        let Mylayer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+        Mymap2.addLayer(Mylayer);
+
+        let marker = null;
+        Mymap2.on('click', (event)=> {
+
+            if(marker !== null){
+                Mymap2.removeLayer(marker);
+            }
+
+            marker = L.marker([event.latlng.lat , event.latlng.lng]).addTo(Mymap2);
+
+            document.getElementById('latitude').value = event.latlng.lat;
+            document.getElementById('longitude').value = event.latlng.lng;
+        })
+    }
+</script>
+
+
+<script>
+    function DeleteWeatherStation(id){
+            console.log(id)
+
+    if(confirm('Are you sure you want to delete this item?')){
+         let formdata = new FormData();
+        formdata.append("id", id);
+
+        let requestOptions = {
+          method: 'DELETE',
+          body: formdata,
+          redirect: 'follow'
+        };
+
+        fetch("/api/delete/weather_station/", requestOptions)
+          .then(response => response.text())
+          .then(result => console.log(result))
+          .then(result => location.reload())
+          .catch(error => console.log('error', error));
+    }
+
+    }
+    function EditWeatherStation(id){
+
+        let WS_id_input = document.getElementById('WS-form-id')
+        let operation = document.getElementById('operation')
+        let location_input = document.getElementById('location')
+        let latitude = document.getElementById('latitude')
+        let longitude = document.getElementById('longitude')
+        let WeatherStation = document.getElementById(`WS-${id}`)
+
+        location_input.value = WeatherStation.dataset.location
+        latitude.value = WeatherStation.dataset.latitude
+        longitude.value = WeatherStation.dataset.longitude
+        WS_id_input.value = id
+        operation.value = 'edit'
+
+    }
+    function AddWeatherStation(id){
+        let location_input = document.getElementById('location')
+        let latitude = document.getElementById('latitude')
+        let longitude = document.getElementById('longitude')
+        let operation = document.getElementById('operation')
+
+        location_input.value = ''
+        latitude.value = ''
+        longitude.value = ''
+        operation.value = 'add'
+
+    }
+    $(document).ready(function(){
+       var data = [];
+       $.ajax({
+         url: "{% url 'mydata_weatherstation'%}",
+         method: 'GET',
+         success: function (data_weather_station) {
+          data_weather_station.forEach(function(item) {
+              item.group = "weatherstation"; // Add group property to each item
+          });
+          data = data.concat(data_weather_station);
+          initWeatherMap(data);
+      }
+  });
+});
+
+</script>
+<script src="/static/assets/vendor/clipboard/dist/clipboard.min.js"></script>
+
+{% endblock javascripts %}
