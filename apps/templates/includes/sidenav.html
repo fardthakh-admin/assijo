@@ -1,0 +1,92 @@
+<nav class="sidenav navbar navbar-vertical  fixed-left  navbar-expand-xs navbar-light bg-white" id="sidenav-main">
+  <div class="scrollbar-inner">
+    <!-- Brand -->
+    <div class="sidenav-header  align-items-center">
+      <h3 style="line-height:5;">your dashboard </h3>
+    </div>
+    <div class="navbar-inner">
+      <!-- Collapse -->
+      <div class="collapse navbar-collapse" id="sidenav-collapse-main">
+        <!-- Nav items -->
+        <ul class="navbar-nav">
+        {% if user.farm == null %}
+
+        {% else %}
+        <li class="nav-item">
+            <a class="nav-link {% if 'index' in segment %} active {% endif %}" href="/">
+              <i class="ni ni-tv-2 text-primary"></i>
+              <span class="nav-link-text">Dashboard</span>
+            </a>
+          </li>
+        <li class="nav-item">
+            <a class="nav-link {% if 'Sensor' in segment %} active {% endif %}" href="{% url 'sensor' %}">
+              <i class="fa fa-rss"></i>
+              <span class="nav-link-text">Sensors</span>
+            </a>
+          </li>
+         <li class="nav-item">
+            <a class="nav-link {% if 'valve' in segment %} active {% endif %}" href="{% url 'valve' %}">
+              <i class="fa-solid fa-faucet"></i>
+              <span class="nav-link-text">valves</span>
+            </a>
+          </li>
+
+        <li class="nav-item">
+            <a class="nav-link {% if 'water_pump' in segment %} active {% endif %}" href="{% url 'water_pump' %}">
+              <i class="fa-solid fa-gauge"></i>
+              <span class="nav-link-text">water pumps</span>
+            </a>
+          </li>
+        <li class="nav-item">
+            <a class="nav-link {% if 'water_tank' in segment %} active {% endif %}" href="{% url 'water_tank' %}">
+              <i class="fa-solid fa-droplet"></i>
+              <span class="nav-link-text">water tanks</span>
+            </a>
+          </li>
+            <li class="nav-item">
+            <a class="nav-link {% if 'Tree' in segment %} active {% endif %}" href="{% url 'tree' %}">
+              <i class="fa fa-tree"></i>
+              <span class="nav-link-text">Trees</span>
+            </a>
+          </li>
+          {% if request.user.id == user.farm.owner %}
+          <li class="nav-item">
+            <a class="nav-link {% if 'users' in segment %} active {% endif %}" href="{% url 'users' %}">
+              <i class="fa fa-user-circle" aria-hidden="true"></i>
+              <span class="nav-link-text">users</span>
+            </a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link {% if 'weather_station' in segment %} active {% endif %}" href="{% url 'weather_station' %}">
+              <i class="fa fa-thermometer-three-quarters" aria-hidden="true"></i>
+              <span class="nav-link-text">weather stations</span>
+            </a>
+          </li>
+         <li class="nav-item">
+            <a class="nav-link {% if 'offline_scenario' in segment %} active {% endif %}" href="{% url 'offline_scenario' %}">
+              <i class="fa-solid fa-power-off"></i>
+              <span class="nav-link-text">Offline Scenarios</span>
+            </a>
+          </li>
+            {% endif %}
+
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">
+              <i class="ni ni-user-run text-red"></i>
+              <span class="nav-link-text">Logout</span>
+            </a>
+          </li>            
+        </ul>
+        <!-- Divider -->
+        <hr class="my-3">
+        <!-- Heading -->
+
+
+
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>

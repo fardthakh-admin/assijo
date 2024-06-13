@@ -1,0 +1,1462 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Dashboard {% endblock title %}
+{% load static %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block content %}
+    <!-- Header -->
+    <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js"></script>
+	  <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js"></script>
+    <link rel="stylesheet" href="{% static "assets/js/leaflet/leaflet.css"%} " />
+    <link rel="stylesheet" href="{% static "assets/css/leaflet-owm.css" %}" />
+    <link rel="stylesheet" href="{% static "assets/css/iconLayers.css" %}" />
+    <script src="https://openlayers.org/api/OpenLayers.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+.main-content{
+    overflow-x: hidden;
+}
+    .leaflet-control-layers label {
+    display: table-cell;
+}
+    .create-farm{
+        text-decoration: none;
+        background-color: white;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 23px;
+        padding-right: 20px;
+        border-radius: 60px;
+        transition: 0.6s;
+        color: #5e72e4;
+    }
+
+    .create-farm:hover{
+        transition: 0.6s;
+        background-color: #1a174d;
+        color: white;
+        font-size: 50px;
+    }
+
+    g[class^='raphael-group'][class$='-creditgroup'] {
+         display:none !important;
+    }
+    g[class$='creditgroup'] {
+         display:none !important;
+    }
+    #map {
+      width: 1180px;
+      height: 433px;
+      /* {#inset: 50% auto auto 50%;#} */
+      transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+      /* {#z-index: 100;#} */
+      /* position: fixed; */
+      margin: auto;
+      overflow: visible;
+      z-index: 1;
+      text-align: center;
+    }
+    #viewDiv{
+        height: 350px;
+        /* {#font-size: 20px;#} */
+        font-weight: bolder;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #2c2c2cfb;
+        background-color: rgb(255, 255, 255);
+        text-align: center;
+    }
+
+    #borderDiv{
+        height: 350px;
+        /* {#font-size: 20px;#} */
+        font-weight: bolder;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #2c2c2cfb;
+        background-color: rgb(255, 255, 255);
+        text-align: center;
+        pointer-events: none;
+    }
+    </style>
+
+
+
+    <div class="header bg-primary pb-6">
+      <div class="container-fluid">
+          {% if user.farm == null %}
+            <div style="color: white; padding-top: 60px;font-size: 45px;font-weight: 400">
+                <center>
+                    <div style="margin-bottom: 40px">You do not have a farm Yet</div>
+                    <a href="{% url 'create_farm' %}" class="btn btn-light">
+                        Create Farm
+                    </a>
+                </center>
+            </div>
+          {% else %}
+        <div class="header-body">
+          <div class="row align-items-center py-4">
+            <div class="col-lg-6 col-7">
+
+              <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+
+              </nav>
+            </div>
+            <div class="col-lg-6 col-5 text-right">
+                  <div class="input-daterange datepicker row align-items-center">
+                    <!--FIX THE URL AND THE ACTION FOR DATE TIME FILTER-->
+                    
+                    <div class="col">
+                        <div class="form-group">
+                            <div class="input-group input-group-alternative">
+                                <input class="form-control" placeholder="Start date" name="start_date" id="start-date" type="date">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <div class="input-group input-group-alternative">
+                                <input class="form-control" placeholder="End date" name="end_date" id="end-date" type="date">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <div class="input-group input-group-alternative">
+                                <button class="btn btn-light" type="submit" id="time-filter-button">Filter</button>
+                            </div>
+                        </div>
+                    </div>
+              
+                  </div>
+            </div>
+          </div>
+
+          <!-- Card stats -->
+          <div class="header" style="margin-top: -50px;">
+            <div class="container-fluid">
+              <div class="header-body">
+                <div class="row align-items-center py-4">
+                  <div class="col-lg-6 col-7">
+      
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+      
+                    </nav>
+                  </div>
+      
+                </div>
+      
+                <div class="row">
+                  <div class="col-xl-3 col-md-6" >
+                    <div class="card card-stats">
+                      <!-- Card body -->
+                      <div class="card-body" >
+                        <div class="row">
+                          <div class="col">
+                            <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Temperature</h5>
+                            <span class="h2 font-weight-bold mb-0">
+                              
+                            </span>
+                          </div>                    
+                          <div class="col-auto">
+                            
+                            <div class="icon icon-shape bg-gradient-danger text-white rounded-circle shadow">                      
+                              <i class="fa fa-thermometer-three-quarters"></i>
+                            </div>
+                          </div>
+                        </div>
+      
+                        <span id="temperature-card">
+                          {{  packetresult.AirTC_Avg }}{{  packetresult.AirTC_AvgUnit }}
+                        </span>
+      
+                        <p class="mt-3 mb-0 text-sm">
+                          <span class="text-success mr-2"><i class="fa fa-arrow-up"></i></span>
+                          <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+      
+      
+      
+                <div class="col-xl-3 col-md-6" >
+                    <div class="card card-stats">
+                      <!-- Card body -->
+                      <div class="card-body" >
+                        <div class="row">
+                          <div class="col">
+                            <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Humidity</h5>
+                          <span class="h2 font-weight-bold mb-0">
+                              
+                          </span>
+                          </div>
+                          <div class="col-auto">
+                            <div class="icon icon-shape bg-gradient-primary text-white rounded-circle shadow">
+                              <i class="fa-solid fa-water"></i>
+                            </div>
+                          </div>
+                        </div>
+      
+                        <span id="humidity-card">
+                          {{ packetresult.RH }}{{ packetresult.RHUnit }}
+                        </span>
+      
+                        
+                        <p class="mt-3 mb-0 text-sm">
+                          <span class="text-danger mr-2"><i class="fa fa-arrow-down"></i></span>
+                          <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+      
+      
+      
+      
+                <div class="col-xl-3 col-md-6" >
+                    <div class="card card-stats">
+                      <!-- Card body -->
+                      <div class="card-body " >
+      
+                        <div class="row">
+                          <div class="col">
+                            <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Rainfall</h5>
+                           
+                              <span class="h2 font-weight-bold mb-0">
+                              
+                          </span>
+                          </div>
+                          <div class="col-auto">
+                            <div class="fa-solid icon icon-shape bg-gradient-cyan text-white rounded-circle shadow">
+                              <i class="fa-cloud-moon-rain"></i>
+                            </div>
+                          </div>
+                        </div>
+      
+                        <span id="rainfall-card">
+                          {{packetresult.Rain_mm_Tot }}{{packetresult.Rain_mm_TotUnit }}
+                        </span>
+      
+                        <p class="mt-3 mb-0 text-sm">
+                          <span class="text-danger mr-2"><i class="fa fa-arrow-down"></i></span>
+                          <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+      
+      
+      
+                <div class="col-xl-3 col-md-6" >
+                    <div class="card card-stats">
+                      <!-- Card body -->
+                      <div class="card-body" >
+                        <div class="row">
+                          <div class="col">
+                            <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">Wind Speed</h5>
+                          
+                              <span class="h2 font-weight-bold mb-0">
+                              
+                              </span>
+      
+                          </div>
+                          <div class="col-auto">
+                            <div class=" icon-shape bg-gradient-indigo text-white rounded-circle shadow">
+                                <i class="fa-solid fa-wind"></i>
+      
+                            </div>
+                          </div>
+                        </div>
+      
+                        <span id="windspeed-card">
+                          {{ packetresult.wind_speed_AVG }}{{ packetresult.wind_speed_AVGUnit }}
+                        </span>
+      
+                        <p class="mt-3 mb-0 text-sm">
+                          <span class="text-success mr-2"><i class="fa fa-arrow-up"></i></span>
+                          <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+      
+      
+                </div>
+                <div class="row" style="margin-top: 15px;">
+                  <div class="col-xl-3 col-md-6" >
+                    <div class="card card-stats">
+                      <!-- Card body -->
+                      <div class="card-body" >
+                        <div class="row">
+                          <div class="col">
+                            <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">BP_mmHg_Avg</h5>
+                          
+                            <span class="h2 font-weight-bold mb-0">
+                              
+                            </span>
+      
+                          </div>
+                          <div class="col-auto">
+                            <div class="icon icon-shape bg-gradient-warning text-white rounded-circle shadow">
+                              <i class="fa fa-directions"></i>
+                            </div>
+                          </div>
+                        </div>
+      
+                        <span id="direction-card">
+                          {{packetresult.BP_mmHg_Avg }}{{packetresult.BP_mmHg_AvgUnit }}
+                        </span>
+      
+                        <p class="mt-3 mb-0 text-sm">
+                          <span class="text-decoration-none mr-2"><i class="fa fa-arrow-left"></i></span>
+                          <span class="text-nowrap"> last read:{{ packetresult.timestamp }}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+      
+      
+      
+                <div class="col-xl-3 col-md-6" >
+                    <div class="card card-stats">
+                      <!-- Card body -->
+                      <div class="card-body" >
+                        <div class="row">
+                          <div class="col">
+                            <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">timestamp</h5>
+                            
+                          <span class="h2 font-weight-bold mb-0">
+                              
+                          </span>
+                          </div>
+                          <div class="col-auto">
+                            <div class="icon icon-shape bg-gradient-pink text-white rounded-circle shadow">
+                              <i class="fa-solid fa-clock-o"></i>
+                            </div>
+                          </div>
+                        </div>
+      
+                        <span id="timestamp-card">
+                          {{ packetresult.timestamp }}
+                        </span>
+      
+                        <p class="mt-3 mb-0 text-sm">
+                            <span class="text-success mr-2"><i class="fa fa-arrow-up"></i></span>
+                          <span class="text-nowrap">last read: {{ packetresult.timestamp }}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+      
+      
+      
+      
+                <div class="col-xl-3 col-md-6" >
+                    <div class="card card-stats">
+                      <!-- Card body -->
+                      <div class="card-body " >
+                        <div class="row">
+                          <div class="col">
+                            <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">visibility</h5>
+                            
+                              <span class="h2 font-weight-bold mb-0">
+                              
+                          </span>
+                          </div>
+                          <div class="col-auto">
+                            <div class="fa-solid icon icon-shape bg-gradient-success text-white rounded-circle shadow">
+                              <i class="fa-low-vision"></i>
+                            </div>
+                          </div>
+                        </div>
+      
+                        <span id="visibility-card">
+                          {{packetresult.Visibility_m_Avg}}{{packetresult.Visibility_m_AvgUnit}}
+                        </span>
+      
+                        <p class="mt-3 mb-0 text-sm">
+                          <span class="text-danger mr-2"><i class="fa fa-arrow-down"></i></span>
+                          <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+      
+      
+      
+                <div class="col-xl-3 col-md-6" >
+                    <div class="card card-stats">
+                      <!-- Card body -->
+                      <div class="card-body" >
+                        <div class="row">
+                          <div class="col">
+                            <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">solar radiation</h5>
+                          
+                              <span class="h2 font-weight-bold mb-0">
+                              
+                              </span>
+      
+                          </div>
+                          <div class="col-auto">
+                            <div class=" icon-shape bg-gradient-info text-white rounded-circle shadow">
+                                <i class="fa-solid fa-solar-panel"></i>
+      
+                            </div>
+                          </div>
+                        </div>
+      
+                        <span id="solar-radiation-card">
+                          {{packetresult.SlrkW_Avg}}{{packetresult.SlrkW_AvgUnit}}
+                        </span>
+      
+                        <p class="mt-3 mb-0 text-sm">
+                          <span class="text-success mr-2"><i class="fa fa-arrow-up"></i></span>
+                          <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+      
+      
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- Page content -->
+    <div class="container-fluid mt--6">
+        <div class="row">
+            <div class="col-xl-8">
+              <div class="card bg-default">
+                <div class="card-header bg-transparent">
+                  <div class="row align-items-center">
+                    <div class="col">
+                      <h6 class="text-light text-uppercase ls-1 mb-1">Overview</h6>
+                      <h5 class="h3 text-white mb-0">Water Level </h5>
+                    </div>
+                    <div class="col">
+                      <ul class="nav nav-pills justify-content-end">
+                        <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-watertank-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 60, 60]}]}}' data-prefix="$" data-suffix="k">
+                          <a href="#" class="nav-link py-2 px-3 active" data-toggle="tab">
+                            <span class="d-none d-md-block" id="watertank-chart-month">Month</span>
+                            <span class="d-md-none">M</span>
+                          </a>
+                        </li>
+                        <li class="nav-item" data-toggle="chart" data-target="#chart-watertank-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 5, 25, 10, 30, 15, 40, 40]}]}}' data-prefix="$" data-suffix="k">
+                          <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
+                            <span class="d-none d-md-block" id="watertank-chart-week">Week</span>
+                            <span class="d-md-none">W</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <!-- Chart -->
+                  <div class="chart">
+                    <!-- Chart wrapper -->
+                    <canvas id="chart-watertank-dark" class="chart-canvas"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xl-4">
+              <div class="card">
+                <div class="card-header bg-transparent">
+                  <div class="row align-items-center">
+                    <div class="col">
+                      <h6 class="text-uppercase text-muted ls-1 mb-1">Performance</h6>
+                      <h5 class="h3 mb-0">Water level </h5>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                    <div id="chart-container" style="padding-left: inherit;"></div>
+    {#             <!-- Chart -->#}
+    {#              <div class="chart">#}
+    {#                <canvas id="chart-bar" class="chart-canvas"></canvas>#}
+    {#              </div>#}
+                </div>
+              </div>
+            </div>
+          </div>
+        <div class="row">
+        <div class="col-xl-12">
+              <div class="card">
+                  <div class="card-header border-0">
+                      <div class="row align-items-center">
+                          <div class="col">
+                              <h3 class="mb-0">Farm Location</h3>
+                          </div>
+                      </div>
+                  </div>
+                <div class="table-responsive">
+                  <!-- Projects table -->
+                   <div id="viewDiv">
+                   </div>
+                   <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+                </div>
+              </div>
+            </div>
+
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-header border-0">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h3 class="mb-0">Farm Borders</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive" style="padding-bottom: 30px">
+                            {% if user.farm.polygon == "" %}
+                                <div style="color: white; padding-top: 60px;font-size: 45px;font-weight: 400">
+                                    <center>
+                                        <div style="margin-bottom: 40px; color: #1a174d">You have not established your farm borders yet</div>
+                                        <a href="{% url 'create_farm_borders' %}" class="create-farm">
+                                            Create Borders
+                                        </a>
+                                    </center>
+                                </div>
+                            {% else %}
+                            <!-- Projects table -->
+                            <div id="borderDiv"></div>
+                             <div class="blur-hidden">
+                                <input id="wktStringTextArea" class="fade" style="font-size: 1px" onchange="restoreDefaultColors()" value="{{ user.farm.polygon }}">
+                             </div>
+
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+        <div class="col-xl-12">
+          <div class="card">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">Sensors</h3>
+                </div>
+              </div>
+            </div>
+            <div>
+
+            <div class="col-xl-15" style="display: flex">
+                <div class="table-responsive">
+                    <!-- Projects table -->
+                    <table class="table align-items-center table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Type</th>
+                      <th class="sortable">category</th>
+                    <th scope="col">Number Result</th>
+                    <th scope="col">string result</th>
+                      <th class="sortable">Location</th>
+                  </tr>
+                </thead>
+                <tbody>
+                 {% for item in sensors %}
+                  <tr> 
+
+                    <th scope="row">
+                        {{item.id}}
+                    </th>
+                    <td>
+                        {{ item.type}}
+                    </td>
+                      <td>
+                        {{ item.category}}
+                    </td>
+                    <td>
+                     {% if not item.number_results.all.count %}   -   {% endif %}
+                     {% for item in item.number_results.all %}
+                          {{ item.number }}
+                     {% endfor %}
+                    </td>
+                    <td>
+                     {% if not item.STRINGRESULT.all.count %}   -   {% endif %}
+                        {% for item in item.STRINGRESULT.all %}
+                             {{ item.string_result }}
+                        {% endfor %}
+                    </td>
+                     <td>
+                       {{ item.location }}
+                    </td>
+                      {% endfor %}
+
+                </tbody>
+              </table>
+                </div>
+                <div class="col-xl-7">
+                    <div class="card bg-default">
+                        <div class="card-header bg-transparent">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h6 class="text-light text-uppercase ls-1 mb-1">Overview</h6>
+                                    <h5 class="h3 text-white mb-0">Humidity in soil </h5>
+                                </div>
+                                <div class="col">
+                                    <ul class="nav nav-pills justify-content-end">
+                                        <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-sensor-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 60, 60]}]}}' data-prefix="$" data-suffix="k">
+                                            <a href="#" class="nav-link py-2 px-3 active" data-toggle="tab">
+                                                <span class="d-none d-md-block" id="humidity-chart-month">Month</span>
+                                                <span class="d-md-none">M</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item" data-toggle="chart" data-target="#chart-sensor-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 5, 25, 10, 30, 15, 40, 40]}]}}' data-prefix="$" data-suffix="k">
+                                          <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
+                                            <span class="d-none d-md-block" id="humidity-chart-week">Week</span>
+                                            <span class="d-md-none">W</span>
+                                          </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                              </div>
+                            </div>
+                        <div class="card-body">
+                        <!-- Chart -->
+                            <div class="chart">
+                                <!-- Chart wrapper -->
+                                <canvas id="chart-sensor-dark" class="chart-canvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-12">
+          <div class="card">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0"> Trees </h3>
+                </div>
+
+                <div></div>
+
+              </div>
+            </div>
+              <div class="col-xl-15" style="display: flex">
+              <div class="table-responsive">
+              <!-- Projects table -->
+                <table class="table align-items-center table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">state</th>
+                    <th scope="col">time</th>
+{#                      <th scope="col">WATER SHARE</th>#}
+                      <th class="sortable">Location</th>
+                  </tr>
+                </thead>
+                <tbody>
+                 {% for item in trees %}
+                  <tr>
+
+                    <th scope="row">
+                        {{item.id}}
+                    </th>
+                    <td>
+                        {{ item.type}}
+                    </td>
+                     <td>
+                     {{ item.state }}
+                     </td>
+
+                    <td>
+                        {{ item.time}}
+                    </td>
+{#                    <td >#}
+{#                     {% if not item.item.water_share.all %}   -   {% endif %}#}
+{#                        {% for item in item.item.water_share.all %}#}
+{#                             {{ item.number }}#}
+{#                        {% endfor %}#}
+{#                    </td>#}
+                     <td>
+                       {{ item.location }}
+                    </td>
+                      {% endfor %}
+
+                </tbody>
+              </table>
+              </div>
+              <div class="col-xl-7">
+                    <div class="card bg-default">
+                <div class="card-header bg-transparent">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h6 class="text-light text-uppercase ls-1 mb-1">Overview</h6>
+                  <h5 class="h3 text-white mb-0">Water Share </h5>
+                </div>
+                <div class="col">
+                  <ul class="nav nav-pills justify-content-end">
+                    <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-watershare-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 30, 30]}]}}' data-prefix="$" data-suffix="k">
+                      <a href="#" class="nav-link py-2 px-3 active" data-toggle="tab">
+                        <span class="d-none d-md-block" id="watershare-chart-month">Month</span>
+                        <span class="d-md-none">M</span>
+                      </a>
+                    </li>
+                    <li class="nav-item" data-toggle="chart" data-target="#chart-watershare-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 5, 25, 10, 30, 15, 40, 40]}]}}' data-prefix="$" data-suffix="k">
+                      <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
+                        <span class="d-none d-md-block" id="watershare-chart-week" >Week</span>
+                        <span class="d-md-none">W</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+                <div class="card-body">
+                <!-- Chart -->
+                <div class="chart">
+                    <!-- Chart wrapper -->
+                    <canvas id="chart-watershare-dark" class="chart-canvas"></canvas>
+                </div>
+            </div>
+          </div>
+                </div>
+              </div>
+          </div>
+      </div>
+
+
+        <div class="col-xl-12">
+          <div class="card">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0"> Valves </h3>
+                </div>
+
+                <div></div>
+
+              </div>
+            </div>
+              <div class="col-xl-15" style="display: flex">
+              <div class="table-responsive">
+              <!-- Projects table -->
+                <table class="table align-items-center table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">state</th>
+{#                    <th scope="col">time</th>#}
+{#                      <th scope="col">WATER SHARE</th>#}
+                      <th class="sortable">Location</th>
+                  </tr>
+                </thead>
+                <tbody>
+                 {% for valve in valves %}
+                  <tr>
+                    <th scope="row">
+                        {{valve.id}}
+                    </th>
+                    <td>
+                        {{ valve.type}}
+                    </td>
+                     <td>
+                     {{ valve.state }}
+                     </td>
+
+                    <td>
+                        {{ valve.location}}
+                    </td>
+{#                    <td >#}
+{#                     {% if not item.item.water_share.all %}   -   {% endif %}#}
+{#                        {% for item in item.item.water_share.all %}#}
+{#                             {{ item.number }}#}
+{#                        {% endfor %}#}
+{#                    </td>#}
+                      {% endfor %}
+                </tbody>
+              </table>
+              </div>
+              <div class="col-xl-7">
+                    <div class="card bg-default">
+                <div class="card-header bg-transparent">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h6 class="text-light text-uppercase ls-1 mb-1">Overview</h6>
+                  <h5 class="h3 text-white mb-0">Valve Flowmeter </h5>
+                </div>
+                <div class="col">
+                  <ul class="nav nav-pills justify-content-end">
+                    <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-valve-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 30, 30]}]}}' data-prefix="$" data-suffix="k">
+                      <a href="#" class="nav-link py-2 px-3 active" data-toggle="tab">
+                        <span class="d-none d-md-block" id="valve-chart-month">Month</span>
+                        <span class="d-md-none">M</span>
+                      </a>
+                    </li>
+                    <li class="nav-item" data-toggle="chart" data-target="#chart-valve-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 5, 25, 10, 30, 15, 40, 40]}]}}' data-prefix="$" data-suffix="k">
+                      <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
+                        <span class="d-none d-md-block" id="valve-chart-week">Week</span>
+                        <span class="d-md-none">W</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+                <div class="card-body">
+                <!-- Chart -->
+                <div class="chart">
+                    <!-- Chart wrapper -->
+                    <canvas id="chart-valve-dark" class="chart-canvas"></canvas>
+                </div>
+            </div>
+          </div>
+                </div>
+              </div>
+          </div>
+      </div>
+
+
+        <div class="col-xl-12">
+          <div class="card">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0"> Water Pumps </h3>
+                </div>
+                <div></div>
+              </div>
+            </div>
+              <div class="col-xl-15" style="display: flex">
+              <div class="table-responsive">
+              <!-- Projects table -->
+                <table class="table align-items-center table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">state</th>
+                    <th scope="col">energy level</th>
+{#                  <th scope="col">WATER SHARE</th>#}
+                    <th class="sortable">Location</th>
+                  </tr>
+                </thead>
+                <tbody>
+                 {% for water_pump in waterpumps %}
+                  <tr>
+
+                    <th scope="row">
+                        {{water_pump.id}}
+                    </th>
+                    <td>
+                        {{ water_pump.state}}
+                    </td>
+                     <td>
+                     {% if not water_pump.water_pump.all.count %}   -   {% endif %}
+                         {% for water_pump in water_pump.water_pump.all %}
+                        {{ water_pump.energy_result }}
+                             {% endfor %}
+                     </td>
+
+                    <td>
+                        {{ water_pump.location}}
+                    </td>
+{#                    <td >#}
+{#                     {% if not item.item.water_share.all %}   -   {% endif %}#}
+{#                        {% for item in item.item.water_share.all %}#}
+{#                             {{ item.number }}#}
+{#                        {% endfor %}#}
+{#                    </td>#}
+                      {% endfor %}
+
+                </tbody>
+              </table>
+              </div>
+              <div class="col-xl-7">
+                    <div class="card bg-default">
+                <div class="card-header bg-transparent">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h6 class="text-light text-uppercase ls-1 mb-1">Overview</h6>
+                  <h5 class="h3 text-white mb-0">Pump Energy Level </h5>
+                </div>
+                <div class="col">
+                  <ul class="nav nav-pills justify-content-end">
+                    <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-energy-level-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 30, 30]}]}}' data-prefix="$" data-suffix="k">
+                      <a href="#" class="nav-link py-2 px-3 active" data-toggle="tab">
+                        <span class="d-none d-md-block" id="energylevel-chart-month">Month</span>
+                        <span class="d-md-none">M</span>
+                      </a>
+                    </li>
+                    <li class="nav-item" data-toggle="chart" data-target="#chart-energy-level-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 5, 25, 10, 30, 15, 40, 40]}]}}' data-prefix="$" data-suffix="k">
+                      <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
+                        <span class="d-none d-md-block" id="energylevel-chart-week">Week</span>
+                        <span class="d-md-none">W</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+                <div class="card-body">
+                <!-- Chart -->
+                <div class="chart">
+                    <!-- Chart wrapper -->
+                    <canvas id="chart-energy-level-dark" class="chart-canvas"></canvas>
+                </div>
+            </div>
+          </div>
+                </div>
+              </div>
+          </div>
+      </div>
+      {% endif %}
+
+      
+{#        <div class="col-xl-4">#}
+{##}
+{#          <div class="card">#}
+{##}
+{#            <div class="card-header border-0">#}
+{#              <div class="row align-items-center">#}
+{#                <div class="col">#}
+{#                  <h3 class="mb-0">Social traffic</h3>#}
+{#                </div>#}
+{#                <div class="col text-right">#}
+{#                  <a href="#!" class="btn btn-sm btn-primary">See all</a>#}
+{#                </div>#}
+{#              </div>#}
+{#            </div>#}
+{#            <div class="table-responsive">#}
+{#              <!-- Projects table -->#}
+{#              <table class="table align-items-center table-flush">#}
+{#                <thead class="thead-light">#}
+{#                  <tr>#}
+{#                    <th scope="col">Referral</th>#}
+{#                    <th scope="col">Visitors</th>#}
+{#                    <th scope="col"></th>#}
+{#                  </tr>#}
+{#                </thead>#}
+{#                <tbody>#}
+{#                  <tr>#}
+{#                    <th scope="row">#}
+{#                      Facebook#}
+{#                    </th>#}
+{#                    <td>#}
+{#                      1,480#}
+{#                    </td>#}
+{#                    <td>#}
+{#                      <div class="d-flex align-items-center">#}
+{#                        <span class="mr-2">60%</span>#}
+{#                        <div>#}
+{#                          <div class="progress">#}
+{#                            <div class="progress-bar bg-gradient-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;"></div>#}
+{#                          </div>#}
+{#                        </div>#}
+{#                      </div>#}
+{#                    </td>#}
+{#                  </tr>#}
+{#                  <tr>#}
+{#                    <th scope="row">#}
+{#                      Facebook#}
+{#                    </th>#}
+{#                    <td>#}
+{#                      5,480#}
+{#                    </td>#}
+{#                    <td>#}
+{#                      <div class="d-flex align-items-center">#}
+{#                        <span class="mr-2">70%</span>#}
+{#                        <div>#}
+{#                          <div class="progress">#}
+{#                            <div class="progress-bar bg-gradient-success" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width: 70%;"></div>#}
+{#                          </div>#}
+{#                        </div>#}
+{#                      </div>#}
+{#                    </td>#}
+{#                  </tr>#}
+{#                  <tr>#}
+{#                    <th scope="row">#}
+{#                      Google#}
+{#                    </th>#}
+{#                    <td>#}
+{#                      4,807#}
+{#                    </td>#}
+{#                    <td>#}
+{#                      <div class="d-flex align-items-center">#}
+{#                        <span class="mr-2">80%</span>#}
+{#                        <div>#}
+{#                          <div class="progress">#}
+{#                            <div class="progress-bar bg-gradient-primary" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%;"></div>#}
+{#                          </div>#}
+{#                        </div>#}
+{#                      </div>#}
+{#                    </td>#}
+{#                  </tr>#}
+{#                  <tr>#}
+{#                    <th scope="row">#}
+{#                      Instagram#}
+{#                    </th>#}
+{#                    <td>#}
+{#                      3,678#}
+{#                    </td>#}
+{#                    <td>#}
+{#                      <div class="d-flex align-items-center">#}
+{#                        <span class="mr-2">75%</span>#}
+{#                        <div>#}
+{#                          <div class="progress">#}
+{#                            <div class="progress-bar bg-gradient-info" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%;"></div>#}
+{#                          </div>#}
+{#                        </div>#}
+{#                      </div>#}
+{#                    </td>#}
+{#                  </tr>#}
+{#                  <tr>#}
+{#                    <th scope="row">#}
+{#                      twitter#}
+{#                    </th>#}
+{#                    <td>#}
+{#                      2,645#}
+{#                    </td>#}
+{#                    <td>#}
+{#                      <div class="d-flex align-items-center">#}
+{#                        <span class="mr-2">30%</span>#}
+{#                        <div>#}
+{#                          <div class="progress">#}
+{#                            <div class="progress-bar bg-gradient-warning" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="width: 30%;"></div>#}
+{#                          </div>#}
+{#                        </div>#}
+{#                      </div>#}
+{#                    </td>#}
+{#                  </tr>#}
+{#                </tbody>#}
+{#              </table>#}
+{#            </div>#}
+{#          </div>#}
+{#        </div>#}
+{#      </div>#}
+</div>
+{% endblock content %}
+
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+    <script src="{% static "assets/vendor/chart.js/dist/Chart.min.js"%}"></script>
+    <script src="{% static "assets/vendor/chart.js/dist/Chart.extension.js" %}"></script>
+    <script src="{% static "assets/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" %}"></script>
+    <script src="{% static "assets/js/echart.min.js" %}"></script>
+    <script src="{% static "assets/js/echarts-liquid.min.js" %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+    <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
+
+
+    <script>
+        var chart = echarts.init(document.getElementById("water-level-card"));
+        var options ={
+                    series: [{
+                        type: 'liquidFill',
+                        data: [0.6],
+                        radius: '70%',
+                        outline: {
+                            show: false
+                        },}]}
+                    chart.setOption(options);
+    </script>
+
+<script>
+
+
+        const date = new Date();
+        const weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+        function checkDay(day){
+            if(day + date.getDay() > 6){
+                return day+ date.getDay()-7;
+            }else{
+                return day+date.getDay();
+            }
+        }
+
+        for( let i = 1; i <= 5;i++){
+            document.getElementById("day"+(i)).innerHTML = weekday[checkDay(i)];
+        }
+</script>
+
+<!--  ICONS ON MAP SCRIPT  -->
+<script>
+$(document).ready(function(){
+        $.ajax({
+            url: "{% url 'mydata_watertank'%}",
+            method: 'GET',
+            success: function (data) {                
+                Pass(data);
+            }
+      });
+    });
+function Pass(data) {
+    FusionCharts.ready(function () {
+
+        var waterLevel = data[0].water_level;
+        var waterCapacity = data[0].water_capacity;
+        var fuelWidget = new FusionCharts({
+            type: 'cylinder',
+            dataFormat: 'json',
+            id: 'fuelMeter',
+            renderAt: 'chart-container',
+            width: '320',
+            height: '350',
+            dataSource: {
+                "chart": {
+                    "theme": "fusion",
+                    "cylFillColor": "#0099fd",
+                    "cylFillHoverColor": "#0099fd",
+                    "cylFillHoverAlpha": "85",
+                    "majorTMColor": "#0099fd",
+                    "caption": "Water Level in the Tank",
+                    "subcaption": "Full Tank =" + waterCapacity + " ltrs",
+                    "lowerLimit": "0",
+                    "upperLimit": waterCapacity,
+                    "lowerLimitDisplay": "Empty",
+                    "upperLimitDisplay": "Full",
+                    "numberSuffix": " ltrs",
+                    "showValue": "0",
+                    "chartBottomMargin": "55"
+                },
+                "value": waterLevel,
+                "annotations": {
+                    "origw": "400",
+                    "origh": "190",
+                    "autoscale": "1",
+                    "groups": [{
+                        "id": "range",
+                        "items": [{
+                            "id": "rangeBg",
+                            "type": "rectangle",
+                            "x": "$canvasCenterX-100",
+                            "y": "$chartEndY-40",
+                            "tox": "$canvasCenterX +145",
+                            "toy": "$chartEndY-65",
+                            "fillcolor": "#6caa03"
+                        },
+                            {
+                                "id": "rangeText",
+                                "type": "Text",
+                                "fontSize": "14",
+                                "fillcolor": "#333333",
+                                "text": "Available Volume = " + waterLevel,
+                                "x": "$chartCenterX-15",
+                                "y": "$chartEndY-50"
+                            }]
+                    }]
+                }
+            }
+        }).render();
+
+        // Update the chart with the initial waterLevel value
+        fuelWidget.feedData("&value=" + waterLevel);
+    });
+}
+</script>
+
+
+<script>
+   $(document).ready(function(){
+    var data = [];
+    $.ajax({
+        url: "{% url 'mydata_sensor'%}",
+        method: 'GET',
+        success: function (data_sensor) {
+            data_sensor.forEach(function(item) {
+                item.group = "sensor"; // Add group property to each item
+            });
+            data = data.concat(data_sensor);
+        }
+    });
+
+    $.ajax({
+        url: "{% url 'mydata_waterpump'%}",
+        method: 'GET',
+        success: function (data_waterpump) {
+            data_waterpump.forEach(function(item) {
+                item.group = "waterpump"; // Add group property to each item
+            });
+            data = data.concat(data_waterpump);
+        }
+    });
+
+    $.ajax({
+        url: "{% url 'mydata_watertank'%}",
+        method: 'GET',
+        success: function (data_watertank) {
+            data_watertank.forEach(function(item) {
+                item.group = "watertank"; // Add group property to each item
+            });
+            data = data.concat(data_watertank);
+        }
+    });
+
+    $.ajax({
+        url: "{% url 'mydata_Trees'%}",
+        method: 'GET',
+        success: function (data_tree) {
+            data_tree.forEach(function(item) {
+                item.group = "tree"; // Add group property to each item
+            });
+            data = data.concat(data_tree);
+        }
+    });
+
+    $.ajax({
+        url: "{% url 'mydata_valve'%}",
+        method: 'GET',
+        success: function (data_valve) {
+            data_valve.forEach(function(item) {
+                item.group = "valve"; // Add group property to each item
+            });
+            data = data.concat(data_valve);
+            initMap(data);
+        }
+    });
+});
+
+
+    function initMap(data) {
+        map = new OpenLayers.Map("viewDiv");
+
+        var Navigation = new OpenLayers.Control.Navigation({
+            'zoomWheelEnabled': false,
+            'defaultDblClick': function ( event ) {
+            return;
+            }
+        });
+
+        map.addControl(Navigation);
+
+        var NavigationControls = map.getControlsByClass('OpenLayers.Control.Navigation')
+          , i;
+
+        for ( i = 0; i < NavigationControls.length; i++ ) {
+            NavigationControls[i].disableZoomWheel();
+        }
+
+        map.addLayer(new OpenLayers.Layer.OSM);
+
+        var markers = new OpenLayers.Layer.Markers("Markers");
+        map.addLayer(markers);
+        var markersArray = data;
+
+        // {#console.log("markersArray")#}
+        // {#console.log(markersArray)#}
+
+        for (var i = 0; i < markersArray.length; i++) {
+            var lonLat = new OpenLayers.LonLat(markersArray[i].longitude, markersArray[i].latitude)
+                .transform(
+                    new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+                    map.getProjectionObject() // to Spherical Mercator Projection
+                );
+            if (markersArray[i].group == "sensor") {
+                var icon = new OpenLayers.Icon("static/assets/img/icons/sensor-icon.png", new OpenLayers.Size(32, 32));
+                markers.addMarker(new OpenLayers.Marker(lonLat, icon));
+            } else if (markersArray[i].group == "valve") {
+                    var icon = new OpenLayers.Icon("static/assets/img/icons/valve.png", new OpenLayers.Size(32, 32));
+                    markers.addMarker(new OpenLayers.Marker(lonLat, icon));
+            } else if (markersArray[i].group == "waterpump") {
+                    var icon = new OpenLayers.Icon("static/assets/img/icons/water_pump.png", new OpenLayers.Size(50, 32));
+                    markers.addMarker(new OpenLayers.Marker(lonLat, icon));
+            } else if (markersArray[i].group == "watertank") {
+                    var icon = new OpenLayers.Icon("static/assets/img/icons/water_tank.png", new OpenLayers.Size(32, 32));
+                    markers.addMarker(new OpenLayers.Marker(lonLat, icon));
+            } else if (markersArray[i].group == "tree") {
+                    var icon = new OpenLayers.Icon("static/assets/img/icons/tree.png", new OpenLayers.Size(32, 32));
+                    markers.addMarker(new OpenLayers.Marker(lonLat, icon));
+            }
+
+        }
+        var lonLatcenter = new OpenLayers.LonLat({{user.farm.longitude}}, {{user.farm.latitude}})
+        .transform(
+                new OpenLayers.Projection("EPSG:4326"),
+                map.getProjectionObject()
+        );
+        var zoom = 10;
+        map.setCenter(lonLatcenter, zoom);
+
+    }
+    </script>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+    <script type="text/javascript" src="{% static "assets/js/leaflet/leaflet-src.js" %}"></script>
+    <script type="text/javascript" src="{% static "assets/js/leaflet-owm.js" %}"></script>
+    <script type="text/javascript" src="{% static "assets/js/iconLayer.js" %}"></script>
+    <script type="text/javascript" src="{% static "assets/js/charts/charts.js" %}"></script>
+    
+
+
+    <!--    POLYGONS MAP SCRIPTS    -->
+    <script>
+
+    var raster;
+    var source;
+    var vector;
+    var borderMap;
+    var typeSelect;
+    var draw;
+    var features = new ol.Collection();
+    var format = new ol.format.WKT();
+    var current_shape = "point";
+
+    var fill = new ol.style.Fill({
+      color: 'rgba(210, 122, 167,0.2)'
+    });
+
+    var stroke = new ol.style.Stroke({
+      color: '#B40404',
+      width: 2
+    });
+
+    var styles = [
+        new ol.style.Style({
+            image: new ol.style.Circle({
+                fill: fill,
+                stroke: stroke,
+                radius: 5
+            }),
+            fill: fill,
+            stroke: stroke
+        })
+    ];
+
+    /**
+    * Let user change the geometry type.
+    * @param {Event} e Change event.
+    */
+    function createVector() {
+        vector = new ol.layer.Vector({
+            source: new ol.source.Vector({ features: features }),
+            style: styles
+        });
+    }
+
+    function toEPSG4326(element, index, array) {
+      element = element.getGeometry().transform('EPSG:3857', 'EPSG:4326');
+    }
+
+    function toEPSG3857(element, index, array) {
+      element = element.getGeometry().transform('EPSG:4326', 'EPSG:3857');
+    }
+
+    function selectGeom(shape) {
+      current_shape = shape;
+      borderMap.removeInteraction(draw);
+    }
+
+    function initBorderMap() {
+        // document.getElementById("missing_wkt").style.display = "block";
+        createVector();
+        raster = new ol.layer.Tile({
+            source: new ol.source.OSM()
+        });
+
+        features.on("add", function (e) {
+            restoreDefaultColors();
+            features.forEach(toEPSG4326);
+            document.getElementById('wktStringTextArea').value = format.writeFeatures(features.getArray(), { rightHanded: true });
+            features.forEach(toEPSG3857);
+        });
+
+        borderMap = new ol.Map({
+            layers: [raster, vector],
+            target: 'borderDiv',
+            view: new ol.View({
+                center: [
+                41000{{ user.farm.latitude }},
+                37000{{ user.farm.longitude }},
+            ],
+            zoom: 8
+            })
+        });
+
+        if (window.location && window.location.hash) {
+            loadWKTfromURIFragment(window.location.hash);
+        }
+        plotWKT();
+        selectGeom('Polygon');
+        }
+
+    function restoreDefaultColors() {
+      document.getElementById("wktStringTextArea").style.borderColor = "";
+      document.getElementById("wktStringTextArea").style.backgroundColor = "";
+    };
+
+    // Plot wkt string on map
+    function plotWKT() {
+        var new_feature = "{{ user.farm.polygon }}";
+
+        wkt_string = "{{ user.farm.polygon }}";
+        if (wkt_string == "") {
+            document.getElementById("wktStringTextArea").style.borderColor = "red";
+            document.getElementById("wktStringTextArea").style.backgroundColor = "#F7E8F3";
+            return;
+        } else {
+            try {
+                new_feature = format.readFeature(wkt_string);
+            } catch (err) { }
+        }
+        console.log(new_feature)
+        if (!new_feature) {
+            document.getElementById("wktStringTextArea").style.borderColor = "red";
+            document.getElementById("wktStringTextArea").style.backgroundColor = "#F7E8F3";
+            return;
+        } else {
+            borderMap.removeLayer(vector);
+            features.clear();
+            new_feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');
+            features.push(new_feature);
+        }
+        vector = new ol.layer.Vector({
+            source: new ol.source.Vector({ features: features }),
+            style: styles
+        });
+
+      selectGeom(current_shape);
+      borderMap.addLayer(vector);
+      derived_feature = features.getArray()[0];
+      extent = derived_feature.getGeometry().getExtent();
+      minx = derived_feature.getGeometry().getExtent()[0];
+      miny = derived_feature.getGeometry().getExtent()[1];
+      maxx = derived_feature.getGeometry().getExtent()[2];
+      maxy = derived_feature.getGeometry().getExtent()[3];
+      centerx = (minx + maxx) / 2;
+      centery = (miny + maxy) / 2;
+      borderMap.setView(new ol.View({
+        center: [{{ user.farm.longitude }}, {{ user.farm.latitude }}],
+        zoom: 8
+      }));
+      borderMap.getView().fit(extent, borderMap.getSize());
+    }
+
+
+    function loadWKTfromURIFragment(fragment) {
+      // remove first character from fragment as it contains '#'
+      var wkt = window.location.hash.slice(1);
+      document.getElementById("wktStringTextArea").value = decodeURI(wkt);
+    }
+    initBorderMap();
+    </script>
+
+{% endblock javascripts %}

@@ -1,0 +1,136 @@
+
+
+{% extends 'layouts/base.html' %}
+
+
+{% block title %} Dashboard {% endblock title %}
+{% load static %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block content %}
+    <script src="https://openlayers.org/api/OpenLayers.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+
+<style>
+    #map {
+        width: 100%;
+        height: 500px;
+        border-radius: 10px;
+    }
+</style>
+
+<!-- Header -->
+
+<!-- User Form Modal -->
+    <div class="modal-fade" role="dialog" tabindex="-1" id="user-form-modal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                <div class="py-1">
+                    <div style="font-size: 18px">
+                        Please Choose the Name and Location of your farm:
+                        <br>
+                        <br>
+                    </div>
+
+                    <form class="form"  method="POST" action="">
+                        {% csrf_token %}
+                        <input class="form-control" type="hidden" name="operation" id="operation" required>
+                        <input class="form-control" type="hidden" name="id" id="sensor-form-id" >
+                        <div class="row">
+                            <div class="col">
+                                {#Long and lat and map#}
+                                <div class="row">
+                                    <div class="col">
+                                        <label>Farm Name</label>
+                                        <input class="form-control" type="text" name="farm_name" id="farm_name"required >
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label>latitude</label>
+                                            <input class="form-control" type="text" name="latitude" id="latitude"required >
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label>longitude</label>
+                                            <input class="form-control" type="text" name="longitude" id="longitude"required >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col mb-3">
+                                        <div class="form-group">
+                                            <div class="wrap">
+                                                <div id="map"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        {#Long and lat and map#}
+                            </div>
+                        </div>
+
+                        <div>
+                            <button class="btn btn-primary" type="submit">Save</button>
+                        </div>
+                    </form>
+
+            {% if not user.is_authenticated %}
+            <a href="{% url 'login' %}">login</a>
+            {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Card stats -->
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+    <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<script>
+
+var MymapOptions = {
+    center:[31.2 , 36.2384],
+    zoom:7
+}
+
+var map = new L.map('map' , MymapOptions);
+
+var Mylayer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+map.addLayer(Mylayer);
+
+var marker = null;
+map.on('click', (event)=> {
+
+        if (marker !== null) {
+            map.removeLayer(marker);
+        }
+
+        marker = L.marker([event.latlng.lat, event.latlng.lng]).addTo(map);
+
+        document.getElementById('latitude').value = event.latlng.lat;
+        document.getElementById('longitude').value = event.latlng.lng;
+
+    })
+
+</script>
+<script src="{% static "assets/vendor/clipboard/dist/clipboard.min.js" %}"></script>
+
+
+{% endblock javascripts %}

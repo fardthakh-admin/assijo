@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14.1
+    environment:
+      - POSTGRES_DB=assijo
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  appseed-app:
+    container_name: appseed_app
+    restart: unless-stopped
+    env_file: .env
+    build:
+      context: .
+      dockerfile: ./docker/backend/Dockerfile
+    entrypoint: /home/backend/docker/backend/wsgi_entrypoint.sh
+    volumes:
+      - static_volume:/home/backend/core/staticfiles
+      - static_image:/home/backend/media
+    depends_on:
+      - db
+    expose:
+      - 8000
+
+  nginx:
+    container_name: nginx
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    ports:
+      - 8080:80
+      - 8443:443
+    volumes:
+      - static_volume:/app/backend/staticfiles
+      - static_image:/app/backend/media
+      - ./docker/nginx/certbot/conf:/etc/letsencrypt
+      - ./docker/nginx/certbot/www:/var/www/certbot
+    depends_on: 
+      - appseed-app
+
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./docker/nginx/certbot/conf:/etc/letsencrypt
+      - ./docker/nginx/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+volumes:
+  static_volume: {}
+  static_image: {}
+  postgres_data:
