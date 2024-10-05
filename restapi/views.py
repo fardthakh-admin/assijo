@@ -594,33 +594,33 @@ class CreateFarmBordersView(APIView):
 @permission_classes([permissions.IsAuthenticated])
 def create_sensor_multiple_results(request, sensor_id):
     try:
-        user = models.User.objects.get( id = request.user.id )
-        farm = models.Farm.objects.get( owner = user.id )
+        user = models.User.objects.get(id=request.user.id)
+        farm = models.Farm.objects.get(owner=user.id)
         sensor = models.Sensor.objects.get(pk=sensor_id, farm=farm)
     except models.Sensor.DoesNotExist:
         return Response({"detail": "Sensor not found or does not belong to the user."}, status=404)
 
-    # request.data['unit'] = sensor.unit
     my_data = request.data
     loop = 0
     prev_param = []
 
     for param in my_data:
-        # last_param = param
         if param.startswith("unit"):
+            # When you reach a "unit", create a result using previous param, number, and unit.
             print(param)
-            one_result = models.Result.objects.create(sensor=sensor, type = prev_param[0], number = prev_param[1], unit = prev_param[2])
+            one_result = models.Result.objects.create(
+                sensor=sensor, 
+                type=prev_param[0],  # Type (e.g., temperature or humidity)
+                number=prev_param[1],  # Number (e.g., 25 or 60)
+                unit=my_data[param]  # Unit (e.g., °C or %)
+            )
         else:
-            prev_param = [param, my_data[param], my_data["unit"+str(loop)]]
-            loop+= 1
-
-    # # serializer = serializers.ResultSerializer(data=request.data)
-    # if serializer.is_valid():
-    #     serializer.save(sensor=sensor)
+            # Save the current param and its number, and look for the corresponding "unit".
+            prev_param = [param, my_data[param], my_data.get("unit"+str(loop), "")]
+            loop += 1
 
     return Response(request.data, status=201)
-    
-    # return Response(serializer.errors, status=400)
+
 
 
 # DATA CREATION (POST APIs)
