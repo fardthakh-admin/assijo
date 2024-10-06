@@ -590,6 +590,8 @@ class CreateFarmBordersView(APIView):
         else:
             return Response({'message': 'Farm already has borders or no farm found'}, status=status.HTTP_400_BAD_REQUEST)
 
+
+from datetime import datetime
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def create_sensor_multiple_results(request, sensor_id):
@@ -603,21 +605,48 @@ def create_sensor_multiple_results(request, sensor_id):
     my_data = request.data
     loop = 0
     prev_param = []
+    string_param_name = ""
 
-    for param in my_data:
+    for param, value in my_data.items():
+       
         if param.startswith("unit"):
-            # When you reach a "unit", create a result using previous param, number, and unit.
-            print(param)
-            one_result = models.Result.objects.create(
-                sensor=sensor, 
-                type=prev_param[0],  # Type (e.g., temperature or humidity)
-                number=prev_param[1],  # Number (e.g., 25 or 60)
-                unit=my_data[param]  # Unit (e.g., °C or %)
+            continue  
+
+        # Check if the value is a string that starts with "string_"
+        if isinstance(value, str) and value.startswith("string_"):
+            string_param_name = value[len("string_"):]  # Remove "string_" prefix
+            unit_key = f"unit{loop}"  # Corresponding unit key, e.g., "unit0", "unit1"
+            unit_value = my_data.get(unit_key, "")
+            
+            # Create the StringResult object
+            models.StringResult.objects.create(
+                sensors=sensor,
+                string_result=string_param_name,  
+                name=unit_value,  
+                timestamp=datetime.now()
             )
+        
         else:
-            # Save the current param and its number, and look for the corresponding "unit".
-            prev_param = [param, my_data[param], my_data.get("unit"+str(loop), "")]
-            loop += 1
+            # Handle other numeric or general results
+            try:
+                
+                numeric_value = float(value) 
+                unit_key = f"unit{loop}"  
+                unit_value = my_data.get(unit_key, "")
+
+                # Create the Result object
+                models.Result.objects.create(
+                    sensor=sensor,
+                    type=param,  
+                    number=numeric_value,  
+                    unit=unit_value  #
+                )
+            
+            except ValueError:
+               
+                pass
+        
+        loop += 1  # Increment loop to move to the next "unit"
 
     return Response(request.data, status=201)
 
