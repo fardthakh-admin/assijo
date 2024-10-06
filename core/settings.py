@@ -18,7 +18,15 @@ SECRET_KEY = config('SECRET_KEY', default='S#perS3crEt_1122')
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 # load production server from .env
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", config('SERVER', default='localhost'), '10.239.181.28', '10.0.2.2']
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    config("SERVER", default="localhost"),
+    "10.239.181.28",
+    "0.0.0.0",
+    "agritech-jo.com",
+    "www.agritech-jo.com",
+]
 
 # REST_FRAMEWORK = {
 #     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -129,13 +137,13 @@ ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
 # }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'assijo',
-        'USER': 'postgres',
-        'PASSWORD': '12345',
-        'HOST': 'localhost',
-        'port':'5432',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "HOST": "localhost",
+        "PORT": 5432,
+        "NAME": "assijo",
+        "USER": "elabbasy",
+        "PASSWORD": "elabbasy",
     }
 }
 
