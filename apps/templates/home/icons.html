@@ -1,9 +1,12 @@
+
 {% extends 'layouts/base.html' %}
 
 {% block title %} Icons {% endblock title %}
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}{% endblock stylesheets %}
+
+{% load static %}
 
 {% block content %}
 
@@ -935,6 +938,6 @@
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
 
-<script src="/static/assets/vendor/clipboard/dist/clipboard.min.js"></script>
+<script src="{% static "assets/vendor/clipboard/dist/clipboard.min.js" %}"></script>
 
 {% endblock javascripts %}

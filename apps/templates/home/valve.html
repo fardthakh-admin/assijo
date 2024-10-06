@@ -5,6 +5,7 @@
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}{% endblock stylesheets %}
 
+{% load static %}
 {% block content %}
     <script src="https://openlayers.org/api/OpenLayers.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -324,7 +325,7 @@
                     new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
                     map.getProjectionObject() // to Spherical Mercator Projection
                 );
-            var icon = new OpenLayers.Icon("static/assets/img/icons/valve.png", new OpenLayers.Size(32, 32));
+            var icon = new OpenLayers.Icon("{% static '/assets/img/icons/valve.png' %}", new OpenLayers.Size(32, 32));
             markers.addMarker(new OpenLayers.Marker(lonLat, icon));
         }
         var lonLatcenter = new OpenLayers.LonLat({{user.farm.longitude}}, {{user.farm.latitude}})
@@ -450,6 +451,6 @@ function AddValve(){
 }
 </script>
 
-<script src="/static/assets/vendor/clipboard/dist/clipboard.min.js"></script>
+<script src="{% static 'assets/vendor/clipboard/dist/clipboard.min.js' %}"></script>
 
 {% endblock javascripts %}

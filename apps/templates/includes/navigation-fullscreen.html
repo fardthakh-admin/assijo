@@ -1,3 +1,4 @@
+{%load static%}
 <nav id="navbar-main" class="navbar navbar-horizontal navbar-transparent navbar-main navbar-expand-lg navbar-light">
   <div class="container">
     <a class="navbar-brand" href="/">
@@ -11,7 +12,7 @@
         <div class="row">
           <div class="col-6 collapse-brand">
             <a href="/">
-              <img src="/static/assets/img/brand/blue.png">
+              <img src="{% static 'assets/img/brand/blue.png' %}">
             </a>
           </div>
           <div class="col-6 collapse-close">

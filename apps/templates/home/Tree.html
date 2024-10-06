@@ -4,7 +4,7 @@
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}{% endblock stylesheets %}
-
+{% load static %}
 {% block content %}
     <script src="https://openlayers.org/api/OpenLayers.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -433,6 +433,6 @@ function AddTree(){
 }
     </script>
 
-<script src="/static/assets/vendor/clipboard/dist/clipboard.min.js"></script>
+<script src="{% static '/assets/vendor/clipboard/dist/clipboard.min.js' %}"></script>
 
 {% endblock javascripts %}

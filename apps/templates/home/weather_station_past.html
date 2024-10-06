@@ -9,9 +9,9 @@
     <!-- Header -->
     <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js"></script>
 	  <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js"></script>
-    <link rel="stylesheet" href="static/assets/js/leaflet/leaflet.css" />
-    <link rel="stylesheet" href="static/assets/css/leaflet-owm.css" />
-    <link rel="stylesheet" href="static/assets/css/iconLayers.css" />
+    <link rel="stylesheet" href="{% static 'assets/js/leaflet/leaflet.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/css/leaflet-owm.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/css/iconLayers.css' %}" />
     <script src="https://openlayers.org/api/OpenLayers.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <style>
@@ -999,10 +999,10 @@ function download_csv_file() {
 e
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
-  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
-  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+<script src="{% static 'assets/vendor/chart.js/dist/Chart.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/chart.js/dist/Chart.extension.js' %}"></script>
 
-  <script src="/static/assets/js/echarts-liquid.min.js"></script>
+  <script src="{% static 'assets/js/echarts-liquid.min.js' %}"></script>
 <script>
 var chart = echarts.init(document.getElementById("water-level-card"));
  var options ={
@@ -1018,9 +1018,9 @@ var chart = echarts.init(document.getElementById("water-level-card"));
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
-    <script type="text/javascript" src="static/assets/js/leaflet/leaflet-src.js"></script>
-    <script type="text/javascript" src="static/assets/js/leaflet-owm.js"></script>
-    <script type="text/javascript" src="static/assets/js/iconLayer.js"></script>
+    <script type="text/javascript" src="{% static 'assets/js/leaflet/leaflet-src.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/js/leaflet-owm.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/js/iconLayer.js' %}"></script>
 
 
     <!-- LOWER LEFT ICON AND IMAGE ON MAP -->
@@ -1029,7 +1029,7 @@ var chart = echarts.init(document.getElementById("water-level-card"));
 
         providers['OSM'] = {
             title: 'OSM',
-            icon: 'static/assets/img/layers-osm.png',
+            icon: '{% static "assets/img/layers-osm.png" %}',
             layer: L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                 maxZoom: 18,
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -1099,7 +1099,7 @@ var chart = echarts.init(document.getElementById("water-level-card"));
                     new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
                     map.getProjectionObject() // to Spherical Mercator Projection
                 );
-            var icon = new OpenLayers.Icon("static/assets/img/icons/flag_icon.png", new OpenLayers.Size(50, 32));
+            var icon = new OpenLayers.Icon("{% static 'assets/img/icons/flag_icon.png' %}", new OpenLayers.Size(50, 32));
             markers.addMarker(new OpenLayers.Marker(lonLat, icon));
         }
     }
@@ -1257,6 +1257,6 @@ var chart = echarts.init(document.getElementById("water-level-card"));
 });
 
 </script>
-<script src="/static/assets/vendor/clipboard/dist/clipboard.min.js"></script>
+<script src="{% static 'assets/vendor/clipboard/dist/clipboard.min.js' %}"></script>
 
 {% endblock javascripts %}
