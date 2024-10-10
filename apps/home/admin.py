@@ -39,7 +39,12 @@ class ResultAdmin(admin.ModelAdmin):
     list_filter = ['unit', 'sensor']
     model = Result
 
-# Register your models here.
+class StringResultAdmin(admin.ModelAdmin):
+    list_display = ('string_result', 'timestamp', 'name', 'sensors', 'valves', 'water_tanks')  # Specify columns to display
+    list_filter = ('sensors', 'valves', 'water_tanks')  # Specify filters
+    search_fields = ('string_result', 'name')  # Add search functionality if needed
+
+
 class ResultInline(admin.StackedInline):
     model = Result
 
@@ -110,7 +115,7 @@ admin.site.register(Valve, ValveInAdmin)
 admin.site.register(WaterTank, WaterTankAdmin)
 admin.site.register(WaterPump, WaterPumpAdmin)
 admin.site.register(EnergyLevel)
-admin.site.register(StringResult)
+# admin.site.register(StringResult)
 admin.site.register(OfflineScenario)
 admin.site.register(Gateway)
 admin.site.register(Tree, TreeAdmin)
@@ -120,3 +125,5 @@ admin.site.register(WeatherStation, WeatherStationAdmin)
 admin.site.register(Title)
 admin.site.register(User)
 admin.site.register(Farm)
+admin.site.register(StringResult, StringResultAdmin)
+

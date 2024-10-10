@@ -48,5 +48,5 @@ urlpatterns = [
     path('farm-create-tree-result/<int:tree_id>/',views.create_tree_result , name = 'farm-create-tree-result'),
     path('farm-create-valve-result/<int:valve_id>/', views.create_valve_result, name='farm-create-valve-result'),
     path('farm-create-waterpump-result/<int:waterpump_id>/',views.create_waterpump_energylevel , name = 'farm-create-waterpump-result'),
-    path('set/valve/<int:valve_id>/<slug:valve_state>/',views.set_valve_state , name = 'set-valve-state'),
+    path('set/valve/set-valve-state/',views.set_valve_state , name = 'set-valve-state'),
 ]

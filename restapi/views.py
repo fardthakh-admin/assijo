@@ -511,21 +511,32 @@ def farm_packet_results(request):
 # DATA CREATION (POST APIs)
 @api_view(['PUT'])
 @permission_classes([permissions.IsAuthenticated])
-def set_valve_state(request, valve_id, valve_state):
+def set_valve_state(request):
     try:
-        valve = models.Valve.objects.get(pk=valve_id)
-        # serializer = serializers.ValveSerializer(valve)
-         # request.data['unit'] = sensor.unit
-        # valve_state = valve_state_param
-        serializer = serializers.ValveSerializer(valve, data=request.data)
-        
-        if serializer.is_valid():
-            serializer.save(id=valve_id, state=valve_state)
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
-    except models.Valve.DoesNotExist:
-        return Response({"detail": "Valve not found or does not belong to the user."}, status=404)
+        # Extract the state and valve_ID from the request data
+        valve_state = request.data.get("payload", None)
+        valve_id = request.data.get("valve_ID", None)
 
+        # Check if both state and valve_ID are provided
+        if not valve_state or not valve_id:
+            return Response({"detail": "Missing state or valve_ID in request data."}, status=400)
+
+        # Find the valve by its ID
+        valve = models.Valve.objects.get(pk=valve_id)
+
+        # Prepare the serializer with the updated state
+        serializer = serializers.ValveSerializer(valve, data={"state": valve_state}, partial=True)
+
+        # Validate and save the updated state
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=200)
+        
+        # If validation fails, return errors
+        return Response(serializer.errors, status=400)
+
+    except models.Valve.DoesNotExist:
+        return Response({"detail": "Valve not found."}, status=404)
     
     
 
@@ -604,48 +615,39 @@ def create_sensor_multiple_results(request, sensor_id):
 
     my_data = request.data
     loop = 0
-    prev_param = []
-    string_param_name = ""
 
     for param, value in my_data.items():
        
         if param.startswith("unit"):
-            continue  
+            continue
 
-        # Check if the value is a string that starts with "string_"
-        if isinstance(value, str) and value.startswith("string_"):
-            string_param_name = value[len("string_"):]  # Remove "string_" prefix
-            unit_key = f"unit{loop}"  # Corresponding unit key, e.g., "unit0", "unit1"
-            unit_value = my_data.get(unit_key, "")
+        # Find the corresponding unit for this parameter, e.g., unit0, unit1, etc.
+        unit_key = f"unit{loop}"
+        unit_value = my_data.get(unit_key, "")
+
+        # Process based on unit type and param
+        if unit_value == "State" and isinstance(value, str):
             
-            # Create the StringResult object
             models.StringResult.objects.create(
                 sensors=sensor,
-                string_result=string_param_name,  
+                string_result=value, 
                 name=unit_value,  
                 timestamp=datetime.now()
             )
-        
         else:
-            # Handle other numeric or general results
+            
             try:
-                
                 numeric_value = float(value) 
-                unit_key = f"unit{loop}"  
-                unit_value = my_data.get(unit_key, "")
-
-                # Create the Result object
                 models.Result.objects.create(
                     sensor=sensor,
-                    type=param,  
-                    number=numeric_value,  
-                    unit=unit_value  #
+                    type=param,  # Name of the parameter (e.g., tempreture)
+                    number=numeric_value,  # Store the numeric value
+                    unit=unit_value  # Corresponding unit (e.g., unit0, unit1, etc.)
                 )
-            
             except ValueError:
-               
+                
                 pass
-        
+
         loop += 1  # Increment loop to move to the next "unit"
 
     return Response(request.data, status=201)
