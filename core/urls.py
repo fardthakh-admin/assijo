@@ -12,7 +12,7 @@ urlpatterns = [
         # Auth routes - login / register
     # path("auth/",include("rest.urls")),
     # path('auth/registration/', include('dj_rest_auth.registration.urls')),
-    path("", include("apps.home.urls")),
+    path("home/", include("apps.home.urls")),
     path("api/", include("restapi.urls"))
     # UI Kits Html files
 ]

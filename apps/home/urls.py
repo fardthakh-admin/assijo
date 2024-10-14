@@ -12,7 +12,7 @@ from apps.home import views
 urlpatterns = [
 
     # The home page
-    path('home/', views.index, name='home'),
+    path('', views.index, name='home'),
     # path('', views.weather_station, name='WS'),
 
     # Matches any html file
