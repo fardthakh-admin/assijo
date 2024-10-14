@@ -8,11 +8,11 @@ from django.urls import path, include  # add this
 
 urlpatterns = [
     path('admin/', admin.site.urls),  # Django admin route
-    path("", include("apps.authentication.urls")),
+    path("auth/", include("apps.authentication.urls")),
         # Auth routes - login / register
     # path("auth/",include("rest.urls")),
     # path('auth/registration/', include('dj_rest_auth.registration.urls')),
-    path("home/", include("apps.home.urls")),
+    path('', include("apps.home.urls")),
     path("api/", include("restapi.urls"))
     # UI Kits Html files
 ]
