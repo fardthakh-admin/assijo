@@ -592,7 +592,7 @@ class SensorOperation(APIView):
                 )
 
         # sensors = Sensor.objects.all()
-        return redirect("/sensor")
+        return redirect("/assissjo-api/sensor")
 
 
 @login_required(login_url="/login/")
