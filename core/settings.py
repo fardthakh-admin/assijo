@@ -195,7 +195,7 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost:8000','http://10.0.2.2:8000']
 
 SITE_ID = 1
 
-
+FORCE_SCRIPT_NAME = '/assissjo-api'
 # AUTHENTICATION_BACKENDS={
 
 #     "django.contrib.auth.backends.ModelBackend",
