@@ -361,7 +361,7 @@ class OfflineScenarioOperation(APIView):
                 )
 
         # sensors = Sensor.objects.all()
-        return redirect("/offline_scenario")
+        return redirect("/assissjo-api/offline_scenario")
 
 
 @login_required(login_url="/login/")
@@ -641,7 +641,7 @@ class ValveOperation(APIView):
                 )
 
         # sensors = Sensor.objects.all()
-        return redirect("/valve")
+        return redirect("/assissjo-api/valve")
 
 
 @login_required(login_url="/login/")
@@ -694,7 +694,7 @@ class TreeOperation(APIView):
                 )
 
         # sensors = Sensor.objects.all()
-        return redirect("/tree")
+        return redirect("/assissjo-api/tree")
 
 
 @login_required(login_url="/login/")
@@ -741,7 +741,7 @@ class WaterPumpOperation(APIView):
                 )
 
         # sensors = Sensor.objects.all()
-        return redirect("/water_pump")
+        return redirect("/assissjo-api/water_pump")
 
 
 @login_required(login_url="/login/")
@@ -789,7 +789,7 @@ class WaterTankOperation(APIView):
                     farm=user.farm,
                 )
 
-        return redirect("/water_tank")
+        return redirect("/assissjo-api/water_tank")
 
 
 @login_required(login_url="/login/")
@@ -1044,7 +1044,7 @@ class WeatherStationOperation(APIView):
                     farm=user.farm,
                 )
 
-        return redirect("/weather_station")
+        return redirect("/assissjo-api/weather_station")
 
 
 class UserOperation(APIView):
@@ -1080,7 +1080,7 @@ class UserOperation(APIView):
                     farm=user.farm,
                 )
                 varuser.save()
-        return redirect("/users")
+        return redirect("/assissjo-api/users")
 
 
 ## def index(request):
