@@ -39,6 +39,8 @@ urlpatterns = [
     path('farm-water-share/',views.farm_water_share , name = 'farm-water-share'),
     path('farm-weather-station/',views.farm_weather_station , name = 'farm-weather-station'),
     path('farm-packet-results/',views.farm_packet_results , name = 'farm-packet-results'),
+    path('valve/<int:valve_id>/', views.valve_detail, name='valve-detail'),
+    
 
     # POST urls
     path('farm-create-sensor-result/<int:sensor_id>/',views.create_sensor_result , name = 'farm-create-sensor-result'),
@@ -49,4 +51,6 @@ urlpatterns = [
     path('farm-create-valve-result/<int:valve_id>/', views.create_valve_result, name='farm-create-valve-result'),
     path('farm-create-waterpump-result/<int:waterpump_id>/',views.create_waterpump_energylevel , name = 'farm-create-waterpump-result'),
     path('set/valve/set-valve-state/',views.set_valve_state , name = 'set-valve-state'),
+    
+
 ]

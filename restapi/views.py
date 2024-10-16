@@ -507,6 +507,17 @@ def farm_packet_results(request):
     serializer = serializers.PacketResultSerializer(packet_results, many = True)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def valve_detail(request, valve_id):
+    try:
+        valve = models.Valve.objects.get(id=valve_id)
+    except models.Valve.DoesNotExist:
+        return Response(status=404)
+    
+    serializer = serializers.ValveSerializer(valve)
+    return Response(serializer.data)
+
+
 
 # DATA CREATION (POST APIs)
 @api_view(['PUT'])

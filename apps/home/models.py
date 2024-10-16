@@ -70,6 +70,8 @@ class Valve(models.Model):
     state = models.CharField(max_length=30, blank=True, null=True)
     latitude = models.CharField(max_length=200, blank=True, null=True)
     longitude = models.CharField(max_length=200, blank=True, null=True)
+    pulse = models.CharField(max_length=30, blank=True, null=True)
+    identifier = models.CharField(max_length=30, blank=True, null=True)
 
     def __int__(self):
         return self.id

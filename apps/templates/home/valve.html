@@ -77,6 +77,9 @@
                       <th>Type</th>
                       <th class="max-width">State</th>
                       <th class="sortable">Location</th>
+                      <th class="sortable">Pulse</th>
+                      <th class="sortable">Identifier</th>
+
                       <th class="sortable">Farm Name</th>
                       <th class="sortable">latitude</th>
                       <th class="sortable">longitude</th>
@@ -94,6 +97,8 @@
                       <td class="text-nowrap align-middle">{{ valve.type }}</td>
                       <td class="text-center align-middle"> {{ valve.state }}</td>
                     <td class="text-center align-middle">{{ valve.location }}</td>
+                    <td class="text-center align-middle">{{ valve.pulse}}</td>
+                    <td class="text-center align-middle">{{ valve.identifier}}</td>
                     <td class="text-center align-middle">{{ valve.farm }}</td>
                     <td class="text-center align-middle"> {{ valve.latitude }}</td>
                     <td class="text-center align-middle"> {{ valve.longitude }}</td>
@@ -175,8 +180,8 @@
                           <input class="form-control" type="text" name="location" id="location"required >
                         </div>
 
-                    </div>
-                    <div class="col">
+                     </div>
+                     <div class="col">
 
                         <div class="form-group">
                           <label>State</label>
@@ -187,6 +192,26 @@
                         </div>
                       </div>
                     </div>
+
+                    <div class="row">
+                      <div class="col">
+
+                        <div class="form-group">
+                          <label>Pulse</label>
+                          <input class="form-control" type="text" name="pulse" id="pulse"required >
+                        </div>
+
+                     </div>
+                     <div class="col">
+
+                      <div class="form-group">
+                        <label>Identifier</label>
+                        <input class="form-control" type="text" name="identifier" id="identifier"required >
+                      </div>
+
+                      </div>
+                    </div>
+
                     <div class="row">
                       <div class="col mb-3">
                         <div class="form-group">
@@ -197,7 +222,7 @@
                     </div>
 
                   </div>
-                </div>
+                 </div>
  {#Long and lat and map#}
                     <div class="row">
                       <div class="col">

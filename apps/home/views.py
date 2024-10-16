@@ -445,6 +445,8 @@ def mydata_valve(request):
             "state",
             "latitude",
             "longitude",
+            "pulse",
+            "identifier"
         )
         .filter(farm_id=user.farm)
     )
@@ -614,6 +616,8 @@ class ValveOperation(APIView):
         latitude = request.POST.get("latitude", None)
         longitude = request.POST.get("longitude", None)
         valve_id = request.POST.get("id", None)
+        pulse= request.POST.get("pulse", None)
+        identifier= request.POST.get("identifier", None)
 
         if operation == "edit":
             valve = Valve.objects.get(pk=valve_id)
@@ -627,22 +631,28 @@ class ValveOperation(APIView):
                 valve.latitude = latitude
             if longitude:
                 valve.longitude = longitude
+            if pulse:
+                valve.pulse = pulse
+            if identifier:
+                valve.identifier = identifier        
             valve.save()
 
         if operation == "add":
-            if location and state and type and latitude and longitude:
+            if location and state and type and latitude and longitude and pulse and identifier :
                 valve = Valve.objects.create(
                     location=location,
                     state=state,
                     type=type,
                     latitude=latitude,
                     longitude=longitude,
+                    pulse=pulse,
+                    identifier=identifier,
                     farm=user.farm,
                 )
-
+               
         # sensors = Sensor.objects.all()
         return redirect("/assissjo-api/valve")
-
+# 
 
 @login_required(login_url="/login/")
 def tree_view(request):

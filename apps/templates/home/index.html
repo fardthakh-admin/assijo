@@ -1171,7 +1171,14 @@ function Pass(data) {
 
 <script>
    $(document).ready(function(){
-    var data = [];
+    var data1 = [];
+    var data2 = [];
+    var data3 = [];
+    var data4 = [];
+    var data5 = [];
+
+    
+
     $.ajax({
         url: "{% url 'mydata_sensor'%}",
         method: 'GET',
@@ -1179,9 +1186,34 @@ function Pass(data) {
             data_sensor.forEach(function(item) {
                 item.group = "sensor"; // Add group property to each item
             });
-            data = data.concat(data_sensor);
+            data1 = data1.concat(data_sensor);
         }
     });
+
+    function renderChart(data) {
+      // Assuming you are using a chart library like Chart.js or similar
+      var ctx = document.getElementById('chart-sensor-dark').getContext('2d');
+      var myChart = new Chart(ctx, {
+          type: 'line', // or any other type of chart
+          data: {
+              labels: data.map(item => item.location), // Example: using location as labels
+              datasets: [{
+                  label: 'Sensor Data',
+                  data: data.map(item => item.value), // Example: using value as data points
+                  backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                  borderColor: 'rgba(75, 192, 192, 1)',
+                  borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+  }
 
     $.ajax({
         url: "{% url 'mydata_waterpump'%}",
@@ -1190,7 +1222,7 @@ function Pass(data) {
             data_waterpump.forEach(function(item) {
                 item.group = "waterpump"; // Add group property to each item
             });
-            data = data.concat(data_waterpump);
+            data2 = data2.concat(data_waterpump);
         }
     });
 
@@ -1201,7 +1233,7 @@ function Pass(data) {
             data_watertank.forEach(function(item) {
                 item.group = "watertank"; // Add group property to each item
             });
-            data = data.concat(data_watertank);
+            data3 = data3.concat(data_watertank);
         }
     });
 
@@ -1212,7 +1244,7 @@ function Pass(data) {
             data_tree.forEach(function(item) {
                 item.group = "tree"; // Add group property to each item
             });
-            data = data.concat(data_tree);
+            data4 = data4.concat(data_tree);
         }
     });
 
@@ -1223,7 +1255,7 @@ function Pass(data) {
             data_valve.forEach(function(item) {
                 item.group = "valve"; // Add group property to each item
             });
-            data = data.concat(data_valve);
+            data5 = data5.concat(data_valve);
             initMap(data);
         }
     });
