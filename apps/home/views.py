@@ -652,7 +652,8 @@ class ValveOperation(APIView):
                
         # sensors = Sensor.objects.all()
         return redirect("/assissjo-api/valve")
-# 
+#         return redirect("valve")
+
 
 @login_required(login_url="/login/")
 def tree_view(request):
