@@ -108,22 +108,24 @@ def farm_timestamps(request):
 
 @api_view(['GET'])
 def farm_timestamps_by_type(request, type):
-    user = models.User.objects.get(id = request.user.id)
+    user = models.User.objects.get(id=request.user.id)
     sensor = models.Sensor.objects.filter(farm_id=user.farm, type=type)
-
 
     list_of_timestamps = []
 
     start_date = request.query_params.get('start-date')
     end_date = request.query_params.get('end-date')
-    
+
     if start_date is None:
-        start_date = datetime.datetime.today() - datetime.timedelta(days=30)
+        start_date = datetime.today() - timedelta(days=30)  # Use `datetime` directly
     if end_date is None:
-        end_date = datetime.datetime.today()
-    
-    results = models.Result.objects.filter(sensor__id__in=sensor , timestamp__range = (start_date, end_date)).order_by('timestamp').values('number', 'timestamp')
-    
+        end_date = datetime.today()  # Use `datetime` directly
+
+    # Ensure proper query filter and date range
+    results = models.Result.objects.filter(
+        sensor__id__in=sensor, timestamp__range=(start_date, end_date)
+    ).order_by('timestamp').values('number', 'timestamp')
+
     return Response(results)
 
 
@@ -520,7 +522,7 @@ def valve_detail(request, valve_id):
 
 
 # DATA CREATION (POST APIs)
-@api_view(['PUT'])
+@api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def set_valve_state(request):
     try:
@@ -613,7 +615,7 @@ class CreateFarmBordersView(APIView):
             return Response({'message': 'Farm already has borders or no farm found'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-from datetime import datetime
+from datetime import datetime, timedelta
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def create_sensor_multiple_results(request, sensor_id):
@@ -726,7 +728,7 @@ def create_watertank_result(request, watertank_id):
 
     serializer = serializers.ResultSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save( watertank = watertank )
+        serializer.save( water_tank = watertank )
         
         return Response(serializer.data, status=201)
     

@@ -116,6 +116,14 @@ class EnergyLevel(models.Model):
     def __str__(self):
         return "%s %s" % (self.energy_result, self.water_pump)
 
+class Tree(models.Model):
+    farm = models.ForeignKey(Farm, on_delete=models.SET_NULL, null=True)
+    location = models.CharField(max_length=100)
+    type = models.CharField(max_length=30)
+    time = models.CharField(max_length=30)
+    state = models.CharField(max_length=30)
+    latitude = models.CharField(max_length=200, blank=True, null=True)
+    longitude = models.CharField(max_length=200, blank=True, null=True)
 
 class Result(models.Model):
     number = models.FloatField(default=0.0)
@@ -161,6 +169,8 @@ class Result(models.Model):
         blank=True,
         null=True,
     )
+    tree = models.ForeignKey(Tree, on_delete=models.CASCADE, blank=True, null=True, related_name="tree")
+    
 
     def __str__(self):
         try:
@@ -171,12 +181,16 @@ class Result(models.Model):
             return "no sensors"
 
     def save(self, *args, **kwargs):
-        sensor = Sensor.objects.get(pk=self.sensor.id)
-        if sensor.type != "multiple":
-            # for(request.query_params):
-
-            # else:
-            self.unit = sensor.unit
+        # Only access sensor if it's not None
+        if self.sensor is not None:
+            try:
+                sensor = Sensor.objects.get(pk=self.sensor.id)
+                if sensor.type != "multiple":
+                    self.unit = sensor.unit
+            except Sensor.DoesNotExist:
+                raise ValueError(f"Sensor with id {self.sensor.id} does not exist.")
+        # If sensor is None, do nothing (or handle any default behavior here)
+    
         super().save(*args, **kwargs)  # Call the "real" save() method.
 
 
@@ -240,14 +254,7 @@ class Gateway(models.Model):
 # return "%s %s" % (self.location, self.state)
 
 
-class Tree(models.Model):
-    farm = models.ForeignKey(Farm, on_delete=models.SET_NULL, null=True)
-    location = models.CharField(max_length=100)
-    type = models.CharField(max_length=30)
-    time = models.CharField(max_length=30)
-    state = models.CharField(max_length=30)
-    latitude = models.CharField(max_length=200, blank=True, null=True)
-    longitude = models.CharField(max_length=200, blank=True, null=True)
+
 
 
 # def __str__(self):

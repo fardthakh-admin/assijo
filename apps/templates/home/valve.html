@@ -394,28 +394,39 @@
 
     <script>
       
-      function deactivateValve(id, e) {
+      
+    function deactivateValve(id, e) {
         console.log(id)
-        // if (confirm('Are you sure you want to delete this item?')) {
-            let formdata = new FormData();
-            let state = $(e).children()[0].classList[1] == "fa-toggle-on" ? true : false;
-            let valveID = e.id;
+        
+        // Determine the current state of the valve
+        let state = $(e).children()[0].classList.contains("fa-toggle-on"); // Check if it's 'on' or 'off'
+        let valveID = id;
 
-            formdata.append("id", valveID);
-            formdata.append("state", String(state));
+        // Prepare data to send in the request
+        let formdata = new FormData();
+        formdata.append("valve_ID", valveID); // Send valve ID
+        formdata.append("payload", state ? "off" : "on"); // Toggle the state (on <=> off)
 
-            let requestOptions = {
-                method: 'PUT',
-                body: formdata,
-                redirect: 'follow'
-            };
+        let requestOptions = {
+            method: 'POST',
+            body: formdata,
+            redirect: 'follow'
+        };
 
-            fetch("/api/set/valve/"+ valveID+"/"+String(state)+"/", requestOptions)
-                .then(response => response.text())
-                .then(result => console.log(result))
-                .then($(e).children()[0].attributes.class.value == "fa-solid fa-toggle-on" ? $(e).children()[0].attributes.class.value = "fa-solid fa-toggle-off" : $(e).children()[0].attributes.class.value = "fa-solid fa-toggle-on")
-                .catch(error => console.log('error', error));
-        // }
+        // Send the PUT request to change the valve state
+        fetch("/api/set/valve/set-valve-state/", requestOptions)
+            .then(response => response.json())  // Handle JSON response
+            .then(result => {
+                console.log(result);
+                
+                // Toggle the button icon class based on the response
+                if (result.state === "on") {
+                    $(e).children()[0].classList.replace("fa-toggle-off", "fa-toggle-on");
+                } else {
+                    $(e).children()[0].classList.replace("fa-toggle-on", "fa-toggle-off");
+                }
+            })
+            .catch(error => console.log('error', error));
     }
 
 

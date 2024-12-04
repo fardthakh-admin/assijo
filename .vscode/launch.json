@@ -14,7 +14,11 @@
                 "localhost:8000"
             ],
             "django": true,
-            "justMyCode": true
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "pythonPath": "${workspaceFolder}/agri-env/bin/python"
         }
     ]
 }

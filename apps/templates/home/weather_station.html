@@ -1029,10 +1029,10 @@ function download_csv_file() {
 e
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
-  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
-  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+  <script src="{% static 'assets/vendor/chart.js/dist/Chart.min.js'%}"></script>
+  <script src="{% static 'assets/vendor/chart.js/dist/Chart.extension.js'%}"></script>
 
-  <script src="/static/assets/js/echarts-liquid.min.js"></script>
+  <script src="{% static 'assets/js/echarts-liquid.min.js'%}"></script>
 <script>
 var chart = echarts.init(document.getElementById("water-level-card"));
  var options ={

@@ -12,9 +12,9 @@
     <!-- Header -->
     <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js"></script>
 	  <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js"></script>
-    <link rel="stylesheet" href="static/assets/js/leaflet/leaflet.css" />
-    <link rel="stylesheet" href="static/assets/css/leaflet-owm.css" />
-    <link rel="stylesheet" href="static/assets/css/iconLayers.css" />
+    <link rel="stylesheet" href="{%static 'assets/js/leaflet/leaflet.css'%}" />
+    <link rel="stylesheet" href="{%static 'assets/css/leaflet-owm.css'%}" />
+    <link rel="stylesheet" href="{%static 'assets/css/iconLayers.css'%}'" />
     <script src="https://openlayers.org/api/OpenLayers.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -135,7 +135,15 @@
                   </div>
             </div>
           </div>
-
+        
+          <script>
+            // Set today's date as default for both start and end date inputs
+            document.addEventListener('DOMContentLoaded', function() {
+                const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+                document.getElementById('start-date').value = today;
+                document.getElementById('end-date').value = today;
+            });
+          </script>
           <!-- Card stats -->
           <div class="header" style="margin-top: -50px;">
             <div class="container-fluid">
@@ -676,15 +684,15 @@
                         <td>{{ item.time }}</td>
                         <td>{{ item.location }}</td>
                         <!-- Uncomment below if you want to display Water Share -->
-                        <!-- <td> -->
-                            <!-- {% if item.water_share.all %} -->
-                                <!-- {% for share in item.water_share.all %} -->
-                                    <!-- {{ share.number }}{{ share.unit }} -->
-                                <!-- {% endfor %} -->
-                            <!-- {% else %} -->
-                                <!-- - -->
-                            <!-- {% endif %} -->
-                        <!-- </td> -->
+                        <td>
+                            {% if item.water_share.all %}
+                                {% for share in item.water_share.all %}
+                                    {{ share.number }}{{ share.unit }}
+                                {% endfor %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -1045,11 +1053,11 @@
 
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
-    <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
-    <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
-    <script src="/static/assets/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
-    <script src="/static/assets/js/echart.min.js"></script>
-    <script src="/static/assets/js/echarts-liquid.min.js"></script>
+    <script src="{% static 'assets/vendor/chart.js/dist/Chart.min.js'%}"></script>
+    <script src="{% static 'assets/vendor/chart.js/dist/Chart.extension.js'%}"></script>
+    <script src="{% static 'assets/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js'%}"></script>
+    <script src="{% static 'assets/js/echart.min.js'%}"></script>
+    <script src="{% static 'assets/js/echarts-liquid.min.js'%}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
@@ -1171,14 +1179,7 @@ function Pass(data) {
 
 <script>
    $(document).ready(function(){
-    var data1 = [];
-    var data2 = [];
-    var data3 = [];
-    var data4 = [];
-    var data5 = [];
-
-    
-
+    var data = [];
     $.ajax({
         url: "{% url 'mydata_sensor'%}",
         method: 'GET',
@@ -1186,34 +1187,9 @@ function Pass(data) {
             data_sensor.forEach(function(item) {
                 item.group = "sensor"; // Add group property to each item
             });
-            data1 = data1.concat(data_sensor);
+            data = data.concat(data_sensor);
         }
     });
-
-    function renderChart(data) {
-      // Assuming you are using a chart library like Chart.js or similar
-      var ctx = document.getElementById('chart-sensor-dark').getContext('2d');
-      var myChart = new Chart(ctx, {
-          type: 'line', // or any other type of chart
-          data: {
-              labels: data.map(item => item.location), // Example: using location as labels
-              datasets: [{
-                  label: 'Sensor Data',
-                  data: data.map(item => item.value), // Example: using value as data points
-                  backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                  borderColor: 'rgba(75, 192, 192, 1)',
-                  borderWidth: 1
-              }]
-          },
-          options: {
-              scales: {
-                  y: {
-                      beginAtZero: true
-                  }
-              }
-          }
-      });
-  }
 
     $.ajax({
         url: "{% url 'mydata_waterpump'%}",
@@ -1222,7 +1198,7 @@ function Pass(data) {
             data_waterpump.forEach(function(item) {
                 item.group = "waterpump"; // Add group property to each item
             });
-            data2 = data2.concat(data_waterpump);
+            data = data.concat(data_waterpump);
         }
     });
 
@@ -1233,7 +1209,7 @@ function Pass(data) {
             data_watertank.forEach(function(item) {
                 item.group = "watertank"; // Add group property to each item
             });
-            data3 = data3.concat(data_watertank);
+            data = data.concat(data_watertank);
         }
     });
 
@@ -1244,7 +1220,7 @@ function Pass(data) {
             data_tree.forEach(function(item) {
                 item.group = "tree"; // Add group property to each item
             });
-            data4 = data4.concat(data_tree);
+            data = data.concat(data_tree);
         }
     });
 
@@ -1255,7 +1231,7 @@ function Pass(data) {
             data_valve.forEach(function(item) {
                 item.group = "valve"; // Add group property to each item
             });
-            data5 = data5.concat(data_valve);
+            data = data.concat(data_valve);
             initMap(data);
         }
     });
@@ -1292,19 +1268,19 @@ function Pass(data) {
                 map.getProjectionObject() // to Spherical Mercator Projection
             );
         if (markersArray[i].group == "sensor") {
-            var icon = new OpenLayers.Icon("static/assets/img/icons/sensor-icon.png", new OpenLayers.Size(32, 32));
+            var icon = new OpenLayers.Icon("{% static 'assets/img/icons/sensor-icon.png' %}", new OpenLayers.Size(32, 32));
             markers.addMarker(new OpenLayers.Marker(lonLat, icon));
         } else if (markersArray[i].group == "valve") {
-            var icon = new OpenLayers.Icon("static/assets/img/icons/valve.png", new OpenLayers.Size(32, 32));
+            var icon = new OpenLayers.Icon("{%static 'assets/img/icons/valve.png'%}", new OpenLayers.Size(32, 32));
             markers.addMarker(new OpenLayers.Marker(lonLat, icon));
         } else if (markersArray[i].group == "waterpump") {
-            var icon = new OpenLayers.Icon("static/assets/img/icons/water_pump.png", new OpenLayers.Size(50, 32));
+            var icon = new OpenLayers.Icon("{%static 'assets/img/icons/water_pump.png'%}", new OpenLayers.Size(50, 32));
             markers.addMarker(new OpenLayers.Marker(lonLat, icon));
         } else if (markersArray[i].group == "watertank") {
-            var icon = new OpenLayers.Icon("static/assets/img/icons/water_tank.png", new OpenLayers.Size(32, 32));
+            var icon = new OpenLayers.Icon("{%static 'assets/img/icons/water_tank.png'%}", new OpenLayers.Size(32, 32));
             markers.addMarker(new OpenLayers.Marker(lonLat, icon));
         } else if (markersArray[i].group == "tree") {
-            var icon = new OpenLayers.Icon("static/assets/img/icons/tree.png", new OpenLayers.Size(32, 32));
+            var icon = new OpenLayers.Icon("{%static 'assets/img/icons/tree.png'%}", new OpenLayers.Size(32, 32));
             markers.addMarker(new OpenLayers.Marker(lonLat, icon));
         }
     }
@@ -1321,10 +1297,10 @@ function Pass(data) {
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
-    <script type="text/javascript" src="static/assets/js/leaflet/leaflet-src.js"></script>
-    <script type="text/javascript" src="static/assets/js/leaflet-owm.js"></script>
-    <script type="text/javascript" src="static/assets/js/iconLayer.js"></script>
-    <script type="text/javascript" src="static/assets/js/charts/charts.js"></script>
+    <script type="text/javascript" src="{% static 'assets/js/leaflet/leaflet-src.js'%}"></script>
+    <script type="text/javascript" src="{% static 'assets/js/leaflet-owm.js'%}"></script>
+    <script type="text/javascript" src="{% static 'assets/js/iconLayer.js'%}"></script>
+    <script type="text/javascript" src="{% static 'assets/js/charts/charts.js'%}"></script>
     
 
 

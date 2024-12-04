@@ -130,7 +130,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
 # }
 DATABASES = {
-    "default": {
+     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "HOST": "localhost",
         "PORT": 5432,

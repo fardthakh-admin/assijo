@@ -10,10 +10,12 @@ __pycache__/
 *.db
 *.sqlite3
 *.log
-
+**/migrations/*
 # venv
 env
 venv/
+assijo/
+agri-env/
 
 # other
 .DS_Store
@@ -24,6 +26,7 @@ package-lock.json
 staticfiles/*
 !staticfiles/.gitkeep 
 .vscode/symbols.json
+.vscode/launch.json
 
 apps/static/assets/node_modules
 apps/static/assets/yarn.lock

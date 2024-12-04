@@ -185,6 +185,7 @@ def index(request):
         list_of_energy_level_results.append(pump_energy_level_results)
     ###   END ENERGY LEVEL   ###
 
+    print(trees)
     context = {
         "user": user,
         "results": result_lists,
@@ -408,113 +409,142 @@ def sensor_view(request):
 
     return render(request, "home/Sensor.html", context={"sensors": sensors})
 
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from django.db.models import F
 
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@login_required
 def mydata_sensor(request):
     user = User.objects.get(id=request.user.id)
-    result_list = list(
-        Sensor.objects.exclude(latitude__isnull=True)
-        .exclude(longitude__isnull=True)
-        .exclude(latitude__exact="")
-        .exclude(longitude__exact="")
-        .values(
-            "id",
-            "location",
-            "type",
-            "category",
-            "latitude",
-            "longitude",
-            "farm",
-        )
-        .filter(farm_id=user.farm)
-    )
-
+    result_list = list(Sensor.objects \
+                       .exclude(latitude__isnull=True) \
+                       .exclude(longitude__isnull=True) \
+                       .exclude(latitude__exact='') \
+                       .exclude(longitude__exact='') \
+                       .filter(farm_id = user.farm)
+                       .values('id',
+                               'location',
+                               'type',
+                               'category',
+                               'latitude',
+                               'longitude',
+                               'farm',
+                               'unit'
+                               )\
+                       
+                       )
+    for result in result_list:
+        result['farm'] = str(result['farm'])
     return JsonResponse(result_list, safe=False)
 
 
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@login_required
 def mydata_valve(request):
     user = User.objects.get(id=request.user.id)
-    result_list = list(
-        Valve.objects.exclude(latitude__isnull=True)
-        .exclude(longitude__isnull=True)
-        .exclude(latitude__exact="")
-        .exclude(longitude__exact="")
-        .values(
-            "id",
-            "location",
-            "type",
-            "state",
-            "latitude",
-            "longitude",
-            "pulse",
-            "identifier"
-        )
-        .filter(farm_id=user.farm)
-    )
-
+    result_list = list(Valve.objects \
+                       .exclude(latitude__isnull=True) \
+                       .exclude(longitude__isnull=True) \
+                       .exclude(latitude__exact='') \
+                       .exclude(longitude__exact='') \
+                       .annotate(farm_name=F('farm__farmName')) 
+                       .values('id',
+                               'location',
+                               'type',
+                               'state',
+                               'latitude',
+                               'longitude',
+                               'farm_name',
+                               
+                               )\
+                       .filter(farm_id = user.farm)
+                       )
+    # for result in result_list:
+    #     result['farm'] = str(result['farm'])
     return JsonResponse(result_list, safe=False)
-
-
+   
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@login_required
 def mydata_waterpump(request):
     user = User.objects.get(id=request.user.id)
-    result_list = list(
-        WaterPump.objects.exclude(latitude__isnull=True)
-        .exclude(longitude__isnull=True)
-        .exclude(latitude__exact="")
-        .exclude(longitude__exact="")
-        .values(
-            "id",
-            "location",
-            "state",
-            "latitude",
-            "longitude",
-            "farm",
-        )
-        .filter(farm_id=user.farm)
-    )
+    result_list = list(WaterPump.objects \
+                       .exclude(latitude__isnull=True) \
+                       .exclude(longitude__isnull=True) \
+                       .exclude(latitude__exact='') \
+                       .exclude(longitude__exact='') \
+                       .annotate(farm_name=F('farm__farmName')) 
+                       
+                       .values('id',
+                               'location',
+                               'state',
+                               'latitude',
+                               'longitude',
+                               'farm_name',
+                               )\
+                       .filter(farm_id = user.farm)
+                       )
 
     return JsonResponse(result_list, safe=False)
-
-
+    
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@login_required
 def mydata_watertank(request):
     user = User.objects.get(id=request.user.id)
-    result_list = list(
-        WaterTank.objects.exclude(latitude__isnull=True)
-        .exclude(longitude__isnull=True)
-        .exclude(latitude__exact="")
-        .exclude(longitude__exact="")
-        .values(
-            "id",
-            "water_level",
-            "water_capacity",
-            "location",
-            "latitude",
-            "longitude",
-            "farm",
-        )
-        .filter(farm_id=user.farm)
-    )
+    result_list = list(WaterTank.objects \
+                       .exclude(latitude__isnull=True) \
+                       .exclude(longitude__isnull=True) \
+                       .exclude(latitude__exact='') \
+                       .exclude(longitude__exact='') \
+                       .annotate(farm_name=F('farm__farmName')) 
+                       
+                       .values('id',
+                               'water_level',
+                               'water_capacity',
+                               'location',
+                               'latitude',
+                               'longitude',
+                               'farm_name',
+                       )\
+                       .filter( farm_id = user.farm )
+                       )
 
     return JsonResponse(result_list, safe=False)
-
-
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@login_required
 def mydata_Trees(request):
-    user = User.objects.get(id=request.user.id)
-    result_list = list(
-        Tree.objects.exclude(latitude__isnull=True)
-        .exclude(longitude__isnull=True)
-        .exclude(latitude__exact="")
-        .exclude(longitude__exact="")
+    user = User.objects.get(id = request.user.id)
+    result_list = list(Tree.objects \
+        .exclude(latitude__isnull=True) \
+        .exclude(longitude__isnull=True) \
+        .exclude(latitude__exact='') \
+        .exclude(longitude__exact='') \
+        .annotate(farm_name=F('farm__farmName')) 
         .values(
-            "id",
-            "location",
-            "type",
-            "time",
-            "state",
-            "latitude",
-            "longitude",
-            "farm",
-        )
-        .filter(farm_id=user.farm)
+            'id',
+            'location',
+            'type',
+            'time',
+            'state',
+            'latitude',
+            'longitude',
+            'farm_name',
+        ) \
+        .filter ( farm_id = user.farm)
+
     )
 
     return JsonResponse(result_list, safe=False)
@@ -555,17 +585,19 @@ def mydata_weatherstation(request):
 class SensorOperation(APIView):
 
     def post(self, request):
-        user = User.objects.get(id=request.user.id)
-        operation = request.POST.get("operation", None)
-        location = request.POST.get("location", None)
-        type = request.POST.get("type", None)
-        category = request.POST.get("category", None)
-        latitude = request.POST.get("latitude", None)
-        longitude = request.POST.get("longitude", None)
-        sensor_id = request.POST.get("id", None)
-        unit = request.POST.get("unit", None)
+        
+        user = User.objects.get(id = request.user.id)
+        
+        operation = request.data.get('operation', None)
+        location = request.data.get('location', None)
+        type = request.data.get('type', None)
+        category = request.data.get('category', None)
+        latitude = request.data.get('latitude', None)
+        longitude = request.data.get('longitude', None)
+        sensor_id = request.data.get('id', None)
+        unit = request.data.get('unit', None)
 
-        if operation == "edit":
+        if operation == 'edit':
             sensor = Sensor.objects.get(pk=sensor_id)
             if location:
                 sensor.location = location
@@ -581,7 +613,7 @@ class SensorOperation(APIView):
                 sensor.unit = unit
             sensor.save()
 
-        if operation == "add":
+        if operation == 'add':
             if location and category and type and latitude and longitude and unit:
                 sensor = Sensor.objects.create(
                     location=location,
@@ -589,12 +621,12 @@ class SensorOperation(APIView):
                     type=type,
                     latitude=latitude,
                     longitude=longitude,
-                    farm=user.farm,
-                    unit=unit,
+                    farm = user.farm,
+                    unit = unit
                 )
 
         # sensors = Sensor.objects.all()
-        return redirect("/assissjo-api/sensor")
+        return redirect('/assissjo-api/sensor')
 
 
 @login_required(login_url="/login/")
@@ -607,49 +639,57 @@ def valve_view(request):
 
 class ValveOperation(APIView):
 
+
     def post(self, request):
-        user = User.objects.get(id=request.user.id)
-        operation = request.POST.get("operation", None)
-        location = request.POST.get("location", None)
-        type = request.POST.get("type", None)
-        state = request.POST.get("state", None)
-        latitude = request.POST.get("latitude", None)
-        longitude = request.POST.get("longitude", None)
-        valve_id = request.POST.get("id", None)
-        pulse= request.POST.get("pulse", None)
-        identifier= request.POST.get("identifier", None)
+        user = User.objects.get(id = request.user.id)
+        operation = request.data.get('operation', None)
+        location = request.data.get('location', None)
+        type = request.data.get('type', None)
+        state = request.data.get('state', None)
+        latitude = request.data.get('latitude', None)
+        longitude = request.data.get('longitude', None)
+        valve_id = request.data.get('id', None)
 
-        if operation == "edit":
-            valve = Valve.objects.get(pk=valve_id)
-            if location:
-                valve.location = location
-            if state:
-                valve.state = state
-            if type:
-                valve.type = type
-            if latitude:
-                valve.latitude = latitude
-            if longitude:
-                valve.longitude = longitude
-            if pulse:
-                valve.pulse = pulse
-            if identifier:
-                valve.identifier = identifier        
-            valve.save()
+        if operation == 'edit':
+            try: 
+                valve = Valve.objects.get(pk=valve_id)
+                if location:
+                    valve.location = location
+                if state:
+                    valve.state = state
+                if type:
+                    valve.type = type
+                if latitude:
+                    valve.latitude = latitude
+                if longitude:
+                    valve.longitude = longitude
+                valve.save()
+                return redirect('/assissjo-api/valve') 
 
-        if operation == "add":
-            if location and state and type and latitude and longitude and pulse and identifier :
+            except Valve.DoesNotExist:
+                return Response({'error': 'Valve not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+        if operation == 'add':
+            if all([location, type, state,latitude, longitude, ]):
                 valve = Valve.objects.create(
                     location=location,
                     state=state,
                     type=type,
                     latitude=latitude,
                     longitude=longitude,
-                    pulse=pulse,
-                    identifier=identifier,
-                    farm=user.farm,
+                    farm = user.farm
                 )
+                return redirect('/assissjo-api/valve') 
+            else:
+                return Response({'error': 'Missing fields'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'error': 'Invalid operation'}, status=status.HTTP_400_BAD_REQUEST)
                
+               
+        # sensors = Sensor.objects.all()
+        return redirect("/assissjo-api/valve")
+#         return redirect("valve")
+      
         # sensors = Sensor.objects.all()
         return redirect("/assissjo-api/valve")
 #         return redirect("valve")
@@ -666,46 +706,54 @@ def tree_view(request):
 class TreeOperation(APIView):
 
     def post(self, request):
-        user = User.objects.get(id=request.user.id)
-        operation = request.POST.get("operation", None)
-        location = request.POST.get("location", None)
-        type = request.POST.get("type", None)
-        state = request.POST.get("state", None)
-        time = request.POST.get("time", None)
-        latitude = request.POST.get("latitude", None)
-        longitude = request.POST.get("longitude", None)
-        tree_id = request.POST.get("id", None)
+        user = User.objects.get( id = request.user.id)
+        operation = request.data.get('operation', None)
+        location = request.data.get('location', None)
+        type = request.data.get('type', None)
+        state = request.data.get('state', None)
+        time = request.data.get('time', None)
+        latitude = request.data.get('latitude', None)
+        longitude = request.data.get('longitude', None)
+        tree_id = request.data.get('id', None)
 
-        if operation == "edit":
-            tree = Tree.objects.get(pk=tree_id)
-            if location:
-                tree.location = location
-            if state:
-                tree.state = state
-            if type:
-                tree.type = type
-            if time:
-                tree.time = time
-            if latitude:
-                tree.latitude = latitude
-            if longitude:
-                tree.longitude = longitude
-            tree.save()
+        if operation == 'edit':
+            try:
+                tree = Tree.objects.get(pk=tree_id)
+                if location:
+                    tree.location = location
+                if state:
+                    tree.state = state
+                if type:
+                    tree.type = type
+                if time:
+                    tree.time = time
+                if latitude:
+                    tree.latitude = latitude
+                if longitude:
+                    tree.longitude = longitude
+                tree.save()
+                return redirect('/assissjo-api/tree') 
 
-        if operation == "add":
-            if location and state and type and time and latitude and longitude:
-                tree = Tree.objects.create(
-                    location=location,
-                    state=state,
-                    type=type,
-                    time=time,
-                    latitude=latitude,
-                    longitude=longitude,
-                    farm=user.farm,
-                )
+            except Valve.DoesNotExist:
+                return Response({'error': 'Tree not found'}, status=status.HTTP_404_NOT_FOUND)
+            
+        if operation == 'add':
+                if location and state and type and time and latitude and longitude:
+                    tree = Tree.objects.create(
+                        location=location,
+                        state=state,
+                        type=type,
+                        time=time,
+                        latitude=latitude,
+                        longitude=longitude,
+                        farm = user.farm,
+                    )
+                    return redirect('/assissjo-api/tree') 
 
+                else:
+                    return Response({'error': 'Missing fields'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Invalid operation'}, status=status.HTTP_400_BAD_REQUEST)
         # sensors = Sensor.objects.all()
-        return redirect("/assissjo-api/tree")
 
 
 @login_required(login_url="/login/")
@@ -721,38 +769,45 @@ def water_pump_view(request):
 class WaterPumpOperation(APIView):
 
     def post(self, request):
-        user = User.objects.get(id=request.user.id)
-        operation = request.POST.get("operation", None)
-        location = request.POST.get("location", None)
-        state = request.POST.get("state", None)
-        latitude = request.POST.get("latitude", None)
-        longitude = request.POST.get("longitude", None)
-        waterpump_id = request.POST.get("id", None)
+        user = User.objects.get( id = request.user.id)
+        operation = request.data.get('operation', None)
+        location = request.data.get('location', None)
+        state = request.data.get('state', None)
+        latitude = request.data.get('latitude', None)
+        longitude = request.data.get('longitude', None)
+        waterpump_id = request.data.get('id', None)
 
-        if operation == "edit":
-            waterpump = WaterPump.objects.get(pk=waterpump_id)
-            if location:
-                waterpump.location = location
-            if state:
-                waterpump.state = state
-            if latitude:
-                waterpump.latitude = latitude
-            if longitude:
-                waterpump.longitude = longitude
-            waterpump.save()
-
-        if operation == "add":
+        if operation == 'edit':
+            try:
+                waterpump = WaterPump.objects.get(pk=waterpump_id)
+                if location:
+                    waterpump.location = location
+                if state:
+                    waterpump.state = state
+                if latitude:
+                    waterpump.latitude = latitude
+                if longitude:
+                    waterpump.longitude = longitude
+                waterpump.save()
+                return redirect('/assissjo-api/water_pump')
+            except Valve.DoesNotExist:
+                return Response({'error': 'WaterPump not found'}, status=status.HTTP_404_NOT_FOUND)
+            
+        if operation == 'add':
             if location and state and latitude and longitude:
                 waterpump = WaterPump.objects.create(
                     location=location,
                     state=state,
                     latitude=latitude,
                     longitude=longitude,
-                    farm=user.farm,
+                    farm = user.farm,
                 )
+                return redirect('/assissjo-api/water_pump')
+            else:
+                 return Response({'error': 'Missing fields'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        return Response({'error': 'Invalid operation'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # sensors = Sensor.objects.all()
-        return redirect("/assissjo-api/water_pump")
 
 
 @login_required(login_url="/login/")
@@ -767,29 +822,35 @@ class WaterTankOperation(APIView):
 
     def post(self, request):
         user = User.objects.get(id=request.user.id)
-        operation = request.POST.get("operation", None)
-        location = request.POST.get("location", None)
-        water_level = request.POST.get("water_level", None)
-        water_capacity = request.POST.get("water_capacity", None)
-        latitude = request.POST.get("latitude", None)
-        longitude = request.POST.get("longitude", None)
-        watertank_id = request.POST.get("id", None)
-        print(operation, location, water_level, watertank_id)
-        if operation == "edit":
-            watertank = WaterTank.objects.get(pk=watertank_id)
-            if location:
-                watertank.location = location
-            if water_level:
-                watertank.water_level = water_level
-            if water_capacity:
-                watertank.water_capacity = water_capacity
-            if latitude:
-                watertank.latitude = latitude
-            if longitude:
-                watertank.longitude = longitude
-            watertank.save()
+        operation = request.data.get('operation', None)
+        location = request.data.get('location', None)
+        water_level = request.data.get('water_level', None)
+        water_capacity = request.data.get('water_capacity', None)
+        latitude = request.data.get('latitude', None)
+        longitude = request.data.get('longitude', None)
+        watertank_id = request.data.get('id', None)
 
-        if operation == "add":
+        print(operation, location, water_level, water_capacity, latitude, longitude, watertank_id)
+
+        if operation == 'edit':
+            try:
+                watertank = WaterTank.objects.get(pk=watertank_id)
+                if location:
+                    watertank.location = location
+                if water_level:
+                    watertank.water_level = water_level
+                if water_capacity:
+                    watertank.water_capacity = water_capacity
+                if latitude:
+                    watertank.latitude = latitude
+                if longitude:
+                    watertank.longitude = longitude
+                watertank.save()
+                return redirect('/assissjo-api/water_tank')
+            except WaterTank.DoesNotExist:
+                return Response({'error': 'WaterTank not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if operation == 'add':
             if location and water_level and water_capacity and latitude and longitude:
                 water_tank = WaterTank.objects.create(
                     location=location,
@@ -799,8 +860,12 @@ class WaterTankOperation(APIView):
                     longitude=longitude,
                     farm=user.farm,
                 )
+                return redirect('/assissjo-api/water_tank')
+            else:
+                return Response({'error': 'Missing fields'}, status=status.HTTP_400_BAD_REQUEST)
 
-        return redirect("/assissjo-api/water_tank")
+        return Response({'error': 'Invalid operation'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 @login_required(login_url="/login/")
@@ -968,37 +1033,63 @@ class WeatherStationAPI(APIView):
 
 class DeleteSensor(APIView):
     def delete(self, request):
-        id = request.POST.get("id", None)
-        sensor = Sensor.objects.get(pk=id)
-        sensor.delete()
-        return Response({"status": "success"})
+        id = request.data.get('id', None)
+        if id is None:
+            return Response({'status': 'fail', 'message': 'ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            sensor = Sensor.objects.get(pk=id)
+            sensor.delete()
+            return Response({'status': 'success'}, status=status.HTTP_200_OK)
+        except Sensor.DoesNotExist:
+            return Response({'status': 'fail', 'message': 'Sensor not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 class DeleteValve(APIView):
 
     def delete(self, request):
-        id = request.POST.get("id", None)
-        valve = Valve.objects.get(pk=id)
-        valve.delete()
-        return Response({"status": "success"})
+        id = request.data.get('id', None)
+        if id is None:
+            return Response({'status': 'fail', 'message': 'ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            valve = Valve.objects.get(pk=id)
+            valve.delete()
+            return Response({'status': 'success'}, status=status.HTTP_200_OK)
+        except Valve.DoesNotExist:
+            return Response({'status': 'fail', 'message': 'Valve not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 class DeleteTree(APIView):
 
     def delete(self, request):
-        id = request.POST.get("id", None)
-        tree = Tree.objects.get(pk=id)
-        tree.delete()
-        return Response({"status": "success"})
+        id = request.data.get('id', None)
+        if id is None:
+            return Response({'status': 'fail', 'message': 'ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            tree = Tree.objects.get(pk=id)
+            tree.delete()
+            return Response({'status': 'success'}, status=status.HTTP_200_OK)
+        except Tree.DoesNotExist:
+            return Response({'status': 'fail', 'message': 'Tree not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 class DeleteWaterPump(APIView):
 
     def delete(self, request):
-        id = request.POST.get("id", None)
-        water_pump = WaterPump.objects.get(pk=id)
-        water_pump.delete()
-        return Response({"status": "success"})
+        id = request.data.get('id', None)
+        if id is None:
+            return Response({'status': 'fail', 'message': 'ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            water_pump = WaterPump.objects.get(pk=id)
+            water_pump.delete()
+            return Response({'status': 'success'}, status=status.HTTP_200_OK)
+        except WaterPump.DoesNotExist:
+            return Response({'status': 'fail', 'message': 'WaterPump not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 class DeleteOfflineScenario(APIView):
@@ -1011,42 +1102,58 @@ class DeleteOfflineScenario(APIView):
 
 class DeleteWaterTank(APIView):
     def delete(self, request):
-        id = request.POST.get("id", None)
-        water_tank = WaterTank.objects.get(pk=id)
-        water_tank.delete()
-        return Response({"status": "success"})
+        id = request.data.get('id', None)
+        if id is None:
+            return Response({'status': 'fail', 'message': 'ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            water_tank = WaterTank.objects.get(pk=id)
+            water_tank.delete()
+            return Response({'status': 'success'}, status=status.HTTP_200_OK)
+        except WaterPump.DoesNotExist:
+                return Response({'status': 'fail', 'message': 'WaterTank not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 class DeleteWeatherstation(APIView):
-    def delete(self, request):
-        id = request.POST.get("id", None)
-        Weather_Station = WeatherStation.objects.get(pk=id)
-        print(Weather_Station)
-        Weather_Station.delete()
-        return Response({"status": "success"})
+     def delete(self, request):
+        id = request.data.get('id', None)
+        if id is None:
+            return Response({'status': 'fail', 'message': 'ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            weather_station = WeatherStation.objects.get(pk=id)
+            weather_station.delete()
+            return Response({'status': 'success'}, status=status.HTTP_200_OK)
+        except WaterPump.DoesNotExist:
+                return Response({'status': 'fail', 'message': 'weather station not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 class WeatherStationOperation(APIView):
     def post(self, request):
         user = User.objects.get(id=request.user.id)
-        operation = request.POST.get("operation", None)
-        location = request.POST.get("location", None)
-        latitude = request.POST.get("latitude", None)
-        longitude = request.POST.get("longitude", None)
-        WeatherStation_id = request.POST.get("id", None)
+        operation = request.data.get("operation", None)
+        location = request.data.get("location", None)
+        latitude = request.data.get("latitude", None)
+        longitude = request.data.get("longitude", None)
+        WeatherStation_id = request.data.get("id", None)
 
         if operation == "edit":
-            weather_station = WeatherStation.objects.get(pk=WeatherStation_id)
+            try:
+                weather_station = WeatherStation.objects.get(pk=WeatherStation_id)
 
-            if location:
-                weather_station.location = location
-            if latitude:
-                weather_station.latitude = latitude
-            if longitude:
-                weather_station.longitude = longitude
-            weather_station.save()
+                if location:
+                    weather_station.location = location
+                if latitude:
+                    weather_station.latitude = latitude
+                if longitude:
+                    weather_station.longitude = longitude
+                
+                weather_station.save()
+                return redirect('/assissjo-api/weather_station')
+            except WeatherStation.DoesNotExist:
+                return Response({'error': 'Weather station not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        if operation == "add":
+        elif operation == "add":
             if location and latitude and longitude:
                 weather_station = WeatherStation.objects.create(
                     location=location,
@@ -1054,8 +1161,12 @@ class WeatherStationOperation(APIView):
                     longitude=longitude,
                     farm=user.farm,
                 )
+                weather_station.save()
+                return redirect('/assissjo-api/weather_station')  # Return redirect after adding the weather station
+            else:
+                return Response({'error': 'Missing fields'}, status=status.HTTP_400_BAD_REQUEST)
 
-        return redirect("/assissjo-api/weather_station")
+        return Response({'error': 'Invalid operation'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserOperation(APIView):

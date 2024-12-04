@@ -382,6 +382,8 @@ function DeleteSensor(id) {
 function EditSensor(id){
     let location_input = document.getElementById('location')
     let type_input = document.getElementById('type')
+    let unit_input = document.getElementById('unit')
+
     let category_input = document.getElementById('category')
     let sensor_id_input = document.getElementById('sensor-form-id')
     let operation = document.getElementById('operation')
@@ -394,6 +396,7 @@ function EditSensor(id){
     category_input.value = sensor.dataset.category
     latitude.value = sensor.dataset.latitude
     longitude.value = sensor.dataset.longitude
+    unit_input.value=sensor.dataset.unit
     sensor_id_input.value = id
     operation.value = 'edit'
 
