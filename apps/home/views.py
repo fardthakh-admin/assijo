@@ -49,7 +49,7 @@ def index(request):
     start_date = (
         request.GET.get("start_date")
         if request.GET.get("start_date") != ""
-        else datetime.datetime.today() - datetime.timedelta(days=30)
+        else datetime.datetime.today() - datetime.timedelta(days=7)
     )
     end_date = (
         request.GET.get("end_date")
@@ -57,7 +57,7 @@ def index(request):
         else datetime.datetime.today()
     )
     if start_date is None:
-        start_date = datetime.datetime.today() - datetime.timedelta(days=30)
+        start_date = datetime.datetime.today() - datetime.timedelta(days=7)
     if end_date is None:
         end_date = datetime.datetime.today()
     humidity_results = (
