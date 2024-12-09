@@ -236,30 +236,34 @@ def farm_energy_levels(request):
 
 @api_view(['GET'])
 def farm_humidity_results(request):
-    user = models.User.objects.get(id = request.user.id)
+    user = models.User.objects.get(id=request.user.id)
 
     sensors = models.Sensor.objects.filter(farm_id=user.farm)
+
+    # Get the date 7 days ago
+    seven_days_ago = datetime.now() - timedelta(days=7)
 
     # Create a list to store the data
     data = []
     for sensor in sensors:
-        # Get the WaterTank ID from the water tank
         sensor_id = sensor.id
 
-        # Get the list of water level results for the current water tank
-        humidity_result = list(models.Result.objects.filter(sensor__id=sensor.id).values_list('number', flat=True))
-        # humidity_result = list(map(int, humidity_result))
-        normalized_list = []
+        # Get the list of humidity results for the last 7 days
+        humidity_result = list(
+            models.Result.objects.filter(sensor__id=sensor.id, timestamp__gte=seven_days_ago)
+            .values_list('number', flat=True)
+        )
 
+        # Normalize the humidity readings
+        normalized_list = []
         for reading in humidity_result:
-            reading_normal = (1 - ((reading - 1700)/(2600 - 1700)) )* 100 
+            reading_normal = (1 - ((reading - 1700) / (2600 - 1700))) * 100
             normalized_list.append(round(reading_normal, 2))
 
-        # Get the unit for the current water tank from the first result (assuming same unit for all results)
-        results = models.Sensor.objects.filter(id=sensor.id)
-        unit = results[0].unit if results.exists() and results[0].unit else None
+        # Get the unit for the sensor
+        unit = sensor.unit if sensor.unit else None
 
-        # Create a dictionary for the current water tank and append it to the data list
+        # Append data for the current sensor
         data.append({
             'sensor_id': sensor_id,
             'unit': unit,
