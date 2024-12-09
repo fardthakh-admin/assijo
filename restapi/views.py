@@ -240,8 +240,8 @@ def farm_humidity_results(request):
 
     sensors = models.Sensor.objects.filter(farm_id=user.farm)
 
-    # Get the date 7 days ago
-    seven_days_ago = datetime.now() - timedelta(days=7)
+    # Get the date 1 days ago
+    seven_days_ago = datetime.now() - timedelta(days=1)
 
     # Create a list to store the data
     data = []
