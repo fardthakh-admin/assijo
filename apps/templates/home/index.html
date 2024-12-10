@@ -481,6 +481,8 @@
               </div>
             </div>
 
+           
+
             <div class="col-xl-4">
               <div class="card">
                 <div class="card-header bg-transparent">
@@ -709,13 +711,13 @@
                 </div>
                 <div class="col">
                   <ul class="nav nav-pills justify-content-end">
-                    <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-watershare-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 30, 30]}]}}' data-prefix="$" data-suffix="k">
+                    <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-tree-results" data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 30, 30]}]}}' data-prefix="$" data-suffix="k">
                       <a href="#" class="nav-link py-2 px-3 active" data-toggle="tab">
                         <span class="d-none d-md-block" id="watershare-chart-month">Month</span>
                         <span class="d-md-none">M</span>
                       </a>
                     </li>
-                    <li class="nav-item" data-toggle="chart" data-target="#chart-watershare-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 5, 25, 10, 30, 15, 40, 40]}]}}' data-prefix="$" data-suffix="k">
+                    <li class="nav-item" data-toggle="chart" data-target="#chart-tree-results" data-update='{"data":{"datasets":[{"data":[0, 20, 5, 25, 10, 30, 15, 40, 40]}]}}' data-prefix="$" data-suffix="k">
                       <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
                         <span class="d-none d-md-block" id="watershare-chart-week" >Week</span>
                         <span class="d-md-none">W</span>
@@ -729,7 +731,7 @@
                 <!-- Chart -->
                 <div class="chart">
                     <!-- Chart wrapper -->
-                    <canvas id="chart-watershare-dark" class="chart-canvas"></canvas>
+                    <canvas id="chart-tree-results" class="chart-canvas"></canvas>
                 </div>
             </div>
           </div>
@@ -874,12 +876,12 @@
                     <td>
                         {{ water_pump.location}}
                     </td>
-{#                    <td >#}
-{#                     {% if not item.item.water_share.all %}   -   {% endif %}#}
-{#                        {% for item in item.item.water_share.all %}#}
-{#                             {{ item.number }}#}
-{#                        {% endfor %}#}
-{#                    </td>#}
+                    <td >
+                     {% if not item.item.water_share.all %}   -   {% endif %}
+                      {% for item in item.item.water_share.all %}
+                            {{ item.number }}
+                       {% endfor %}
+                  </td>
                       {% endfor %}
 
                 </tbody>
@@ -925,6 +927,86 @@
       </div>
       {% endif %}
 
+
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Get the energy level results passed from the view
+    const energyLevelResultList = {{ energy_level_result_list|safe }}; // Timestamp-energy pairs
+    const energyLevelResults = {{ energy_level_results|safe }}; // Raw energy level data
+
+    // Process the data into chart-friendly format
+    const timestamps = energyLevelResultList.map(item => item[0]);
+    const energyValues = energyLevelResultList.map(item => item[1]);
+
+    // Initialize the chart
+    const ctx = document.getElementById('chart-energy-level-dark').getContext('2d');
+    let energyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: timestamps,  // Timestamps for x-axis
+            datasets: [{
+                label: 'Energy Level',
+                data: energyValues,  // Energy levels for y-axis
+                fill: false,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'day',
+                        tooltipFormat: 'll',
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                }
+            }
+        }
+    });
+
+    // Switch between "Month" and "Week" using the tabs
+    document.getElementById('month-tab').addEventListener('click', function() {
+        updateChart('month');
+    });
+
+    document.getElementById('week-tab').addEventListener('click', function() {
+        updateChart('week');
+    });
+
+    function updateChart(period) {
+        // Modify the chart data based on selected period (Month or Week)
+        let filteredData = energyLevelResultList;
+        
+        // Logic to filter data for "Month" or "Week"
+        if (period === 'month') {
+            // Filter data for the last month (this is just a placeholder logic)
+            filteredData = energyLevelResultList.filter(item => {
+                const date = new Date(item[0]);
+                return date >= new Date(Date.now() - (30 * 24 * 60 * 60 * 1000)); // Last 30 days
+            });
+        } else if (period === 'week') {
+            // Filter data for the last week
+            filteredData = energyLevelResultList.filter(item => {
+                const date = new Date(item[0]);
+                return date >= new Date(Date.now() - (7 * 24 * 60 * 60 * 1000)); // Last 7 days
+            });
+        }
+
+        // Update chart with new data
+        const updatedTimestamps = filteredData.map(item => item[0]);
+        const updatedEnergyValues = filteredData.map(item => item[1]);
+
+        energyChart.data.labels = updatedTimestamps;
+        energyChart.data.datasets[0].data = updatedEnergyValues;
+        energyChart.update();
+    }
+</script>
+      
       
 {#        <div class="col-xl-4">#}
 {##}
@@ -1302,8 +1384,75 @@ function Pass(data) {
     <script type="text/javascript" src="{% static 'assets/js/iconLayer.js'%}"></script>
     <script type="text/javascript" src="{% static 'assets/js/charts/charts.js'%}"></script>
     
-
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      // Fetch data from the API
+      async function fetchWaterLevelData() {
+        try {
+          const response = await fetch('/api/farm-water-level-results/');
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+    
+          const data = await response.json();
+          console.log(data); // Inspect the data structure
+    
+          // Example: Parse the data for the first water tank
+          if (data.length > 0) {
+            const waterTankData = data[0]; // First tank
+            const waterLevels = waterTankData.water_levels; // Water levels (Y-axis data)
+            const unit = waterTankData.unit || 'Units'; // Unit
+            const labels = waterLevels.map((_, index) => `Reading ${index + 1}`); // X-axis labels
+    
+            // Render the chart
+            renderChart(labels, waterLevels, unit);
+          }
+        } catch (error) {
+          console.error('Error fetching water level data:', error);
+        }
+      }
+    
+      // Render the chart using Chart.js
+      function renderChart(labels, data, unit) {
+        const ctxw = document.getElementById('chart-watertank-dark').getContext('2d');
+        new Chart(ctxw, {
+          type: 'line',
+          data: {
+            labels: labels, // X-axis labels
+            datasets: [{
+              label: `Water Levels (${unit})`,
+              data: data, // Y-axis data
+              borderColor: 'rgba(75, 192, 192, 1)',
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderWidth: 1,
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: 'Readings'
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: `Water Levels (${unit})`
+                },
+                beginAtZero: true
+              }
+            }
+          }
+        });
+      }
+    
+      // Call the function to fetch data and render the chart
+      fetchWaterLevelData();
+    </script>
+    
+ 
     <!--    POLYGONS MAP SCRIPTS    -->
     <script>
 
@@ -1455,6 +1604,142 @@ function Pass(data) {
     }
     initBorderMap();
     </script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Fetch data from the API for Water Level Chart
+  async function fetchWaterLevelData() {
+    try {
+      const response = await fetch('/api/farm-water-level-results/');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      console.log('Water Level Data:', data); // Inspect the data structure
+
+      // Example: Parse the data for water levels
+      if (data.length > 0) {
+        const waterLevels = data.map(item => item.number); // Y-axis data (water levels)
+        const unit = data[0].unit || 'Units'; // Unit
+        const labels = data.map((_, index) => `Reading ${index + 1}`); // X-axis labels
+
+        // Render the water level chart
+        renderWaterLevelChart(labels, waterLevels, unit);
+      }
+    } catch (error) {
+      console.error('Error fetching water level data:', error);
+    }
+  }
+
+  // Render the Water Level Chart using Chart.js
+  function renderWaterLevelChart(labels, data, unit) {
+    const ctxw = document.getElementById('chart-watershare-dark').getContext('2d');
+    new Chart(ctxw, {
+      type: 'line',
+      data: {
+        labels: labels, // X-axis labels
+        datasets: [{
+          label: `Water Levels (${unit})`,
+          data: data, // Y-axis data (water levels)
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderWidth: 1,
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Readings'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: `Water Levels (${unit})`
+            },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+
+  // Fetch data from the API for Tree Result Chart
+  async function fetchTreeResultData() {
+    try {
+      const response = await fetch('/api/farm-water-share/');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      console.log('Tree Result Data:', data); // Inspect the data structure
+
+      // Example: Parse the data for tree results
+      if (data.length > 0) {
+        const values = data.map(result => result.number); // Y-axis data (result number)
+        const labels = data.map(result => `Tree ${result.tree}`); // X-axis labels (tree IDs or names)
+        const unit = data[0].unit || 'Units'; // Use unit from the first result
+
+        // Render the tree result chart
+        renderTreeResultChart(labels, values, unit);
+      }
+    } catch (error) {
+      console.error('Error fetching tree result data:', error);
+    }
+  }
+
+  // Render the Tree Result Chart using Chart.js
+  function renderTreeResultChart(labels, data, unit) {
+    const ctxshare = document.getElementById('chart-tree-results').getContext('2d');
+    new Chart(ctxshare, {
+      type: 'line', // Line chart type
+      data: {
+        labels: labels, // X-axis labels (tree IDs or names)
+        datasets: [{
+          label: `Tree Results (${unit})`, // Dataset label
+          data: data, // Y-axis data (result values)
+          borderColor: 'rgba(75, 192, 192, 1)', // Line color
+          backgroundColor: 'rgba(75, 192, 192, 0.2)', // Background area color
+          borderWidth: 1, // Line width
+          fill: false,
+          tension: 0.4, // Smoother curve for the line
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Tree ID' // Label for the X-axis
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: `Results (${unit})` // Label for the Y-axis
+            },
+            beginAtZero: true // Start the Y-axis from 0
+          }
+        },
+        plugins: {
+          legend: {
+            display: true, // Display the legend
+          }
+        }
+      }
+    });
+  }
+
+  // Call both functions to fetch and render charts
+  fetchWaterLevelData();
+  fetchTreeResultData();
+</script>
 
 {% endblock javascripts %}
 Footer

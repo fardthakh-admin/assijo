@@ -362,25 +362,25 @@ class PacketResult(models.Model):
         related_name="weather_station",
     )
 
-    def save(self, *args, **kwargs):
-        weather_station = WeatherStation.objects.get(pk=self.weather_station.id)
-        # self.unit = sensor.unit
-        self.BattV_MinUnit = weather_station.BattV_MinUnit
-        self.BattV_AvgUnit = weather_station.BattV_AvgUnit
-        self.PTemp_C_AvgUnit = weather_station.PTemp_C_AvgUnit
-        self.BP_mmHg_AvgUnit = weather_station.BP_mmHg_AvgUnit
-        self.Rain_mm_TotUnit = weather_station.Rain_mm_TotUnit
-        self.AirTC_AvgUnit = weather_station.AirTC_AvgUnit
-        self.AirTC_MaxUnit = weather_station.AirTC_MaxUnit
-        self.AirTC_TMxUnit = weather_station.AirTC_TMxUnit
-        self.AirTC_MinUnit = weather_station.AirTC_MinUnit
-        self.AirTC_TMnUnit = weather_station.AirTC_TMnUnit
-        self.RHUnit = weather_station.RHUnit
-        self.SlrkW_AvgUnit = weather_station.SlrkW_AvgUnit
-        self.SlrMJ_TotUnit = weather_station.SlrMJ_TotUnit
-        self.Visibility_m_AvgUnit = weather_station.Visibility_m_AvgUnit
-        self.wind_speed_AVGUnit = weather_station.wind_speed_AVGUnit
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     weather_station = WeatherStation.objects.get(pk=self.weather_station.id)
+    #     # self.unit = sensor.unit
+    #     self.BattV_MinUnit = weather_station.BattV_MinUnit
+    #     self.BattV_AvgUnit = weather_station.BattV_AvgUnit
+    #     self.PTemp_C_AvgUnit = weather_station.PTemp_C_AvgUnit
+    #     self.BP_mmHg_AvgUnit = weather_station.BP_mmHg_AvgUnit
+    #     self.Rain_mm_TotUnit = weather_station.Rain_mm_TotUnit
+    #     self.AirTC_AvgUnit = weather_station.AirTC_AvgUnit
+    #     self.AirTC_MaxUnit = weather_station.AirTC_MaxUnit
+    #     self.AirTC_TMxUnit = weather_station.AirTC_TMxUnit
+    #     self.AirTC_MinUnit = weather_station.AirTC_MinUnit
+    #     self.AirTC_TMnUnit = weather_station.AirTC_TMnUnit
+    #     self.RHUnit = weather_station.RHUnit
+    #     self.SlrkW_AvgUnit = weather_station.SlrkW_AvgUnit
+    #     self.SlrMJ_TotUnit = weather_station.SlrMJ_TotUnit
+    #     self.Visibility_m_AvgUnit = weather_station.Visibility_m_AvgUnit
+    #     self.wind_speed_AVGUnit = weather_station.wind_speed_AVGUnit
+    #     super().save(*args, **kwargs)
 
 
 class home_user(AbstractUser):

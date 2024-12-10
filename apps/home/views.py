@@ -45,6 +45,7 @@ def index(request):
     waterlevel = WaterTank.objects.filter(farm_id=user.farm)
     trees = Tree.objects.filter(farm_id=user.farm)
 
+    print(waterlevel)
     # edit this query to get all sensors of type humidity
     start_date = (
         request.GET.get("start_date")
@@ -62,7 +63,7 @@ def index(request):
         end_date = datetime.datetime.today()
     humidity_results = (
         Result.objects.filter(
-            sensor__type="humidity",
+            # sensor__type="humidity",
             sensor__farm=user.farm,
             timestamp__range=(start_date, end_date),
         )
@@ -80,13 +81,13 @@ def index(request):
         times.append(result["timestamp"].strftime("%Y-%m-%d"))
         sensor_results.append(result["number"])
 
-    humidity_sensors = Sensor.objects.filter(farm_id=user.farm, type="humidity")
+    humidity_sensors = Sensor.objects.filter(farm_id=user.farm)
     list_of_humidity_results = []
 
     times2 = np.unique(times)
     times2 = list(times2)
 
-    # print("start date:")
+    print("waterpumps:",waterpumps)
     # print(start_date)
     # print("end date:")
     # print(end_date)
@@ -138,6 +139,7 @@ def index(request):
         )
         list_of_watershare_results.append(watershare_results)
     ###   END WATER SHARE   ###
+    print(list_of_watershare_results)
 
     ###   VALVE FLOW METER   ###
     valve_flow_reading_results = Result.objects.filter(
@@ -165,17 +167,17 @@ def index(request):
     ###   END VALVE FLOW METER   ###
 
     ###   ENERGY LEVEL   ###
-    energy_level_reading_results = EnergyLevel.objects.values("energy_result")
+    energy_level_reading_results = EnergyLevel.objects.filter(
+        timestamp__range=(start_date, end_date)
+    ).values("energy_result", "timestamp")
+    
     energy_level_results = []
-    energy_level_result_list = [
-        [result["energy_result"]] for result in energy_level_reading_results
-    ]
-
+    energy_level_result_list = []
     for result in energy_level_reading_results:
         energy_level_results.append(result["energy_result"])
+        energy_level_result_list.append([result["timestamp"], result["energy_result"]])
 
     list_of_energy_level_results = []
-
     for pump in waterpumps:
         pump_energy_level_results = list(
             EnergyLevel.objects.filter(water_pump__id=pump.id).values_list(
@@ -184,6 +186,9 @@ def index(request):
         )
         list_of_energy_level_results.append(pump_energy_level_results)
     ###   END ENERGY LEVEL   ###
+    
+    times_json = json.dumps(times)  # Pass times as JSON
+    sensor_results_json = json.dumps(sensor_results)
 
     print(trees)
     context = {
@@ -200,7 +205,7 @@ def index(request):
         "waterpumps": waterpumps,
         "result": result_list,
         "time": water_time,
-        "water_tank_results": water_tank_results,
+        "water_tank_results":  json.dumps(water_tank_results),
         "water_share_results": water_share_results,
         "water_share_result_list": water_share_result_list,
         "energy_level_results": energy_level_results,
@@ -210,8 +215,12 @@ def index(request):
         "humidity_sensors": humidity_sensors,
         "list_of_humidity_results": list_of_humidity_results,
         "list_of_flow_meter_results": list_of_flow_meter_results,
-        "list_of_watershare_results": list_of_watershare_results,
+        "list_of_watershare_results": list_of_wateshares,
         "list_of_energy_level_results": list_of_energy_level_results,
+         "times_json": times_json,  # Pass times in JSON format
+        "sensor_results_json": sensor_results_json,
+        "water_time": json.dumps(water_time),  # Convert to JSON for use in JS
+        
     }
 
     html_template = loader.get_template("home/index.html")
@@ -1218,10 +1227,56 @@ def index(request):
         farm = user.farm
         packetresult = PacketResult.objects.filter(weather_station__farm=farm).last()
         sensors = Sensor.objects.filter(farm=farm)
+        weather = WeatherStation.objects.filter(farm_id=user.farm)
+        valves = Valve.objects.filter(farm_id=user.farm)
+        waterpumps = WaterPump.objects.filter(farm_id=user.farm)
+        waterlevel = WaterTank.objects.filter(farm_id=user.farm)
+        trees = Tree.objects.filter(farm_id=user.farm)
+
+
+        start_date = (
+        request.GET.get("start_date")
+        if request.GET.get("start_date") != ""
+        else datetime.datetime.today() - datetime.timedelta(days=7))
+        end_date = (
+        request.GET.get("end_date")
+        if request.GET.get("end_date") != ""
+        else datetime.datetime.today())
+        if start_date is None:
+            start_date = datetime.datetime.today() - datetime.timedelta(days=7)
+        if end_date is None:
+            end_date = datetime.datetime.today()
+
+        energy_level_reading_results = EnergyLevel.objects.filter(
+         # Use `__date` to remove time
+        ).values("energy_result")
+
+        energy_level_results = []
+        energy_level_result_list = []
+        for result in energy_level_reading_results:
+            energy_level_results.append(result["energy_result"])
+            energy_level_result_list.append([result["energy_result"]])
+
+        list_of_energy_level_results = []
+        for pump in waterpumps:
+            pump_energy_level_results = list(
+                EnergyLevel.objects.filter(water_pump__id=pump.id).values_list(
+                    "energy_result", flat=True
+                )
+            )
+            list_of_energy_level_results.append(pump_energy_level_results)
+    
+
         return render(
             request,
             "home/index.html",
-            context={"packetresult": packetresult, "sensors": sensors},
+            context={"packetresult": packetresult, "sensors": sensors,"trees": trees,
+        "weather": weather,
+        "valves": valves,
+        "waterlevel": waterlevel,
+        "waterpumps": waterpumps,
+        "energy_level_results": energy_level_results,
+        "energy_level_result_list": energy_level_result_list,},
         )
     else:
         login_url = reverse("login")

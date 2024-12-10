@@ -1,10 +1,15 @@
 import datetime
+from django.utils import timezone
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import permissions
 from apps.home import models
 import numpy as np
 from . import serializers
+from django.utils.dateparse import parse_datetime
+from apps.home.models import Tree
+from apps.home.models import Result
+from .serializers import ResultSerializer
 
 
 @api_view(['GET'])
@@ -88,22 +93,36 @@ def farm_water_pumps(request):
 
 @api_view(['GET'])
 def farm_timestamps(request):
-    user = models.User.objects.get(id = request.user.id)
+    user = models.User.objects.get(id=request.user.id)
     sensors = models.Sensor.objects.filter(farm_id=user.farm)
 
+    # Retrieve query params for start and end dates
+    start_date_str = request.query_params.get('start-date')
+    end_date_str = request.query_params.get('end-date')
 
-    list_of_timestamps = []
+    # Default to 30 days ago for start date and today for end date
+    if start_date_str is None:
+        start_date = datetime.today() - timedelta(days=30)
+    else:
+        start_date = parse_datetime(start_date_str) or datetime.today() - timedelta(days=30)
 
-    start_date = request.query_params.get('start-date')
-    end_date = request.query_params.get('end-date')
-    
-    if start_date is None:
-        start_date = datetime.datetime.today() - datetime.timedelta(days=30)
-    if end_date is None:
-        end_date = datetime.datetime.today()
-    
-    results = models.Result.objects.filter(sensor__farm = user.farm , timestamp__range = (start_date, end_date)).order_by('timestamp').values('number', 'timestamp')
-    
+    if end_date_str is None:
+        end_date = datetime.today()
+    else:
+        end_date = parse_datetime(end_date_str) or datetime.today()
+
+    # Ensure the dates are timezone-aware if Django timezone support is active
+    if timezone.is_aware(start_date):
+        start_date = timezone.make_aware(start_date)
+    if timezone.is_aware(end_date):
+        end_date = timezone.make_aware(end_date)
+
+    # Fetch results based on the specified range
+    results = models.Result.objects.filter(
+        sensor__farm=user.farm,
+        timestamp__range=(start_date, end_date)
+    ).order_by('timestamp').values('number', 'timestamp')
+
     return Response(results)
 
 @api_view(['GET'])
@@ -362,41 +381,29 @@ def farm_water_level_results(request):
 
 @api_view(['GET'])
 def farm_water_share(request):
-    # Get the authenticated user
-    user = models.User.objects.get(id = request.user.id)
+ 
+    try:
+        # Get the authenticated user
+        user = models.User.objects.get(id=request.user.id)
+        
+        # Retrieve the farm associated with the user
+        farm = models.Farm.objects.get(owner=user.id)
+        
+        # Get all trees related to the farm
+        trees = Tree.objects.filter(farm=farm)
+        
+        # Get all results for these trees
+        results = Result.objects.filter(tree__in=trees)
+        
+    except models.Farm.DoesNotExist:
+        return Response({"detail": "Farm not found for this user."}, status=404)
+    except models.User.DoesNotExist:
+        return Response({"detail": "User not found."}, status=404)
 
-    # Filter trees based on the user's farm
-    trees = models.Tree.objects.filter(farm_id=user.farm)
-
-    # Filter water shares for the trees and order by ID in descending order
-    water_share = models.WaterShare.objects.filter(tree__in=trees)
-
-    # Create a dictionary to store the data grouped by tree ID and unit
-    data_by_tree_id = {}
-    for share in water_share:
-        tree_id = share.tree.id
-        if share.unit:
-            unit = share.unit
-            key = f"{tree_id}_{unit}"
-            if key not in data_by_tree_id:
-                data_by_tree_id[key] = {
-                    'tree_id': tree_id,
-                    'unit': unit,
-                    'shares': [],
-                }
-        else:
-            key = f"{tree_id}_None"
-            if key not in data_by_tree_id:
-                data_by_tree_id[key] = {
-                    'tree_id': tree_id,
-                    'shares': [],
-                }
-        data_by_tree_id[key]['shares'].append(share.number)
-
-    # Convert the dictionary values to a list to match the desired output format
-    data = list(data_by_tree_id.values())
-
-    return Response(data)
+    # Serialize the results
+    serializer = ResultSerializer(results, many=True)
+    
+    return Response(serializer.data)
 
     # user = models.User.objects.get(id = request.user.id)
     # trees = models.Tree.objects.filter(farm_id=user.farm)
