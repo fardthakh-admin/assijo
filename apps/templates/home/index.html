@@ -1389,7 +1389,7 @@ function Pass(data) {
       // Fetch data from the API
       async function fetchWaterLevelData() {
         try {
-          const response = await fetch('/api/farm-water-level-results/');
+          const response = await fetch('/assissjo-api/api/farm-water-level-results/');
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
@@ -1610,7 +1610,7 @@ function Pass(data) {
   // Fetch data from the API for Water Level Chart
   async function fetchWaterLevelData() {
     try {
-      const response = await fetch('/api/farm-water-level-results/');
+      const response = await fetch('/assissjo-api/api/farm-water-level-results/');
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -1671,7 +1671,7 @@ function Pass(data) {
   // Fetch data from the API for Tree Result Chart
   async function fetchTreeResultData() {
     try {
-      const response = await fetch('/api/farm-water-share/');
+      const response = await fetch('/assissjo-api/api/farm-water-share/');
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -1735,6 +1735,90 @@ function Pass(data) {
       }
     });
   }
+
+ 
+  // Fetch data from the farm_humidity_results API
+  async function fetchHumidityData() {
+    try {
+      const response = await fetch('/assissjo-api/api/farm-humidity-results/');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      console.log(data); // Inspect the data structure
+
+      // Process data for chart
+      if (data.length > 0) {
+        // We'll need to create one dataset per sensor
+        const datasets = data.map(sensorData => {
+          const labels = Array(sensorData.humidity.length).fill(''); // Create an empty label array
+          return {
+            label: `Sensor ${sensorData.sensor_id} (${sensorData.unit || 'Unit'})`,
+            data: sensorData.humidity, // Y-axis data (normalized humidity)
+            borderColor: getRandomColor(), // Use a random color for each sensor
+            backgroundColor: 'rgba(75, 192, 192, 0.2)', // Use a transparent background
+            borderWidth: 1,
+            fill: false, // Don't fill the area under the line
+            tension: 0.4, // Smooth lines
+          };
+        });
+
+        // Render the chart with the processed data
+        renderChart(labels, datasets);
+      }
+    } catch (error) {
+      console.error('Error fetching humidity data:', error);
+    }
+  }
+
+  // Render the chart using Chart.js
+  function renderChart(labels, datasets) {
+    const ctxh = document.getElementById('chart-sensor-dark').getContext('2d');
+    new Chart(ctxh, {
+      type: 'line',
+      data: {
+        labels: labels, // X-axis labels (empty in this case, we can add time or reading numbers)
+        datasets: datasets, // Multiple datasets for each sensor
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Readings' // Label for the X-axis
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Humidity (%)' // Label for the Y-axis
+            },
+            beginAtZero: true
+          }
+        },
+        plugins: {
+          legend: {
+            display: true, // Show the legend
+          }
+        }
+      }
+    });
+  }
+
+  // Helper function to generate random colors for each sensor
+  function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
+  // Call the function to fetch data and render the chart
+  fetchHumidityData();
 
   // Call both functions to fetch and render charts
   fetchWaterLevelData();
