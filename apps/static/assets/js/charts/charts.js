@@ -307,7 +307,7 @@ function stringfy(elem) {
 
 //TIMESTAMPS
 let times = []
-fetch('/api/farm-timestamps/')
+fetch('/assissjo-api/api/farm-timestamps/')
 .then((resp) => resp.json())//get data and turn it into JSON
 .then(function(data){
     console.log(data);
@@ -322,7 +322,7 @@ fetch('/api/farm-timestamps/')
 let sensor_chart;
 const $chart = $('#chart-sensor-dark');
 function init( $chart ) {
-    fetch('/api/farm-humidity-results/')
+    fetch('/assissjo-api/api/farm-humidity-results/')
     .then((resp) => resp.json())//get data and turn it into JSON
     .then(function(data){
         let list_of_results = [];
@@ -382,7 +382,7 @@ function init( $chart ) {
 
         let month_button = document.getElementById('humidity-chart-month');
         month_button.addEventListener('click', () => {
-            fetch('/api/farm-timestamps-month/')
+            fetch('/assissjo-api/api/farm-timestamps-month/')
             .then((resp) => resp.json())
             .then((data) => {
                 chart_share.data.labels = data;
@@ -393,7 +393,7 @@ function init( $chart ) {
 
         let week_button = document.getElementById('humidity-chart-week');
         week_button.addEventListener('click', () => {
-            fetch('/api/farm-timestamps-week/')
+            fetch('/assissjo-api/api/farm-timestamps-week/')
             .then((resp) => resp.json())
             .then((data) => {
                 chart_share.data.labels = data;
@@ -412,7 +412,7 @@ function init( $chart ) {
 let watertank_chart;  
 const $water_tank_chart = $('#chart-watertank-dark');
 function init_water_tank($water_tank_chart) {
-    fetch('/api/farm-general-results/capacity')
+    fetch('/assissjo-api/api/farm-general-results/capacity')
     .then((resp) => resp.json())//get data and turn it into JSON
     .then(function(response){
         let list_of_results = [];
@@ -423,7 +423,7 @@ function init_water_tank($water_tank_chart) {
         
         //TIMESTAMPS
         let timesWater = []
-        fetch('/api/farm-timestamps/capacity')
+        fetch('/assissjo-api/api/farm-timestamps/capacity')
         .then((resp) => resp.json())//get data and turn it into JSON
         .then(function(data){
             //this function turns the array of arrays (data) into one single array
@@ -487,7 +487,7 @@ function init_water_tank($water_tank_chart) {
 
         let month_button = document.getElementById('watertank-chart-month');
         month_button.addEventListener('click', () => {
-            fetch('/api/farm-timestamps-month/')
+            fetch('/assissjo-api/api/farm-timestamps-month/')
             .then((resp) => resp.json())
             .then((data) => {
                 chart_share.data.labels = data;
@@ -498,7 +498,7 @@ function init_water_tank($water_tank_chart) {
 
         let week_button = document.getElementById('watertank-chart-week');
         week_button.addEventListener('click', () => {
-            fetch('/api/farm-timestamps-week/')
+            fetch('/assissjo-api/api/farm-timestamps-week/')
             .then((resp) => resp.json())
             .then((data) => {
                 chart_share.data.labels = data;
@@ -519,7 +519,7 @@ function init_water_tank($water_tank_chart) {
 let watershare_chart;
 const $water_share_chart = $('#chart-watershare-dark');
 function init_water_share($water_share_chart) {
-    fetch('/api/farm-water-share/')
+    fetch('/assissjo-api/api/farm-water-share/')
     .then((resp) => resp.json())//get data and turn it into JSON
     .then(function(response){
         let list_of_results = [];
@@ -581,7 +581,7 @@ function init_water_share($water_share_chart) {
           
         let month_button = document.getElementById('watershare-chart-month');
         month_button.addEventListener('click', () => {
-            fetch('/api/farm-timestamps-month/')
+            fetch('/assissjo-api/api/farm-timestamps-month/')
             .then((resp) => resp.json())
             .then((data) => {
                 chart_share.data.labels = data;
@@ -591,7 +591,7 @@ function init_water_share($water_share_chart) {
 
         let week_button = document.getElementById('watershare-chart-week');
         week_button.addEventListener('click', () => {
-            fetch('/api/farm-timestamps-week/')
+            fetch('/assissjo-api/api/farm-timestamps-week/')
             .then((resp) => resp.json())
             .then((data) => {
                 chart_share.data.labels = data;
@@ -611,7 +611,7 @@ function init_water_share($water_share_chart) {
 let valveflow_chart;
 const $valve_flow_chart = $('#chart-valve-dark');
 function init_valve_flow($valve_flow_chart) {
-    fetch('/api/farm-valveflow-results/')
+    fetch('/assissjo-api/api/farm-valveflow-results/')
     .then((resp) => resp.json())//get data and turn it into JSON
     .then(function(data){
         let list_of_results = [];
@@ -671,7 +671,7 @@ function init_valve_flow($valve_flow_chart) {
           
         let month_button = document.getElementById('valve-chart-month');
         month_button.addEventListener('click', () => {
-            fetch('/api/farm-timestamps-month/')
+            fetch('/assissjo-api/api/farm-timestamps-month/')
             .then((resp) => resp.json())
             .then((data) => {
                 chart_share.data.labels = data;
@@ -682,7 +682,7 @@ function init_valve_flow($valve_flow_chart) {
 
         let week_button = document.getElementById('valve-chart-week');
         week_button.addEventListener('click', () => {
-            fetch('/api/farm-timestamps-week/')
+            fetch('/assissjo-api/api/farm-timestamps-week/')
             .then((resp) => resp.json())
             .then((data) => {
                 chart_share.data.labels = data;
@@ -701,7 +701,7 @@ function init_valve_flow($valve_flow_chart) {
 // ENERGY LEVEL CHART
 let energylevel_chart;
 function init_energy_level(energy_level_chart) {
-    fetch('/api/farm-energy-levels/')
+    fetch('/assissjo-api/api/farm-energy-levels/')
     .then((resp) => resp.json())//get data and turn it into JSON
     .then(function(data){
         let list_of_results = [];
@@ -761,7 +761,7 @@ function init_energy_level(energy_level_chart) {
 
         let month_button = document.getElementById('energylevel-chart-month');
         month_button.addEventListener('click', () => {
-            fetch('/api/farm-timestamps-month/')
+            fetch('/assissjo-api/api/farm-timestamps-month/')
             .then((resp) => resp.json())
             .then((data) => {
                 chart_share.data.labels = data;
@@ -772,7 +772,7 @@ function init_energy_level(energy_level_chart) {
 
         let week_button = document.getElementById('energylevel-chart-week');
         week_button.addEventListener('click', () => {
-            fetch('/api/farm-timestamps-week/')
+            fetch('/assissjo-api/api/farm-timestamps-week/')
             .then((resp) => resp.json())
             .then((data) => {
                 chart_share.data.labels = data;
@@ -833,7 +833,7 @@ time_filter.addEventListener('click', (event) =>{
     let end_date = document.getElementById('end-date').value;   
     
     // API call
-    fetch(`/api/farm-timestamps/?start-date=${start_date}&end-date=${end_date}`)
+    fetch(`/assissjo-api/api/farm-timestamps/?start-date=${start_date}&end-date=${end_date}`)
             .then(response => response.json())
             .then((data) => {
                 //assignment section
