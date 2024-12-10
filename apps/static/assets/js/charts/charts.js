@@ -326,56 +326,93 @@ function init( $chart ) {
     .then((resp) => resp.json())//get data and turn it into JSON
     .then(function(data){
         let list_of_results = [];
-
-        //this function turns the array of arrays (data) into one single array
-        let flattenedArray = [];
-        
-        let i = 50;
+        let flattenedArray = []; // Flattened array for Y-axis scaling
+        let i = 50; // Initial color values
         let j = 20;
-        //place holder
-        let itterator = 1
-        for(let object of data){
-            flattenedArray.push(object.humidity)
-            list_of_results.push(
-                {
-                    label: `Sensor ID : ${object.sensor_id} \n Unit : (${object.unit}) \n and Value is `,
-                    data: object.humidity,
-                    borderColor: `rgba(200, ${i}, ${j})`,
-                },                
-            )
+
+        // Placeholder for X-axis labels (if available)
+        let labels = [];
+
+        // Process the API response to create datasets and labels
+        data.forEach((object) => {
+            const sensorId = object.sensor_id; // Sensor ID
+            const humidity = object.humidity; // Array of humidity values
+            const unit = object.unit || 'Unknown'; // Default to 'Unknown' if no unit
+
+            // Generate the labels for the X-axis (based on the number of humidity readings)
+            if (labels.length === 0) {
+                // Create a common set of labels for all the sensors, assuming equal number of readings
+                labels = humidity.map((_, index) => `Reading ${index + 1}`);
+            }
+
+            // Flatten humidity values for dynamic Y-axis scaling
+            flattenedArray.push(...humidity);
+
+            // Add dataset for each sensor
+            list_of_results.push({
+                label: `Sensor ID: ${sensorId} (Unit: ${unit})`,
+                data: humidity, // Array of humidity values
+                borderColor: `rgba(200, ${i}, ${j}, 1)`, // Dynamic border color
+                backgroundColor: `rgba(200, ${i}, ${j}, 0.2)`, // Slight transparency for area fill
+                borderWidth: 2,
+                fill: false,
+                tension: 0.4, // Smooth lines
+            });
+
+            // Increment color values dynamically
             i += 50;
             j += 10;
-            itterator += 1;
 
-            if(i >= 255){
-                i = 0;
-            }
-
-            if(j >= 255){
-                j = 0;
-            }
-        }
-        
-        flattenedArray = flattenedArray.flat();
-        const chart_share = new Chart(($chart), {
-            type: 'line',
-            data:  {
-                labels: times,
-                datasets: list_of_results
-            },
-            options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                    callback:(value)=>value,
-                    max: Math.max(...flattenedArray),
-                    min: Math.min(...flattenedArray),
-                    stepSize: 1
-                    }
-                }]
-            }
-            }
+            // Reset color values if exceeding RGB range
+            if (i >= 255) i = 0;
+            if (j >= 255) j = 0;
         });
+
+        // Create or update the chart
+        if (sensor_chart) {
+            sensor_chart.data.labels = labels;
+            sensor_chart.data.datasets = list_of_results;
+            sensor_chart.update();
+        } else {
+            const ctx = $chart[0].getContext('2d');
+            sensor_chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels, // X-axis labels (reading number)
+                    datasets: list_of_results, // Sensor data
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Readings',
+                            },
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Humidity',
+                            },
+                            beginAtZero: true,
+                            ticks: {
+                                max: Math.max(...flattenedArray), // Dynamic max value
+                                min: Math.min(...flattenedArray), // Dynamic min value
+                                stepSize: 10, // Adjust step size as needed
+                            },
+                        },
+                    },
+                    plugins: {
+                        legend: {
+                            display: true, // Show the legend
+                            position: 'top',
+                        },
+                    },
+                },
+            });
+        }
+    
 
         // VARIABLE FOR OUTSIDE CHART USAGE
         sensor_chart = chart_share;
@@ -517,64 +554,107 @@ function init_water_tank($water_tank_chart) {
 
 //WATER SHARE CHART
 let watershare_chart;
-const $water_share_chart = $('#chart-watershare-dark');
+const $water_share_chart = $('#chart-tree-results');
 function init_water_share($water_share_chart) {
     fetch('/assissjo-api/api/farm-water-share/')
     .then((resp) => resp.json())//get data and turn it into JSON
     .then(function(response){
-        let list_of_results = [];
+        let datasets = [];
+            let flattenedArray = [];
+            let treeData = {}; // Group data by tree ID
+            let i = 50; // Initial color values
+            let j = 20;
 
-        //this function turns the array of arrays (data) into one single array
-        let flattenedArray = [];
-        // console.log(flattenedArray)
-        
-        let i = 50;
-        let j = 20;
+            // Process the API response
+            response.forEach((object) => {
+                const treeId = object.tree; // Access the tree ID
+                const share = object.number; // Water share value
+                const unit = object.unit || 'Unknown'; // Default to 'Unknown' if no unit
+                const timestamp = new Date(object.timestamp).toLocaleString(); // Convert timestamp to readable format
 
-        // //place holder
-        // let itterator = 1
-        for(let object of response){
-            flattenedArray.push(object.shares)            
+                // Group data by tree ID
+                if (!treeData[treeId]) {
+                    treeData[treeId] = {
+                        shares: [],
+                        timestamps: [],
+                        unit: unit,
+                    };
+                }
 
-            list_of_results.push(
-                {
-                    label: `Tree ID : ${object.tree_id} \n Unit : (${object.unit}) \n and Value is `,
-                    data: object.shares,
-                    borderColor: `rgba(200, ${i}, ${j})`,
-                },                
-            )
-            i += 50;
-            j += 10;            
+                treeData[treeId].shares.push(share);
+                treeData[treeId].timestamps.push(timestamp);
+            });
 
-            if(i >= 255){
-                i = 0;
+            // Create datasets from grouped tree data
+            for (const treeId in treeData) {
+                flattenedArray.push(...treeData[treeId].shares); // Flatten shares for Y-axis scaling
+
+                datasets.push({
+                    label: `Tree ID: ${treeId} (Unit: ${treeData[treeId].unit})`,
+                    data: treeData[treeId].shares, // Share values for the tree
+                    borderColor: `rgba(200, ${i}, ${j}, 1)`, // Dynamic border color
+                    backgroundColor: `rgba(200, ${i}, ${j}, 0.2)`, // Slight transparency for area fill
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.4, // Smooth lines
+                });
+
+                // Increment color values dynamically
+                i += 50;
+                j += 30;
+
+                // Reset color values if exceeding RGB range
+                if (i > 255) i = 50;
+                if (j > 255) j = 20;
             }
 
-            if(j >= 255){
-                j = 0;
-            }
-        }
+            // Use timestamps of the first tree as labels
+            const labels = treeData[Object.keys(treeData)[0]].timestamps;
 
-        flattenedArray = flattenedArray.flat()
-        const chart_share = new Chart(($water_share_chart), {
-            type: 'line',
-            data:  {
-                labels: times,
-                datasets: list_of_results
-            },
-            options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                    callback:(value)=>value,
-                    max: Math.max(...flattenedArray),
-                    min: Math.min(...flattenedArray),
-                    stepSize: 1
-                    }
-                }]
+            // Initialize or update the chart
+            if (watershare_chart) {
+                watershare_chart.data.labels = labels;
+                watershare_chart.data.datasets = datasets;
+                watershare_chart.update();
+            } else {
+                const ctx = $water_share_chart[0].getContext('2d');
+                watershare_chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels, // X-axis labels (timestamps)
+                        datasets: datasets, // Tree data
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Timestamp',
+                                },
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Water Share',
+                                },
+                                beginAtZero: true,
+                                ticks: {
+                                    max: Math.max(...flattenedArray), // Dynamic max value
+                                    min: Math.min(...flattenedArray), // Dynamic min value
+                                    stepSize: 10, // Adjust step size as needed
+                                },
+                            },
+                        },
+                        plugins: {
+                            legend: {
+                                display: true, // Show the legend
+                                position: 'top',
+                            },
+                        },
+                    },
+                });
             }
-            }
-        });
 
         // VARIABLE FOR OUTSIDE CHART USAGE
         watershare_chart = chart_share;
@@ -614,57 +694,84 @@ function init_valve_flow($valve_flow_chart) {
     fetch('/assissjo-api/api/farm-valveflow-results/')
     .then((resp) => resp.json())//get data and turn it into JSON
     .then(function(data){
-        let list_of_results = [];
-
-        //this function turns the array of arrays (data) into one single array
+        let datasets = [];
         let flattenedArray = [];
-        
-        let i = 50;
+        let i = 50; // Initial color values
         let j = 20;
-        //place holder
-        let itterator = 1
-        for(let object of data){
-            flattenedArray.push(object.valve_flow_results)
-            list_of_results.push(
-                {
-                    label: `Valve ID ${object.valve_id} \n Unit : (${object.unit}) \n and Value is `,
-                    data: object.valve_flow_results,
-                    borderColor: `rgba(200, ${i}, ${j})`,
-                },                
-            )
+
+        // Process the API data
+        data.forEach((object) => {
+            // Flatten all valve flow results into a single array for Y-axis scaling
+            flattenedArray.push(...object.valve_flow_results);
+
+            // Add dataset for each valve
+            datasets.push({
+                label: `Valve ID: ${object.valve_id} (Unit: ${object.unit || 'Unknown Unit'})`,
+                data: object.valve_flow_results,
+                borderColor: `rgba(200, ${i}, ${j}, 1)`, // Dynamic border color
+                backgroundColor: `rgba(200, ${i}, ${j}, 0.2)`, // Slight transparency for area fill
+                borderWidth: 2,
+                fill: false,
+                tension: 0.4, // Smooth lines
+            });
+
+            // Increment color values dynamically
             i += 50;
-            j += 10;
-            itterator += 1;
+            j += 30;
 
-            if(i >= 255){
-                i = 0;
-            }
-
-            if(j >= 255){
-                j = 0;
-            }
-        }
-
-        flattenedArray = flattenedArray.flat()
-        const chart_share = new Chart(($valve_flow_chart), {
-            type: 'line',
-            data:  {
-                labels: times,
-                datasets: list_of_results
-            },
-            options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                    callback:(value)=>value,
-                    max: Math.max(...flattenedArray),
-                    min: Math.min(...flattenedArray),
-                    stepSize: 1
-                    }
-                }]
-            }
-            }
+            // Reset color values if exceeding RGB range
+            if (i > 255) i = 50;
+            if (j > 255) j = 20;
         });
+
+        // Generate labels for the X-axis based on the maximum readings
+        const maxReadings = Math.max(...data.map((obj) => obj.valve_flow_results.length));
+        const labels = Array.from({ length: maxReadings }, (_, index) => `Reading ${index + 1}`);
+
+        // Initialize or update the chart
+        if (valveflow_chart) {
+            valveflow_chart.data.labels = labels;
+            valveflow_chart.data.datasets = datasets;
+            valveflow_chart.update();
+        } else {
+            const ctx = $valve_flow_chart[0].getContext('2d');
+            valveflow_chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels, // X-axis labels
+                    datasets: datasets, // Valve data
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Readings',
+                            },
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Valve Flow',
+                            },
+                            beginAtZero: true,
+                            ticks: {
+                                max: Math.max(...flattenedArray), // Dynamic max value
+                                min: Math.min(...flattenedArray), // Dynamic min value
+                                stepSize: 10, // Adjust step size as needed
+                            },
+                        },
+                    },
+                    plugins: {
+                        legend: {
+                            display: true, // Show the legend
+                            position: 'top',
+                        },
+                    },
+                },
+            });
+        }
 
         // VARIABLE FOR OUTSIDE CHART USAGE
         valveflow_chart = chart_share;
@@ -704,59 +811,86 @@ function init_energy_level(energy_level_chart) {
     fetch('/assissjo-api/api/farm-energy-levels/')
     .then((resp) => resp.json())//get data and turn it into JSON
     .then(function(data){
-        let list_of_results = [];
-
-        //this function turns the array of arrays (data) into one single array
+        let datasets = [];
         let flattenedArray = [];
-        
-        let i = 50
-        let j = 20
-        //place holder
-        let itterator = 1
-        for(let object of data){
-            flattenedArray.push(object.energy_levels)
-            list_of_results.push(
-                {
-                    label: `Water Pump ID. ${object.Water_pump_id} \n Unit : (${object.unit}) \n and Value is `,
-                    data: object.energy_levels,
-                    borderColor: `rgba(200, ${i}, ${j})`,
-                },                
-            )
+        let i = 50;
+        let j = 20;
+
+        // Create datasets from the API data
+        data.forEach((object) => {
+            // Add all energy levels to flattenedArray for global calculations
+            flattenedArray.push(...object.energy_levels);
+
+            // Add dataset for each water pump
+            datasets.push({
+                label: `Water Pump ID: ${object.Water_pump_id} (${object.unit || 'Unknown Unit'})`,
+                data: object.energy_levels,
+                borderColor: `rgba(${i}, ${j}, 200, 1)`, // Dynamic color
+                backgroundColor: `rgba(${i}, ${j}, 200, 0.2)`, // Slight transparency
+                borderWidth: 2,
+                fill: false,
+                tension: 0.4, // Smooth lines
+            });
+
+            // Increment color values for dynamic chart styling
             i += 50;
-            j += 10;
-            itterator += 1;
-            
-            if(i >= 255){
-                i = 0;
-            }
+            j += 30;
 
-            if(j >= 255){
-                j = 0;
-            }
-        }
-
-        flattenedArray = flattenedArray.flat()
-        const chart_share = new Chart($(energy_level_chart[0]), {
-            type: 'line',
-            data:  {
-                labels: times,
-                datasets: list_of_results
-            },
-            options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                    callback:(value)=>value,
-                    max: Math.max(...flattenedArray),
-                    min: Math.min(...flattenedArray),
-                    stepSize: 1
-                    }
-                }]
-            }
-            }
+            // Reset color values if they exceed RGB range
+            if (i > 255) i = 50;
+            if (j > 255) j = 20;
         });
 
-        // VARIABLE FOR OUTSIDE CHART USAGE
+        // Labels for X-axis (assumes each pump has the same number of readings)
+        const maxReadings = Math.max(...data.map((obj) => obj.energy_levels.length));
+        const labels = Array.from({ length: maxReadings }, (_, index) => `Reading ${index + 1}`);
+
+        // Initialize or update the chart
+        if (energylevel_chart) {
+            energylevel_chart.data.labels = labels;
+            energylevel_chart.data.datasets = datasets;
+            energylevel_chart.update();
+        } else {
+            const ctx = energy_level_chart[0].getContext('2d');
+            energylevel_chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels, // X-axis labels
+                    datasets: datasets, // Pump data
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Readings',
+                            },
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Energy Levels',
+                            },
+                            beginAtZero: true,
+                            ticks: {
+                                // Custom Y-axis range dynamically calculated
+                                max: Math.max(...flattenedArray),
+                                min: Math.min(...flattenedArray),
+                                stepSize: 10, // Adjust step size if necessary
+                            },
+                        },
+                    },
+                    plugins: {
+                        legend: {
+                            display: true, // Show the legend
+                            position: 'top',
+                        },
+                    },
+                },
+                
+            });
+            // VARIABLE FOR OUTSIDE CHART USAGE
         energylevel_chart = chart_share;
 
         let month_button = document.getElementById('energylevel-chart-month');
@@ -779,12 +913,106 @@ function init_energy_level(energy_level_chart) {
                 chart_share.update();
             })
         })
-
+        }
     })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+    .catch((error) => console.error('Error fetching energy level data:', error));
 };
+
+        
+
+
+let waterlevel_chart;
+const $waterlevel_chart = $('#chart-watertank-dark');
+function init_water_level(waterlevel_chart) {
+    fetch('/assissjo-api/api/farm-water-level-results/')
+    .then((resp) => resp.json()) // Get data and turn it into JSON
+    .then(function(data){
+        let datasets = [];
+        let flattenedArray = [];
+        let i = 50;
+        let j = 20;
+
+        // Create datasets from the API data
+        data.forEach((object) => {
+            // Add all water levels to flattenedArray for global calculations
+            flattenedArray.push(...object.water_levels);
+
+            // Add dataset for each water tank
+            datasets.push({
+                label: `Water Tank ID: ${object.water_tank_id} (${object.unit || 'Unknown Unit'})`,
+                data: object.water_levels,
+                borderColor: `rgba(${i}, ${j}, 200, 1)`, // Dynamic color
+                backgroundColor: `rgba(${i}, ${j}, 200, 0.2)`, // Slight transparency
+                borderWidth: 2,
+                fill: false,
+                tension: 0.4, // Smooth lines
+            });
+
+            // Increment color values for dynamic chart styling
+            i += 50;
+            j += 30;
+
+            // Reset color values if they exceed RGB range
+            if (i > 255) i = 50;
+            if (j > 255) j = 20;
+        });
+
+        // Labels for X-axis (assumes each tank has the same number of readings)
+        const maxReadings = Math.max(...data.map((obj) => obj.water_levels.length));
+        const labels = Array.from({ length: maxReadings }, (_, index) => `Reading ${index + 1}`);
+
+        // If the chart is already created, update it
+        if (waterlevel_chart) {
+            waterlevel_chart.data.labels = labels;
+            waterlevel_chart.data.datasets = datasets;
+            waterlevel_chart.update();
+        } else {
+            // Get the context of the canvas from the jQuery object
+            const ctx = $waterlevel_chart[0].getContext('2d');
+
+            // Create a new chart
+            waterlevel_chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels, // X-axis labels
+                    datasets: datasets, // Water tank data
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Readings',
+                            },
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: `Water Levels (${data[0].unit || 'Units'})`, // Use the unit from the first item
+                            },
+                            beginAtZero: true,
+                            ticks: {
+                                // Custom Y-axis range dynamically calculated
+                                max: Math.max(...flattenedArray),
+                                min: Math.min(...flattenedArray),
+                                stepSize: 10, // Adjust step size if necessary
+                            },
+                        },
+                    },
+                    plugins: {
+                        legend: {
+                            display: true, // Show the legend
+                            position: 'top',
+                        },
+                    },
+                },
+            });
+        }
+    })
+    .catch((error) => console.error('Error fetching water level data:', error));
+}
+  
 // END OF ENERGY LEVEL CHART
 
 
@@ -817,7 +1045,9 @@ $(document).ready(function(){
     init_energy_level($('#chart-energy-level-dark'));
 });
 
-
+$(document).ready(function(){
+    init_water_level();
+});
 
 // if ($energy_level_chart.length) {
 //     init_energy_level($energy_level_chart);
@@ -854,6 +1084,8 @@ time_filter.addEventListener('click', (event) =>{
             })
             .catch(error => console.error('Error fetching data:', error));
 })
+
+
 
 
 
