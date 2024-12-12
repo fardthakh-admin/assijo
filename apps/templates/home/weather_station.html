@@ -1139,7 +1139,7 @@ var chart = echarts.init(document.getElementById("water-level-card"));
 
     <!--   WEATHER FORECAST API   -->
     <script>
-        fetch("http://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
+        fetch("https://api.openweathermap.org/data/2.5/forecast?lat=31.942839972853083&lon=35.8868408203125&units=metric&appid=5639c29d6c931e776c6fdc6ca8edfd04")
         .then( response => response.json())
         .then(data => {
           console.log(data.list)
