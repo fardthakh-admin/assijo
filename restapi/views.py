@@ -530,7 +530,16 @@ def valve_detail(request, valve_id):
     serializer = serializers.ValveSerializer(valve)
     return Response(serializer.data)
 
-
+@api_view(['GET'])
+def valve_detail_identifier(request, identifier):
+    try:
+        # Fetching the valve using the identifier (CharField)
+        valve = models.Valve.objects.get(identifier=identifier)
+    except models.Valve.DoesNotExist:
+        return Response(status=404)
+    
+    serializer = serializers.ValveSerializer(valve)
+    return Response(serializer.data)
 
 # DATA CREATION (POST APIs)
 @api_view(['POST'])

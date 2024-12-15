@@ -40,6 +40,8 @@ urlpatterns = [
     path('farm-weather-station/',views.farm_weather_station , name = 'farm-weather-station'),
     path('farm-packet-results/',views.farm_packet_results , name = 'farm-packet-results'),
     path('valve/<int:valve_id>/', views.valve_detail, name='valve-detail'),
+    path('valve-details/<str:identifier>/', views.valve_detail_identifier, name='valve-detail-identifier'),
+
     
 
     # POST urls
