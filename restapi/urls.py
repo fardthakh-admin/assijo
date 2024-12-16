@@ -53,6 +53,7 @@ urlpatterns = [
     path('farm-create-valve-result/<int:valve_id>/', views.create_valve_result, name='farm-create-valve-result'),
     path('farm-create-waterpump-result/<int:waterpump_id>/',views.create_waterpump_energylevel , name = 'farm-create-waterpump-result'),
     path('set/valve/set-valve-state/',views.set_valve_state , name = 'set-valve-state'),
+    path('set/valve/identifier/set-valve-state/',views.set_valve_state_identifier , name = 'set-valve-state-identifier'),
     
 
 ]
