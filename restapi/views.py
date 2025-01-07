@@ -573,7 +573,35 @@ def set_valve_state(request):
     
     
 
+# DATA CREATION (POST APIs)
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def set_valve_state_identifier(request):
+    try:
+        # Extract the state and identifier from the request data
+        valve_state = request.data.get("payload", None)
+        identifier = request.data.get("identifier", None)
 
+        # Check if both state and identifier are provided
+        if not valve_state or not identifier:
+            return Response({"detail": "Missing state or identifier in request data."}, status=400)
+
+        # Find the valve by its identifier
+        valve = models.Valve.objects.get(identifier=identifier)
+
+        # Prepare the serializer with the updated state
+        serializer = serializers.ValveSerializer(valve, data={"state": valve_state}, partial=True)
+
+        # Validate and save the updated state
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=200)
+        
+        # If validation fails, return errors
+        return Response(serializer.errors, status=400)
+
+    except models.Valve.DoesNotExist:
+        return Response({"detail": "Valve not found."}, status=404)
 
 
 # DATA CREATION (POST APIs)
