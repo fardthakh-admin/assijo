@@ -1281,3 +1281,51 @@ def index(request):
     else:
         login_url = reverse("login")
         return redirect(login_url)
+
+
+import csv
+from .models import WeatherStation, PacketResult
+
+def download_weather_csv(request):
+    # Create an HttpResponse object with the appropriate content type for CSV
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="packet_results.csv"'
+
+    # Create a CSV writer
+    writer = csv.writer(response)
+
+    # Write the header row (column names) for PacketResult data
+    writer.writerow([
+        'Farm', 'Packet', 'Location', 'Latitude', 'Longitude', 'BattV_MinUnit', 'BattV_AvgUnit', 
+        'PTemp_C_AvgUnit', 'BP_mmHg_AvgUnit', 'Rain_mm_TotUnit', 'AirTC_AvgUnit', 'AirTC_MaxUnit',
+        'AirTC_TMxUnit', 'AirTC_MinUnit', 'AirTC_TMnUnit', 'RHUnit', 'SlrkW_AvgUnit', 'SlrMJ_TotUnit',
+        'Visibility_m_AvgUnit', 'wind_speed_AVGUnit', 'Temperature', 'Humidity', 'Rainfall', 'Wind Speed',
+        'Timestamp', 'Direction', 'Visibility', 'Solar Radiation', 'BattV_Min', 'BattV_Avg', 'PTemp_C_Avg',
+        'BP_mmHg_Avg', 'Rain_mm_Tot', 'AirTC_Avg', 'AirTC_Max', 'AirTC_TMx', 'AirTC_Min', 'AirTC_TMn', 
+        'RH', 'SlrkW_Avg', 'SlrMJ_Tot', 'Visibility_m_Avg', 'wind_speed_AVG'
+    ])
+
+    # Query all PacketResult instances
+    packet_results = PacketResult.objects.all()
+
+    for packet_result in packet_results:
+        weather_station = packet_result.weather_station  # Access related WeatherStation
+        
+        # Write the row of data for this PacketResult
+        writer.writerow([
+            weather_station.farm, weather_station.packet, weather_station.location, weather_station.latitude,
+            weather_station.longitude, weather_station.BattV_MinUnit, weather_station.BattV_AvgUnit,
+            weather_station.PTemp_C_AvgUnit, weather_station.BP_mmHg_AvgUnit, weather_station.Rain_mm_TotUnit,
+            weather_station.AirTC_AvgUnit, weather_station.AirTC_MaxUnit, weather_station.AirTC_TMxUnit,
+            weather_station.AirTC_MinUnit, weather_station.AirTC_TMnUnit, weather_station.RHUnit,
+            weather_station.SlrkW_AvgUnit, weather_station.SlrMJ_TotUnit, weather_station.Visibility_m_AvgUnit,
+            weather_station.wind_speed_AVGUnit, packet_result.temperature, packet_result.humidity,
+            packet_result.rainfall, packet_result.wind_speed, packet_result.timestamp, packet_result.direction,
+            packet_result.visibility, packet_result.solar_radiation, packet_result.BattV_Min, packet_result.BattV_Avg,
+            packet_result.PTemp_C_Avg, packet_result.BP_mmHg_Avg, packet_result.Rain_mm_Tot, packet_result.AirTC_Avg,
+            packet_result.AirTC_Max, packet_result.AirTC_TMx, packet_result.AirTC_Min, packet_result.AirTC_TMn,
+            packet_result.RH, packet_result.SlrkW_Avg, packet_result.SlrMJ_Tot, packet_result.Visibility_m_Avg,
+            packet_result.wind_speed_AVG
+        ])
+
+    return response

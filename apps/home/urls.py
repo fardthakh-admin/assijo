@@ -7,6 +7,7 @@ from django.urls import path, re_path, include
 from rest_framework import routers
 
 from apps.home import views
+from .views import download_weather_csv
 
 
 urlpatterns = [
@@ -59,6 +60,7 @@ urlpatterns = [
     path('tree-operation/', views.TreeOperation.as_view(), name='tree-operation'),
     path('waterpump-operation/', views.WaterPumpOperation.as_view(), name='waterpump-operation'),
     path('offlinescenario-operation/', views.OfflineScenarioOperation.as_view(), name='offlinescenario-operation'),
+     path('download-weatherStaionResultsCSV/', download_weather_csv, name='download_weather_csv'),
 
     # path('water_tank', views.water_tank_view),
 

@@ -471,7 +471,11 @@ Current Weather Data
                   </tbody>
                 </table>
               </div>
-
+              <div>
+                <form method="get" action="{% url 'download_weather_csv' %}">
+                  <button type="submit">Download CSV allResults</button>
+                </form>
+                </div>
                 <!--   WEATHER FORECASTING STATION   -->
                 <div class="col">
                   
@@ -913,6 +917,7 @@ Predicted Weather Data Table
 <div class="btn-group">
   <button onclick="download_csv_file()"> Download CSV </button>  
 </div>
+
 <script>
 function download_csv_file() {
   var table = document.getElementById("tableBody");

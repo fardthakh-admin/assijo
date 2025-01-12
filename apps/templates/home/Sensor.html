@@ -82,7 +82,7 @@
                     {% endif %}
                   </tr>
                 </thead>
-                <tbody>
+                <tbody id="tableBody">
                  {% for sensor in sensors %}
                      <tr id="sensor-{{ sensor.id }}"
                          data-location="{{ sensor.location }}"
@@ -121,6 +121,9 @@
                 </tbody>
               </table>
             </div>
+          </div>
+          <div class="btn-group">
+            <button onclick="download_csv_file()"> Download CSV </button>  
           </div>
         </div>
       </tbody>
@@ -251,6 +254,42 @@
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
 <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+<script>
+  function download_csv_file() {
+    var table = document.getElementById("tableBody");
+     // Create an empty array to store the table data
+    var csvFileData = [];
+   // Create an array of custom header names for each column
+    var customHeaders = ["ID", "Type", "category", "Location","Farm Name","latitude","longitude","unit"];
+  
+    // Push the custom header row to the CSV data
+    csvFileData.push(customHeaders);
+     // Iterate through the rows in the table
+    for (var i =0 ; i < table.rows.length; i++) {
+      var row = table.rows[i];
+      var rowData = [];
+      // Iterate through the cells in each row
+      for (var j = 0; j < row.cells.length; j++) {
+        rowData.push(row.cells[j].innerText);
+      }
+        // Add the row data to the CSV data array
+      csvFileData.push(rowData);
+    }
+     // Create the CSV string
+    var csv = csvFileData.map(function (row) {
+      return row.join(",");
+    }).join("\n");
+      // Create a data URI for the CSV content
+    var csvDataUri = "data:text/csv;charset=utf-8," + encodeURI(csv);
+   // Create a hidden link element for downloading
+    var hiddenElement = document.createElement("a");
+    hiddenElement.href = csvDataUri;
+    hiddenElement.target = "_blank";
+    hiddenElement.download = "Sensors_data.csv";
+    hiddenElement.click();
+  }
+  
+  </script>
 
 <script>
 {#let MymapOptions = {#}
