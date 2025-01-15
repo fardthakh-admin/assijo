@@ -547,18 +547,18 @@ def valve_detail_identifier(request, identifier):
 def set_valve_state(request):
     try:
         # Extract the state and valve_ID from the request data
-        valve_state = request.data.get("payload", None)
-        valve_id = request.data.get("valve_ID", None)
+        valve_state = request.data.get("ValveState", None)
+        identifier = request.data.get("identifier", None)
+        pulse = request.data.get("pulse", None)
+        # Check if both state and identifier are provided
+        if not valve_state or not identifier or not pulse:
+            return Response({"detail": "Missing state or identifier, or pulse in request data."}, status=400)
 
-        # Check if both state and valve_ID are provided
-        if not valve_state or not valve_id:
-            return Response({"detail": "Missing state or valve_ID in request data."}, status=400)
-
-        # Find the valve by its ID
-        valve = models.Valve.objects.get(pk=valve_id)
+        # Find the valve by its identifier
+        valve = models.Valve.objects.get(identifier=identifier)
 
         # Prepare the serializer with the updated state
-        serializer = serializers.ValveSerializer(valve, data={"state": valve_state}, partial=True)
+        serializer = serializers.ValveSerializer(valve, data={"state": valve_state,"pulse":pulse}, partial=True)
 
         # Validate and save the updated state
         if serializer.is_valid():
