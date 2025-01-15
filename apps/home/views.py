@@ -1265,7 +1265,13 @@ def index(request):
                 )
             )
             list_of_energy_level_results.append(pump_energy_level_results)
-    
+
+
+        user = request.user  # Get the logged-in user
+        sensors = Sensor.objects.filter(farm_id=user.farm).distinct() # Adjust this to fit your model structure
+
+        # Extract sensor IDs
+        sensor_ids = sensors.values_list('id', flat=True)
 
         return render(
             request,
@@ -1276,7 +1282,8 @@ def index(request):
         "waterlevel": waterlevel,
         "waterpumps": waterpumps,
         "energy_level_results": energy_level_results,
-        "energy_level_result_list": energy_level_result_list,},
+        "energy_level_result_list": energy_level_result_list,
+        'sensor_ids': sensor_ids,},
         )
     else:
         login_url = reverse("login")

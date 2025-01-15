@@ -320,129 +320,133 @@ fetch('/assissjo-api/api/farm-timestamps/')
 
 
 let sensor_chart;
-const $chart = $('#chart-sensor-dark');
-function init( $chart ) {
-    fetch('/assissjo-api/api/farm-humidity-results/')
-    .then((resp) => resp.json())//get data and turn it into JSON
-    .then(function(data){
-        let list_of_results = [];
-        let flattenedArray = []; // Flattened array for Y-axis scaling
-        let i = 50; // Initial color values
-        let j = 20;
+    const $chart = $('#chart-sensor-dark');
+    const $dropdown = $('#sensors-dropdown');
+    function init($chart) {
+        fetch('/assissjo-api/api/farm-humidity-results/')
+            .then((resp) => resp.json()) // get data and turn it into JSON
+            .then(function (data) {
+                const list_of_results = [];
+                const sensorIds = [];
+                let flattenedArray = []; // Flattened array for Y-axis scaling
+                let i = 50; // Initial color values
+                let j = 20;
 
-        // Placeholder for X-axis labels (if available)
-        let labels = [];
+                // Placeholder for X-axis labels (if available)
+                let labels = [];
 
-        // Process the API response to create datasets and labels
-        data.forEach((object) => {
-            const sensorId = object.sensor_id; // Sensor ID
-            const humidity = object.humidity; // Array of humidity values
-            const unit = object.unit || 'Unknown'; // Default to 'Unknown' if no unit
+                // Process the API response to create datasets and labels
+                data.forEach((object) => {
+                    const sensorId = object.sensor_id; // Sensor ID
+                    const humidity = object.humidity; // Array of humidity values
+                    const unit = object.unit || 'Unknown'; // Default to 'Unknown' if no unit
 
-            // Generate the labels for the X-axis (based on the number of humidity readings)
-            if (labels.length === 0) {
-                // Create a common set of labels for all the sensors, assuming equal number of readings
-                labels = humidity.map((_, index) => `Reading ${index + 1}`);
-            }
+                    // Create a label for the dropdown
+                    sensorIds.push(sensorId);
 
-            // Flatten humidity values for dynamic Y-axis scaling
-            flattenedArray.push(...humidity);
+                    // Generate the labels for the X-axis (based on the number of humidity readings)
+                    if (labels.length === 0) {
+                        // Create a common set of labels for all the sensors, assuming equal number of readings
+                        labels = humidity.map((_, index) => `Reading ${index + 1}`);
+                    }
 
-            // Add dataset for each sensor
-            list_of_results.push({
-                label: `Sensor ID: ${sensorId} (Unit: ${unit})`,
-                data: humidity, // Array of humidity values
-                borderColor: `rgba(200, ${i}, ${j}, 1)`, // Dynamic border color
-                backgroundColor: `rgba(200, ${i}, ${j}, 0.2)`, // Slight transparency for area fill
-                borderWidth: 2,
-                fill: false,
-                tension: 0.4, // Smooth lines
-            });
+                    // Flatten humidity values for dynamic Y-axis scaling
+                    flattenedArray.push(...humidity);
 
-            // Increment color values dynamically
-            i += 50;
-            j += 10;
+                    // Add dataset for each sensor
+                    list_of_results.push({
+                        sensorId,
+                        label: `Sensor ID: ${sensorId} (Unit: ${unit})`,
+                        data: humidity, // Array of humidity values
+                        borderColor: `rgba(200, ${i}, ${j}, 1)`, // Dynamic border color
+                        backgroundColor: `rgba(200, ${i}, ${j}, 0.2)`, // Slight transparency for area fill
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4, // Smooth lines
+                    });
 
-            // Reset color values if exceeding RGB range
-            if (i >= 255) i = 0;
-            if (j >= 255) j = 0;
-        });
+                    // Increment color values dynamically
+                    i += 50;
+                    j += 10;
 
-        // Create or update the chart
-        if (sensor_chart) {
-            sensor_chart.data.labels = labels;
-            sensor_chart.data.datasets = list_of_results;
-            sensor_chart.update();
-        } else {
-            const ctx = $chart[0].getContext('2d');
-            sensor_chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels, // X-axis labels (reading number)
-                    datasets: list_of_results, // Sensor data
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Readings',
+                    // Reset color values if exceeding RGB range
+                    if (i >= 255) i = 0;
+                    if (j >= 255) j = 0;
+                });
+
+                $dropdown.empty();
+$dropdown.append('<option value="">All Sensors</option>');
+
+sensorIds.forEach((sensorId) => {
+    $dropdown.append(`<option value="${sensorId}">Sensor ${sensorId}</option>`);
+});
+
+                // Create or update the chart
+                if (sensor_chart) {
+                    sensor_chart.data.labels = labels;
+                    sensor_chart.data.datasets = list_of_results;
+                    sensor_chart.update();
+                } else {
+                    const ctx = $chart[0].getContext('2d');
+                    sensor_chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels, // X-axis labels (reading number)
+                            datasets: list_of_results, // Sensor data
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Readings',
+                                    },
+                                },
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'Humidity',
+                                    },
+                                    beginAtZero: true,
+                                    ticks: {
+                                        max: Math.max(...flattenedArray), // Dynamic max value
+                                        min: Math.min(...flattenedArray), // Dynamic min value
+                                        stepSize: 10, // Adjust step size as needed
+                                    },
+                                },
+                            },
+                            plugins: {
+                                legend: {
+                                    display: true, // Show the legend
+                                    position: 'top',
+                                },
                             },
                         },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Humidity',
-                            },
-                            beginAtZero: true,
-                            ticks: {
-                                max: Math.max(...flattenedArray), // Dynamic max value
-                                min: Math.min(...flattenedArray), // Dynamic min value
-                                stepSize: 10, // Adjust step size as needed
-                            },
-                        },
-                    },
-                    plugins: {
-                        legend: {
-                            display: true, // Show the legend
-                            position: 'top',
-                        },
-                    },
-                },
-            });
-        }
-    
+                    });
+                }
 
-        // VARIABLE FOR OUTSIDE CHART USAGE
-        sensor_chart = chart_share;
+                // Handle dropdown selection change
+                $dropdown.on('change', function () {
+                    const selectedSensorId = $(this).val();
+                    const filteredData = list_of_results.filter((dataset) => {
+                        return selectedSensorId === '' || dataset.sensorId === parseInt(selectedSensorId);
+                    });
 
-        let month_button = document.getElementById('humidity-chart-month');
-        month_button.addEventListener('click', () => {
-            fetch('/assissjo-api/api/farm-timestamps-month/')
-            .then((resp) => resp.json())
-            .then((data) => {
-                chart_share.data.labels = data;
-                chart_share.update();
+                    // Update the chart with filtered data
+                    sensor_chart.data.datasets = filteredData;
+                    sensor_chart.update();
+                });
             })
-            
-        })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
 
-        let week_button = document.getElementById('humidity-chart-week');
-        week_button.addEventListener('click', () => {
-            fetch('/assissjo-api/api/farm-timestamps-week/')
-            .then((resp) => resp.json())
-            .then((data) => {
-                chart_share.data.labels = data;
-                chart_share.update();
-            })
-        })
-          
-    })
-    .catch(error => {
-        console.error('Error:', error);
+    // Initialize the chart on page load
+    $(document).ready(function () {
+        init($chart);
     });
-};
 //  END HUMIDITY SENSOR RESULTS ************************** */
 
 
