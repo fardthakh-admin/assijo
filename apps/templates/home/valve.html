@@ -111,12 +111,12 @@
                             <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="DeleteValve('{{ valve.id }}')">
                                 <i class="fa-solid fa-trash-can-arrow-up" ></i>
                             </button>
-                            {% if valve.state == "on" %}
-                            <button id="{{ valve.id }}" class="btn btn-sm btn-outline-secondary badge" type="button" onclick="deactivateValve('{{ valve.id }}', this)">
+                            {% if valve.state == "open" %}
+                            <button id="{{ valve.id }}" class="btn btn-sm btn-outline-secondary badge" type="button" onclick="deactivateValve('{{ valve.identifier }}', this)" data-pulse="{{ valve.pulse }}">
                               <i class="fa-solid fa-toggle-on"></i>
                             </button>
                             {% else %}
-                            <button id="{{ valve.id }}" class="btn btn-sm btn-outline-secondary badge" type="button" onclick="deactivateValve('{{ valve.id }}', this)">
+                            <button id="{{ valve.id }}" class="btn btn-sm btn-outline-secondary badge" type="button" onclick="deactivateValve('{{ valve.identifier }}', this)" data-pulse="{{ valve.pulse }}">
                               <i class="fa-solid fa-toggle-off"></i>
                             </button>
                             {% endif %}
@@ -431,40 +431,50 @@
     <script>
       
       
-    function deactivateValve(id, e) {
-        console.log(id)
-        
-        // Determine the current state of the valve
-        let state = $(e).children()[0].classList.contains("fa-toggle-on"); // Check if it's 'on' or 'off'
-        let valveID = id;
+      function deactivateValve(id, e) {
+    console.log(id); // Make sure you see the correct valve identifier
 
-        // Prepare data to send in the request
-        let formdata = new FormData();
-        formdata.append("valve_ID", valveID); // Send valve ID
-        formdata.append("payload", state ? "off" : "on"); // Toggle the state (on <=> off)
+    // Get the pulse value from the data-pulse attribute
+    let pulse = $(e).data('pulse'); // Get the pulse value from the button's data-pulse attribute
 
-        let requestOptions = {
-            method: 'POST',
-            body: formdata,
-            redirect: 'follow'
-        };
+    // Determine the current state of the valve based on the icon class
+    let state = $(e).children()[0].classList.contains("fa-toggle-on"); // Check if it's 'on' or 'off'
+    let identifier = id; // Valve ID
 
-        // Send the PUT request to change the valve state
-        fetch("/api/set/valve/set-valve-state/", requestOptions)
-            .then(response => response.json())  // Handle JSON response
-            .then(result => {
-                console.log(result);
-                
-                // Toggle the button icon class based on the response
-                if (result.state === "on") {
-                    $(e).children()[0].classList.replace("fa-toggle-off", "fa-toggle-on");
-                } else {
-                    $(e).children()[0].classList.replace("fa-toggle-on", "fa-toggle-off");
-                }
-            })
-            .catch(error => console.log('error', error));
-    }
+    // Prepare the data as a JavaScript object
+    let data = {
+        "identifier": identifier,
+        "ValveState": state ? "close" : "open", // Toggle the state (open <=> close)
+        "pulse": pulse // Use the pulse value from the button
+    };
 
+    // Use fetch with correct body format (JSON.stringify(data) instead of formData.toString())
+    let requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json', // Sending JSON data
+        },
+        body: JSON.stringify(data), // Correctly stringify the data as JSON
+        redirect: 'follow'
+    };
+
+    // Send the request to update the valve state
+    fetch("/assissjo-api/api/set/valve/set-valve-state/", requestOptions)
+        .then(response => response.json())  // Handle JSON response
+        .then(result => {
+            console.log(result);
+
+            // Assuming the API responds with the state (open/close), adjust the button icon
+            if (result.state === "open") {
+                $(e).children()[0].classList.replace("fa-toggle-off", "fa-toggle-on");
+            } else {
+                $(e).children()[0].classList.replace("fa-toggle-on", "fa-toggle-off");
+            }
+            location.reload();
+        })
+        .catch(error => console.log('error', error)); // Catch and log any errors
+         
+}
 
 
 function DeleteValve(id) {
