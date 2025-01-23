@@ -54,7 +54,7 @@
 
   <div class="col">
     <div class="e-tabs  px-3">
-          <div class="card" style="position:relative; left:-155px">
+          <div class="card" style="position:relative; left:-200px">
             <div class="card-header border-0">
               <div class="row align-items-center">
                 <div class="col">
@@ -67,7 +67,7 @@
                   </div>
             </div>
 
-              <div class="table-responsive table-lg mt-3"  style="position:relative;: top:20px">
+              <div class="table-responsive table-lg mt-3"  style="position:relative; top:20px">
                 <table class="table align-items-center table-flush">
                 <thead class="thead-light">
                   <tr>
@@ -432,10 +432,10 @@
       
       
       function deactivateValve(id, e) {
-    console.log(id); // Make sure you see the correct valve identifier
+    
 
-    // Get the pulse value from the data-pulse attribute
-    let pulse = $(e).data('pulse'); // Get the pulse value from the button's data-pulse attribute
+  
+    let pulse = $(e).data('pulse') || 'none'; // If pulse is undefined or null, set it to 'none'
 
     // Determine the current state of the valve based on the icon class
     let state = $(e).children()[0].classList.contains("fa-toggle-on"); // Check if it's 'on' or 'off'
@@ -445,10 +445,10 @@
     let data = {
         "identifier": identifier,
         "ValveState": state ? "close" : "open", // Toggle the state (open <=> close)
-        "pulse": pulse // Use the pulse value from the button
+        "pulse": pulse // Use the pulse value from the button (if any, else 'none')
     };
 
-    // Use fetch with correct body format (JSON.stringify(data) instead of formData.toString())
+    
     let requestOptions = {
         method: 'POST',
         headers: {
@@ -464,7 +464,7 @@
         .then(result => {
             console.log(result);
 
-            // Assuming the API responds with the state (open/close), adjust the button icon
+            
             if (result.state === "open") {
                 $(e).children()[0].classList.replace("fa-toggle-off", "fa-toggle-on");
             } else {
@@ -472,8 +472,7 @@
             }
             location.reload();
         })
-        .catch(error => console.log('error', error)); // Catch and log any errors
-         
+        .catch(error => console.log('error', error)); 
 }
 
 
