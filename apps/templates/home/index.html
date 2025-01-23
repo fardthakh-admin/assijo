@@ -341,6 +341,7 @@
                           <span class="h2 font-weight-bold mb-0">
                               
                           </span>
+
                           </div>
                           <div class="col-auto">
                             <div class="icon icon-shape bg-gradient-pink text-white rounded-circle shadow">
@@ -430,6 +431,111 @@
                     </div>
                   </div>
       
+      
+                </div>
+                <div class="row justify-content-center" >
+                  <div class="col-xl-3 col-md-6" >
+                    <div class="card card-stats">
+                      <!-- Card body -->
+                      <div class="card-body" >
+                        <div class="row">
+                          <div class="col">
+                            <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">BattV_Avg</h5>
+                          
+                            <span class="h2 font-weight-bold mb-0">
+                              
+                            </span>
+      
+                          </div>
+                          <div class="col-auto">
+                            <div class="icon icon-shape bg-gradient-warning text-white rounded-circle shadow">
+                              <i class="fa fa-battery-full"></i>
+                            </div>
+                          </div>
+                        </div>
+      
+                        <span id="direction-card">
+                          {{packetresult.BattV_Avg }}{{packetresult.BattV_AvgUnit }}
+                        </span>
+      
+                        <p class="mt-3 mb-0 text-sm">
+                          <span class="text-decoration-none mr-2"><i class="fa fa-arrow-left"></i></span>
+                          <span class="text-nowrap"> last read:{{ packetresult.timestamp }}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+      
+      
+      
+                <div class="col-xl-3 col-md-6" >
+                    <div class="card card-stats">
+                      <!-- Card body -->
+                      <div class="card-body" >
+                        <div class="row">
+                          <div class="col">
+                            <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">PTemp_C_Avg</h5>
+                            
+                          <span class="h2 font-weight-bold mb-0">
+                              
+                          </span>
+                          </div>
+                          <div class="col-auto">
+                            <div class="icon icon-shape bg-gradient-info text-white rounded-circle shadow">
+                              <i class="fa fa-tachometer-alt"></i>
+                            </div>
+                          </div>
+                        </div>
+      
+                        <span id="timestamp-card">
+                          {{ packetresult.PTemp_C_Avg }}{{packetresult.PTemp_C_AvgUnit }}
+                        </span>
+      
+                        <p class="mt-3 mb-0 text-sm">
+                            <span class="text-success mr-2"><i class="fa fa-arrow-up"></i></span>
+                          <span class="text-nowrap">last read: {{ packetresult.timestamp }}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+      
+      
+      
+      
+                <div class="col-xl-3 col-md-6" >
+                    <div class="card card-stats">
+                      <!-- Card body -->
+                      <div class="card-body " >
+                        <div class="row">
+                          <div class="col">
+                            <h5 class="card-title text-uppercase text-muted mb-0" style="color: red">AirTC_Avg</h5>
+                            
+                              <span class="h2 font-weight-bold mb-0">
+                              
+                          </span>
+                          </div>
+                          <div class="col-auto">
+                            <div class="fa-solid icon icon-shape bg-gradient-success text-white rounded-circle shadow">
+                              <i class="fa fa-thermometer-half"></i>
+                            </div>
+                          </div>
+                        </div>
+      
+                        <span id="visibility-card">
+                          {{packetresult.AirTC_Avg}}{{packetresult.AirTC_AvgUnit}}
+                        </span>
+      
+                        <p class="mt-3 mb-0 text-sm">
+                          <span class="text-danger mr-2"><i class="fa fa-arrow-down"></i></span>
+                          <span class="text-nowrap">last read:{{ packetresult.timestamp }}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+      
+      
+      
+                   
       
                 </div>
               </div>

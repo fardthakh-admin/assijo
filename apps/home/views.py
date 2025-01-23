@@ -1294,6 +1294,12 @@ import csv
 from .models import WeatherStation, PacketResult
 
 def download_weather_csv(request):
+    # Get the current user's farm (assuming the user is logged in and owns the farm)
+    farm = Farm.objects.filter(owner=request.user.id).first()
+    
+    if not farm:
+        return HttpResponse("Farm not found for the current user.", status=404)
+
     # Create an HttpResponse object with the appropriate content type for CSV
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="packet_results.csv"'
@@ -1312,8 +1318,8 @@ def download_weather_csv(request):
         'RH', 'SlrkW_Avg', 'SlrMJ_Tot', 'Visibility_m_Avg', 'wind_speed_AVG'
     ])
 
-    # Query all PacketResult instances
-    packet_results = PacketResult.objects.all()
+    # Query PacketResults filtered by the current farm's weather stations
+    packet_results = PacketResult.objects.filter(weather_station__farm=farm)
 
     for packet_result in packet_results:
         weather_station = packet_result.weather_station  # Access related WeatherStation
