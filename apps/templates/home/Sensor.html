@@ -6,6 +6,7 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
+
     <script src="https://openlayers.org/api/OpenLayers.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://js.arcgis.com/4.9/esri/css/main.css"/>
@@ -92,11 +93,13 @@
                          data-type="{{sensor.type}}">
 
                     <th scope="row">
+                      <button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="showSensorDetails('{{ sensor.id }}')" data-toggle="modal" data-target="#sensor-modal">
                         {{sensor.id}}
+                      </button>
                     </th>
                     <td>
-                        {{ sensor.type}}
-                    </td>
+                          {{ sensor.type }}
+                    </td>                                  
                     <td>
                         {{ sensor.category}}
                     </td>
@@ -150,6 +153,163 @@
   </div>
 </div>
 </div>
+
+<!--new Sensor Details-->
+<div class="modal fade" id="sensor-modal" tabindex="-1" role="dialog" aria-labelledby="sensor-modal-label" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="sensor-modal-label">Sensor Details</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <!-- Sensor Data Table -->
+              <h5>Sensor Data</h5>
+              <div id="sensor-data-container"></div>
+
+              <!-- Canvas for the Chart (Will be dynamically inserted for each type) -->
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Function to show sensor details when a specific sensor is clicked
+function showSensorDetails(sensorId) {
+  // Using fetch to retrieve data from the API instead of using AJAX
+  fetch("http://127.0.0.1:8000/api/sensor-data/" + sensorId + "/")
+      .then(response => response.json())
+      .then(sensorData => {
+          console.log(sensorData); // For debugging the API response
+
+          if (sensorData) {
+              // Populate modal with sensor data
+              $('#sensor-modal .modal-title').text('Sensor Details for ' + sensorData.sensor_type);
+              
+              // Clear any previous content inside the modal
+              $('#sensor-data-container').empty();
+
+              // If sensor_type is "single"
+              if (sensorData.sensor_type === "single") {
+                  var tableBody = $('<table class="table"><thead><tr><th>Timestamp</th><th>Value</th><th>Unit</th></tr></thead><tbody></tbody></table>');
+                  var table = tableBody.find('tbody');
+
+                  // Iterate over sensor data to populate the table
+                  sensorData.data.forEach(function(item) {
+                      table.append(
+                          '<tr><td>' + new Date(item.timestamp).toLocaleString() + '</td><td>' + item.value + '</td><td>' + item.unit + '</td></tr>'
+                      );
+                  });
+
+                  // Append the table to the modal
+                  $('#sensor-data-container').append(tableBody);
+
+                  // Setup the chart
+                  var labels = sensorData.data.map(item => new Date(item.timestamp).toLocaleString());
+                  var dataPoints = sensorData.data.map(item => item.value);
+                  var unit = sensorData.data.length > 0 ? sensorData.data[0].unit : '';
+
+                  var ctx = document.createElement('canvas');
+                  $('#sensor-data-container').append(ctx);
+
+                  // Ensure Chart.js is loaded before using it
+                  if (typeof Chart !== 'undefined') {
+                      new Chart(ctx, {
+                          type: 'line',
+                          data: {
+                              labels: labels,
+                              datasets: [{
+                                  label: 'Sensor Data (' + unit + ')',
+                                  data: dataPoints,
+                                  borderColor: 'brown',
+                                  fill: false,
+                                  tension: 0,
+                              }]
+                          },
+                          options: {
+                              responsive: true
+                          }
+                      });
+                  } else {
+                      console.error('Chart.js is not loaded.');
+                  }
+              } 
+              // If sensor_type is "multiple"
+              else if (sensorData.sensor_type === "multiple") {
+                  sensorData.types.forEach(function(sensorTypeData) {
+                      var type = sensorTypeData.type;
+                      var tableBody = $('<table class="table"><thead><tr><th>Timestamp</th><th>Value</th><th>Unit</th></tr></thead><tbody></tbody></table>');
+                      var table = tableBody.find('tbody');
+
+                      // Iterate over each type's data to populate the table
+                      sensorTypeData.data.forEach(function(item) {
+                          table.append(
+                              '<tr><td>' + new Date(item.timestamp).toLocaleString() + '</td><td>' + item.value + '</td><td>' + item.unit + '</td></tr>'
+                          );
+                      });
+
+                      // Append the table for each type
+                      $('#sensor-data-container').append('<h5>' + type + ' Data</h5>');
+                      $('#sensor-data-container').append(tableBody);
+
+                      // Setup the chart for each type
+                      var labels = sensorTypeData.data.map(item => new Date(item.timestamp).toLocaleString());
+                      var dataPoints = sensorTypeData.data.map(item => item.value);
+                      var unit = sensorTypeData.data.length > 0 ? sensorTypeData.data[0].unit : '';
+
+                      var ctx = document.createElement('canvas');
+                      $('#sensor-data-container').append(ctx);
+
+                      // Ensure Chart.js is loaded before using it
+                      if (typeof Chart !== 'undefined') {
+                          new Chart(ctx, {
+                              type: 'line',
+                              data: {
+                                  labels: labels,
+                                  datasets: [{
+                                      label: type + ' Data (' + unit + ')',
+                                      data: dataPoints,
+                                      borderColor: 'green',
+                                      fill: false,
+                                      tension: 0,
+                                  }]
+                              },
+                              options: {
+                                  responsive: true
+                              }
+                          });
+                      } else {
+                          console.error('Chart.js is not loaded.');
+                      }
+                  });
+              }
+
+              // Show the modal with the populated data
+              $('#sensor-modal').modal('show');
+          }
+      })
+      .catch(error => {
+          console.error('Error loading sensor data:', error); // Error handling for failed data load
+      });
+}
+
+// Attach an event listener to the sensor type buttons to fetch sensor details
+$(document).on('click', '.sensor-type', function() {
+  var sensorId = $(this).data('id'); // Get the id of the clicked sensor
+  showSensorDetails(sensorId); // Call the function to fetch and display details
+});
+</script>
+
+<!--end new -->
+
+
 
     <!-- User Form Modal -->
     <div class="modal fade" role="dialog" tabindex="-1" id="user-form-modal">
@@ -235,6 +395,7 @@
     </div>
   </div>
 </div>
+
 
     <script>
         jQuery('#user-form-modal').on('shown.bs.modal', function () {

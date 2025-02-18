@@ -9,6 +9,7 @@ from . import serializers
 from django.utils.dateparse import parse_datetime
 from apps.home.models import Tree
 from apps.home.models import Result
+from apps.home.models import Sensor  
 from .serializers import ResultSerializer
 
 
@@ -377,6 +378,76 @@ def farm_water_level_results(request):
     #     list_of_water_level_results.append(water_level_result)
 
     # return Response(list_of_water_level_results)
+
+
+# new
+
+@api_view(['GET'])
+def sensor_data_by_id(request, sensor_id):
+    try:
+        # Get the sensor based on sensor_id
+        sensor = Sensor.objects.get(id=sensor_id)
+
+        # Get the sensor type (single or multiple)
+        sensor_type = sensor.type
+
+        # Create a list to store the data
+        data = []
+
+        if sensor_type == "single":
+            # If the sensor type is single
+            results = Result.objects.filter(sensor=sensor)
+
+            # Add the data for this sensor
+            for result in results:
+                data.append({
+                    'timestamp': result.timestamp,
+                    'value': result.number,
+                    'unit': result.unit
+                })
+
+            return Response({
+                'sensor_id': sensor.id,
+                'sensor_type': sensor_type,
+                'data': data
+            })
+
+        elif sensor_type == "multiple":
+            # Retrieve distinct types of results for this sensor
+            types = Result.objects.filter(sensor=sensor).values('type').distinct()
+
+            # Organize data by type
+            for result_type in types:
+                type_name = result_type['type']
+                type_data = []
+
+                results = Result.objects.filter(sensor=sensor, type=type_name)
+                for result in results:
+                    type_data.append({
+                        'timestamp': result.timestamp,
+                        'value': result.number,
+                        'unit': result.unit
+                    })
+
+                data.append({
+                    'type': type_name,  # Name of the type
+                    'data': type_data   # Results of the type
+                })
+
+            return Response({
+                'sensor_id': sensor.id,
+                'sensor_type': sensor_type,
+                'types': data  # Types with their respective data
+            })
+
+        else:
+            return Response({"detail": "Invalid sensor type."}, status=400)
+
+    except Sensor.DoesNotExist:
+        return Response({"detail": "Sensor not found."}, status=404)
+    except Exception as e:
+        return Response({"detail": str(e)}, status=500)
+
 
 
 @api_view(['GET'])

@@ -42,6 +42,9 @@ urlpatterns = [
     path('valve/<int:valve_id>/', views.valve_detail, name='valve-detail'),
     path('valve-details/<str:identifier>/', views.valve_detail_identifier, name='valve-detail-identifier'),
 
+    # new urls
+    path('sensor-data/<int:sensor_id>/', views.sensor_data_by_id, name='sensor_data_by_id'),
+
     
 
     # POST urls
