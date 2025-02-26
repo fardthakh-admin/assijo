@@ -196,20 +196,25 @@ function showSensorDetails(sensorId) {
               // Clear any previous content inside the modal
               $('#sensor-data-container').empty();
 
+              // Create a carousel container
+              var carouselContainer = $('<div id="sensorDataCarousel" class="carousel slide" data-ride="carousel"><div class="carousel-inner"></div><a class="carousel-control-prev" href="#sensorDataCarousel" role="button" data-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="sr-only">Previous</span></a><a class="carousel-control-next" href="#sensorDataCarousel" role="button" data-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span><span class="sr-only">Next</span></a></div>');
+
               // If sensor_type is "single"
               if (sensorData.sensor_type === "single") {
                   var tableBody = $('<table class="table"><thead><tr><th>Timestamp</th><th>Value</th><th>Unit</th></tr></thead><tbody></tbody></table>');
                   var table = tableBody.find('tbody');
 
                   // Iterate over sensor data to populate the table
-                  sensorData.data.forEach(function(item) {
-                      table.append(
-                          '<tr><td>' + new Date(item.timestamp).toLocaleString() + '</td><td>' + item.value + '</td><td>' + item.unit + '</td></tr>'
-                      );
+                  sensorData.data.forEach(function(item, index) {
+                      var row = '<tr><td>' + new Date(item.timestamp).toLocaleString() + '</td><td>' + item.value + '</td><td>' + item.unit + '</td></tr>';
+                      // Add each table row to the carousel slides
+                      var slide = $('<div class="carousel-item ' + (index === 0 ? 'active' : '') + '"></div>').append('<div class="table-responsive">' + tableBody.html() + '</div>');
+                      slide.find('tbody').append(row);  // Append the row in the current slide
+                      carouselContainer.find('.carousel-inner').append(slide);  // Append slide to the carousel
                   });
 
-                  // Append the table to the modal
-                  $('#sensor-data-container').append(tableBody);
+                  // Append carousel container to the modal
+                  $('#sensor-data-container').append(carouselContainer);
 
                   // Setup the chart
                   var labels = sensorData.data.map(item => new Date(item.timestamp).toLocaleString());
@@ -249,15 +254,17 @@ function showSensorDetails(sensorId) {
                       var table = tableBody.find('tbody');
 
                       // Iterate over each type's data to populate the table
-                      sensorTypeData.data.forEach(function(item) {
-                          table.append(
-                              '<tr><td>' + new Date(item.timestamp).toLocaleString() + '</td><td>' + item.value + '</td><td>' + item.unit + '</td></tr>'
-                          );
+                      sensorTypeData.data.forEach(function(item, index) {
+                          var row = '<tr><td>' + new Date(item.timestamp).toLocaleString() + '</td><td>' + item.value + '</td><td>' + item.unit + '</td></tr>';
+                          // Add each table row to the carousel slides
+                          var slide = $('<div class="carousel-item ' + (index === 0 ? 'active' : '') + '"></div>').append('<div class="table-responsive">' + tableBody.html() + '</div>');
+                          slide.find('tbody').append(row);  // Append the row in the current slide
+                          carouselContainer.find('.carousel-inner').append(slide);  // Append slide to the carousel
                       });
 
                       // Append the table for each type
                       $('#sensor-data-container').append('<h5>' + type + ' Data</h5>');
-                      $('#sensor-data-container').append(tableBody);
+                      $('#sensor-data-container').append(carouselContainer);
 
                       // Setup the chart for each type
                       var labels = sensorTypeData.data.map(item => new Date(item.timestamp).toLocaleString());
