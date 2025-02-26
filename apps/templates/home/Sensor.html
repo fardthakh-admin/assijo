@@ -184,7 +184,7 @@
 // Function to show sensor details when a specific sensor is clicked
 function showSensorDetails(sensorId) {
   // Using fetch to retrieve data from the API instead of using AJAX
-  fetch("/api/sensor-data/" + sensorId + "/")
+  fetch("/sensor-data/" + sensorId + "/")
       .then(response => response.json())
       .then(sensorData => {
           console.log(sensorData); // For debugging the API response
