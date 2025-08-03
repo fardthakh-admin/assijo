@@ -1245,6 +1245,8 @@
 {#        </div>#}
 {#      </div>#}
 </div>
+<div id="load-time" class="text-info font-weight-bold mt-2"></div>
+
 {% endblock content %}
 
 
@@ -1264,6 +1266,50 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const button = document.getElementById("time-filter-button");
+
+    button.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        const startDate = document.getElementById("start-date").value;
+        const endDate = document.getElementById("end-date").value;
+
+        const startTime = performance.now();
+
+        fetch(`/assissjo-api/api/farm-timestamps/?start-date=${startDate}&end-date=${endDate}`)
+            .then(response => response.json())
+            .then(data => {
+                const endTime = performance.now();
+                const timeTaken = ((endTime - startTime) / 1000).toFixed(2);
+                document.getElementById("load-time").innerText = `Time: ${timeTaken} seconds`;
+
+                // افعل ما تريد بالبيانات هنا مثلاً console.log
+                console.log("Filtered data:", data);
+            })
+            .catch(error => {
+                console.error("Fetch error:", error);
+            });
+    });
+});
+</script>
+
+
+
+
+
+
+
 
 
     <script>

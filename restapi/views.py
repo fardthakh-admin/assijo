@@ -92,39 +92,119 @@ def farm_water_pumps(request):
     return Response(serializer.data)
 
 
-@api_view(['GET'])
-def farm_timestamps(request):
-    user = models.User.objects.get(id=request.user.id)
-    sensors = models.Sensor.objects.filter(farm_id=user.farm)
+# @api_view(['GET'])
+# def farm_timestamps(request):
+#     user = models.User.objects.get(id=request.user.id)
+#     sensors = models.Sensor.objects.filter(farm_id=user.farm)
 
-    # Retrieve query params for start and end dates
-    start_date_str = request.query_params.get('start-date')
-    end_date_str = request.query_params.get('end-date')
+#     # Retrieve query params for start and end dates
+#     start_date_str = request.query_params.get('start-date')
+#     end_date_str = request.query_params.get('end-date')
 
-    # Default to 30 days ago for start date and today for end date
-    if start_date_str is None:
-        start_date = datetime.today() - timedelta(days=30)
-    else:
-        start_date = parse_datetime(start_date_str) or datetime.today() - timedelta(days=30)
+#     # Default to 30 days ago for start date and today for end date
+#     if start_date_str is None:
+#         start_date = datetime.today() - timedelta(days=30)
+#     else:
+#         start_date = parse_datetime(start_date_str) or datetime.today() - timedelta(days=30)
 
-    if end_date_str is None:
-        end_date = datetime.today()
-    else:
-        end_date = parse_datetime(end_date_str) or datetime.today()
+#     if end_date_str is None:
+#         end_date = datetime.today()
+#     else:
+#         end_date = parse_datetime(end_date_str) or datetime.today()
 
-    # Ensure the dates are timezone-aware if Django timezone support is active
-    if timezone.is_aware(start_date):
-        start_date = timezone.make_aware(start_date)
-    if timezone.is_aware(end_date):
-        end_date = timezone.make_aware(end_date)
+#     # Ensure the dates are timezone-aware if Django timezone support is active
+#     if timezone.is_aware(start_date):
+#         start_date = timezone.make_aware(start_date)
+#     if timezone.is_aware(end_date):
+#         end_date = timezone.make_aware(end_date)
 
-    # Fetch results based on the specified range
-    results = models.Result.objects.filter(
-        sensor__farm=user.farm,
-        timestamp__range=(start_date, end_date)
-    ).order_by('timestamp').values('number', 'timestamp')
+#     # Fetch results based on the specified range
+#     results = models.Result.objects.filter(
+#         sensor__farm=user.farm,
+#         timestamp__range=(start_date, end_date)
+#     ).order_by('timestamp').values('number', 'timestamp')
 
-    return Response(results)
+#     return Response(results)
+
+# @api_view(['GET'])
+# def farm_timestamps_by_type(request, type):
+#     user = models.User.objects.get(id=request.user.id)
+#     sensor = models.Sensor.objects.filter(farm_id=user.farm, type=type)
+
+#     list_of_timestamps = []
+
+#     start_date = request.query_params.get('start-date')
+#     end_date = request.query_params.get('end-date')
+
+#     if start_date is None:
+#         start_date = datetime.today() - timedelta(days=30)  # Use `datetime` directly
+#     if end_date is None:
+#         end_date = datetime.today()  # Use `datetime` directly
+
+#     # Ensure proper query filter and date range
+#     results = models.Result.objects.filter(
+#         sensor__id__in=sensor, timestamp__range=(start_date, end_date)
+#     ).order_by('timestamp').values('number', 'timestamp')
+
+#     return Response(results)
+
+
+# @api_view(['GET'])
+# def farm_timestamps_days(request):
+#     user = models.User.objects.get(id = request.user.id)
+
+#     list_of_timestamps = []
+        
+#     start_date = datetime.datetime.today() - datetime.timedelta(days=7)
+#     end_date = datetime.datetime.today()
+    
+#     results = models.Result.objects.filter(sensor__farm = user.farm , timestamp__range = (start_date, end_date)).order_by('timestamp').values('number', 'timestamp')
+#     for result in results:
+#         list_of_timestamps.append(result['timestamp'].strftime('%Y-%m-%d'))
+
+#     list_of_timestamps = np.unique(list_of_timestamps)
+#     return Response(list_of_timestamps)
+
+
+# @api_view(['GET'])
+# def farm_timestamps_month(request):
+#     user = models.User.objects.get(id = request.user.id)
+
+#     list_of_timestamps = []
+
+#     start_date = datetime.datetime.today() - datetime.timedelta(days=30)
+#     end_date = datetime.datetime.today()
+    
+#     results = models.Result.objects.filter(sensor__farm = user.farm , timestamp__range = (start_date, end_date)).order_by('timestamp').values('number', 'timestamp')
+#     for result in results:
+#         list_of_timestamps.append(result['timestamp'].strftime('%Y-%m-%d'))
+
+#     list_of_timestamps = np.unique(list_of_timestamps)
+#     return Response(list_of_timestamps)
+
+
+# @api_view(['GET'])
+# def farm_timestamps_week(request):
+#     user = models.User.objects.get(id = request.user.id)
+
+#     list_of_timestamps = []
+        
+#     start_date = datetime.datetime.today() - datetime.timedelta(days=7)
+#     end_date = datetime.datetime.today()
+    
+#     results = models.Result.objects.filter(sensor__farm = user.farm , timestamp__range = (start_date, end_date)).order_by('timestamp').values('number', 'timestamp')
+#     for result in results:
+#         list_of_timestamps.append(result['timestamp'].strftime('%Y-%m-%d'))
+
+#     list_of_timestamps = np.unique(list_of_timestamps)
+#     return Response(list_of_timestamps)
+
+
+
+
+
+
+
 
 @api_view(['GET'])
 def farm_timestamps_by_type(request, type):
@@ -149,55 +229,118 @@ def farm_timestamps_by_type(request, type):
     return Response(results)
 
 
-@api_view(['GET'])
-def farm_timestamps_days(request):
-    user = models.User.objects.get(id = request.user.id)
+
+
+
+
+
+
+
+@api_view(["GET"])
+def farm_timestamps(request):
+    user = models.User.objects.get(id=request.user.id)
+    sensors = models.Sensor.objects.filter(farm_id=user.farm)
 
     list_of_timestamps = []
-        
+
+    start_date = request.query_params.get("start-date")
+    end_date = request.query_params.get("end-date")
+
+    if start_date is None:
+        start_date = datetime.datetime.today() - datetime.timedelta(days=30)
+    if end_date is None:
+        end_date = datetime.datetime.today()
+
+    results = (
+        models.Result.objects.filter(
+            sensor__farm=user.farm, timestamp__range=(start_date, end_date)
+        )
+        .order_by("timestamp")
+        .values("number", "timestamp")
+    )
+
+    return Response(results)
+
+
+@api_view(["GET"])
+def farm_timestamps_days(request):
+    user = models.User.objects.get(id=request.user.id)
+
+    list_of_timestamps = []
+
     start_date = datetime.datetime.today() - datetime.timedelta(days=7)
     end_date = datetime.datetime.today()
-    
-    results = models.Result.objects.filter(sensor__farm = user.farm , timestamp__range = (start_date, end_date)).order_by('timestamp').values('number', 'timestamp')
+
+    results = (
+        models.Result.objects.filter(
+            sensor__farm=user.farm, timestamp__range=(start_date, end_date)
+        )
+        .order_by("timestamp")
+        .values("number", "timestamp")
+    )
     for result in results:
-        list_of_timestamps.append(result['timestamp'].strftime('%Y-%m-%d'))
+        list_of_timestamps.append(result["timestamp"].strftime("%Y-%m-%d"))
 
     list_of_timestamps = np.unique(list_of_timestamps)
     return Response(list_of_timestamps)
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def farm_timestamps_month(request):
-    user = models.User.objects.get(id = request.user.id)
+    user = models.User.objects.get(id=request.user.id)
 
     list_of_timestamps = []
 
     start_date = datetime.datetime.today() - datetime.timedelta(days=30)
     end_date = datetime.datetime.today()
-    
-    results = models.Result.objects.filter(sensor__farm = user.farm , timestamp__range = (start_date, end_date)).order_by('timestamp').values('number', 'timestamp')
+
+    results = (
+        models.Result.objects.filter(
+            sensor__farm=user.farm, timestamp__range=(start_date, end_date)
+        )
+        .order_by("timestamp")
+        .values("number", "timestamp")
+    )
     for result in results:
-        list_of_timestamps.append(result['timestamp'].strftime('%Y-%m-%d'))
+        list_of_timestamps.append(result["timestamp"].strftime("%Y-%m-%d"))
 
     list_of_timestamps = np.unique(list_of_timestamps)
     return Response(list_of_timestamps)
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def farm_timestamps_week(request):
-    user = models.User.objects.get(id = request.user.id)
+    user = models.User.objects.get(id=request.user.id)
 
     list_of_timestamps = []
-        
+
     start_date = datetime.datetime.today() - datetime.timedelta(days=7)
     end_date = datetime.datetime.today()
-    
-    results = models.Result.objects.filter(sensor__farm = user.farm , timestamp__range = (start_date, end_date)).order_by('timestamp').values('number', 'timestamp')
+
+    results = (
+        models.Result.objects.filter(
+            sensor__farm=user.farm, timestamp__range=(start_date, end_date)
+        )
+        .order_by("timestamp")
+        .values("number", "timestamp")
+    )
     for result in results:
-        list_of_timestamps.append(result['timestamp'].strftime('%Y-%m-%d'))
+        list_of_timestamps.append(result["timestamp"].strftime("%Y-%m-%d"))
 
     list_of_timestamps = np.unique(list_of_timestamps)
     return Response(list_of_timestamps)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @api_view(['GET'])
@@ -254,43 +397,119 @@ def farm_energy_levels(request):
     # return Response(list_of_energy_level_results)
 
 
-@api_view(['GET'])
+# @api_view(['GET'])
+# def farm_humidity_results(request):
+#     user = models.User.objects.get(id=request.user.id)
+
+#     sensors = models.Sensor.objects.filter(farm_id=user.farm)
+
+#     # Get the date 1 days ago
+#     seven_days_ago = datetime.now() - timedelta(days=1)
+
+#     # Create a list to store the data
+#     data = []
+#     for sensor in sensors:
+#         sensor_id = sensor.id
+
+#         # Get the list of humidity results for the last 7 days
+#         humidity_result = list(
+#             models.Result.objects.filter(sensor__id=sensor.id, timestamp__gte=seven_days_ago)
+#             .values_list('number', flat=True)
+#         )
+
+#         # Normalize the humidity readings
+#         normalized_list = []
+#         for reading in humidity_result:
+#             reading_normal = (1 - ((reading - 1700) / (2600 - 1700))) * 100
+#             normalized_list.append(round(reading_normal, 2))
+
+#         # Get the unit for the sensor
+#         unit = sensor.unit if sensor.unit else None
+
+#         # Append data for the current sensor
+#         data.append({
+#             'sensor_id': sensor_id,
+#             'unit': unit,
+#             'humidity': normalized_list,
+#         })
+
+#     return Response(data)
+
+
+
+
+from django.shortcuts import get_object_or_404
+import numpy as np
+
+from django.core.cache import cache
+
+
+
+@api_view(["GET"])
 def farm_humidity_results(request):
-    user = models.User.objects.get(id=request.user.id)
+    user = get_object_or_404(models.User, id=request.user.id)
 
+    # cache key per user
+    cache_key = f"humidity_data_user_{user.id}"
+    data = cache.get(cache_key)
+
+    if data is not None:
+        print("✅ Returned data from cache")
+        return Response(data)
+
+    # لو ما في كاش، نبدأ بالحسابات
     sensors = models.Sensor.objects.filter(farm_id=user.farm)
+    print(f"Total sensors found for user {user.id}: {sensors.count()}")
 
-    # Get the date 1 days ago
-    seven_days_ago = datetime.now() - timedelta(days=1)
-
-    # Create a list to store the data
+    all_humidity_raw = []
     data = []
+
     for sensor in sensors:
         sensor_id = sensor.id
 
-        # Get the list of humidity results for the last 7 days
         humidity_result = list(
-            models.Result.objects.filter(sensor__id=sensor.id, timestamp__gte=seven_days_ago)
-            .values_list('number', flat=True)
+            models.Result.objects.filter(sensor__id=sensor.id).values_list("number", flat=True)
         )
+        print(f"Sensor ID: {sensor_id} | Raw humidity readings count: {len(humidity_result)}")
+        all_humidity_raw.extend(humidity_result)
 
-        # Normalize the humidity readings
-        normalized_list = []
-        for reading in humidity_result:
-            reading_normal = (1 - ((reading - 1700) / (2600 - 1700))) * 100
-            normalized_list.append(round(reading_normal, 2))
+        humidity_result = list(map(int, humidity_result))
+        humidity_np = np.array(humidity_result, dtype=np.float32)
 
-        # Get the unit for the sensor
+        mean_val = humidity_np.mean()
+        std_dev = humidity_np.std()
+
+        if std_dev != 0:
+            normalized_list = ((humidity_np - mean_val) / std_dev).tolist()
+        else:
+            normalized_list = [0.0] * len(humidity_np)
+
+        # Get unit for the sensor
         unit = sensor.unit if sensor.unit else None
 
-        # Append data for the current sensor
         data.append({
-            'sensor_id': sensor_id,
-            'unit': unit,
-            'humidity': normalized_list,
+            "sensor_id": sensor_id,
+            "unit": unit,
+            "humidity": normalized_list,
         })
 
+    print(f"Total sensors processed: {len(data)}")
+    print(f"Total results count (all sensors): {len(all_humidity_raw)}")
+
+    # Cache the data for 24 hours (86400 seconds)
+    cache.set(cache_key, data, 60 * 60 * 24)
+
     return Response(data)
+
+
+
+
+
+
+
+
+
+
 
 
 @api_view(['GET'])
