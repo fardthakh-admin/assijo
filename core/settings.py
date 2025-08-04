@@ -140,6 +140,19 @@ DATABASES = {
     }
 }
 
+
+
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
+
+
+
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
@@ -196,6 +209,9 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost:8000','http://10.0.2.2:8000']
 SITE_ID = 1
 
 FORCE_SCRIPT_NAME = '/assissjo-api'
+# FORCE_SCRIPT_NAME = '/assissjo-api'
+
+
 # AUTHENTICATION_BACKENDS={
 
 #     "django.contrib.auth.backends.ModelBackend",

@@ -13,6 +13,7 @@ urlpatterns = [
     # path("auth/",include("rest.urls")),
     # path('auth/registration/', include('dj_rest_auth.registration.urls')),
     path('', include("apps.home.urls")),
-    path("api/", include("restapi.urls"))
+    path("api/", include("restapi.urls")),
+    # path("assissjo-api/api/", include("restapi.urls")),
     # UI Kits Html files
 ]

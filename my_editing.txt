@@ -1,0 +1,30 @@
+1- comment Force Script Name =>  # FORCE_SCRIPT_NAME = '/assissjo-api' in settings.py root.
+
+2- comment the path to solve redirect urls as:
+  2.1- comment this path # path("api/", include("restapi.urls")),.
+  2.2- and use path("assissjo-api/api/", include("restapi.urls")), in urls.py root.
+
+3- comment last farm_humidity_results in restapi/views.py and put new solved one with customization and cash.
+
+4- put the cash settings in settings.py root .
+
+5- calculating the time that data takes in index.html:
+   5.1- <div id="load-time" class="text-info font-weight-bold mt-2"></div>.
+   5.2-  <script> document.addEventListener("DOMContentLoaded", function() { ...
+
+6- remove '{#' from base.html.
+
+7- replace the path from cd /root/assijo to cd /home/elabbasy/project in CICD.
+
+8- comment last farm_timestamps & with day,month and week in restapi/views.py and get new worked ones to solve time filter issue.
+
+Tasks to do:
+t1- solve the filter problem. (Done)
+t2- solve the path issue in cicd. (Done)
+t3- connect my local repo to the real repo. 
+
+For pushing:
+p1-  uncomment Force Script Name =>   FORCE_SCRIPT_NAME = '/assissjo-api' in settings.py root.
+p2- uncomment the path to solve redirect urls as:
+  p2.1- uncomment this path  path("api/", include("restapi.urls")),.
+  p2.2- and comment # path("assissjo-api/api/", include("restapi.urls")), in urls.py root.
